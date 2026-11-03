@@ -1,0 +1,10 @@
+# Sekrety i dane — NIGDY do repozytorium
+tmdb_klucz.txt
+serialog.db
+serialog.db-*
+*.zip
+
+# Pliki robocze
+.claude/
+__pycache__/
+*.pyc

@@ -1,0 +1,2141 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SeriaLog</title>
+<!-- instalacja na ekranie głównym telefonu (iPhone: Udostępnij → Do ekranu początkowego) -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SeriaLog">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f5efe6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* motyw dzienny — ciepły krem, terakota, szałwia */
+:root{
+  --bg:#f5efe6;--card:#fffcf7;--card2:#f0e7da;--line:#e7dccc;
+  --text:#2e2722;--muted:#86796b;--accent:#c4643f;--accent-ink:#a24c2c;--accent-soft:#f6e3d8;
+  --ok:#5c8d5f;--ok-soft:#e4efe0;--heart:#c4505e;--gold:#d99a2b;
+  --warn-bg:#fbf1dc;--warn-ink:#7a5512;
+  --shadow:0 1px 2px rgba(70,45,20,.05),0 3px 12px rgba(70,45,20,.06);--shadow2:0 12px 32px rgba(70,45,20,.16);
+  --r:16px;color-scheme:light;
+}
+/* motyw wieczorny — ciepły, przygaszony brąz zamiast czerni */
+[data-theme=evening]{
+  --bg:#1e1a17;--card:#28231f;--card2:#332c26;--line:#3e362e;
+  --text:#f1e9df;--muted:#a89a8a;--accent:#e08460;--accent-ink:#f0a27f;--accent-soft:#3e2b21;
+  --ok:#8bba86;--ok-soft:#26331f;--heart:#e07a88;--gold:#e8b04a;
+  --warn-bg:#3a2f19;--warn-ink:#f2d593;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 3px 12px rgba(0,0,0,.18);--shadow2:0 12px 32px rgba(0,0,0,.45);
+  color-scheme:dark;
+}
+/* ---------- motywy do wyboru (Profil → Wygląd) ---------- */
+[data-theme=sage]{--bg:#eef2ea;--card:#fbfdf9;--card2:#e2e9dc;--line:#d5dfcc;--text:#233020;--muted:#6b7a66;--accent:#5d8a58;--accent-ink:#3e6a3a;--accent-soft:#dde9d9;--ok:#3f8f5a;--ok-soft:#dcefe2}
+[data-theme=ocean]{--bg:#edf3f8;--card:#fbfdff;--card2:#e0eaf3;--line:#d2dfea;--text:#1b2a37;--muted:#627485;--accent:#2f73a8;--accent-ink:#1d5986;--accent-soft:#dbeaf6;--ok:#2f8f6a;--ok-soft:#dbefe7}
+[data-theme=lavender]{--bg:#f3f0f8;--card:#fdfcff;--card2:#e8e2f3;--line:#dcd4ec;--text:#2a2338;--muted:#766d88;--accent:#7b5db0;--accent-ink:#5d4191;--accent-soft:#ebe3f7}
+[data-theme=blush]{--bg:#f8eff0;--card:#fffbfb;--card2:#f1e1e3;--line:#eacfd3;--text:#33232a;--muted:#85707a;--accent:#bf5d78;--accent-ink:#9b4360;--accent-soft:#f7dfe6;--heart:#bf5d78}
+[data-theme=sand]{--bg:#f6f0e0;--card:#fffcf2;--card2:#eee4cb;--line:#e4d7b7;--text:#2f2a1b;--muted:#807456;--accent:#b5842a;--accent-ink:#8a6215;--accent-soft:#f3e6c3}
+[data-theme=mint]{--bg:#eaf5f2;--card:#fafffd;--card2:#daeee8;--line:#cbe4dc;--text:#1b302b;--muted:#5e7972;--accent:#279a8c;--accent-ink:#1b786d;--accent-soft:#d3eee9;--ok:#3d9455;--ok-soft:#dcefe0}
+[data-theme=navy]{--bg:#141a26;--card:#1c2433;--card2:#253044;--line:#303c53;--text:#e8edf6;--muted:#95a3bb;--accent:#6ea6f7;--accent-ink:#9cc2ff;--accent-soft:#22334f;--ok:#6fcf97;--ok-soft:#1d3a2c;--heart:#f08aa0;--gold:#f2c55c;--warn-bg:#3a3218;--warn-ink:#f2d593;--shadow:0 1px 2px rgba(0,0,0,.35),0 3px 12px rgba(0,0,0,.2);--shadow2:0 12px 32px rgba(0,0,0,.5);color-scheme:dark}
+[data-theme=graphite]{--bg:#18181a;--card:#222225;--card2:#2c2c30;--line:#39393e;--text:#efeee9;--muted:#a3a19a;--accent:#eea72f;--accent-ink:#f6c25e;--accent-soft:#3a3020;--ok:#8fca7a;--ok-soft:#26331f;--heart:#ef7f8e;--gold:#f2c14e;--warn-bg:#3a3018;--warn-ink:#f2d593;--shadow:0 1px 2px rgba(0,0,0,.35),0 3px 12px rgba(0,0,0,.2);--shadow2:0 12px 32px rgba(0,0,0,.5);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Nunito,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+h1,h2,h3,.logo{font-family:Fraunces,Georgia,serif}
+.app{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:96px;position:relative}
+.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.logo{font-weight:700;font-size:22px;letter-spacing:-.3px;display:inline-flex;align-items:center}
+.logo span{color:var(--accent)}
+.logo i{display:inline-block;width:24px;height:24px;border-radius:8px;background:var(--accent);margin-right:9px;position:relative}
+.logo i::after{content:"";position:absolute;left:9px;top:6px;border:6px solid transparent;border-left:8px solid var(--card);border-right:0}
+#count{font-size:13px;color:var(--muted);font-weight:600}
+main{padding:0 16px}
+/* dolne menu */
+.tabs{position:fixed;bottom:0;left:0;right:0;z-index:10;display:flex;justify-content:center;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+.tabs .in{display:flex;width:100%;max-width:560px}
+.tabs a{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 0 10px;font-size:11.5px;font-weight:700;color:var(--muted);position:relative;transition:color .15s}
+.tabs a svg{width:22px;height:22px}
+.tabs a.on{color:var(--accent)}
+.tabs a.on::before{content:"";position:absolute;top:0;left:30%;right:30%;height:3px;border-radius:0 0 3px 3px;background:var(--accent)}
+.tabs .dot{position:absolute;top:5px;left:calc(50% + 6px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--accent);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--card)}
+.tabs .dot[hidden]{display:none}
+body.auth .tabs,body.auth #count{display:none}
+.plb{display:inline-block;width:16px;height:11px;border-radius:2px;background:linear-gradient(#fff 50%,#dc143c 50%);box-shadow:0 0 0 1px rgba(0,0,0,.18);vertical-align:-1px;margin-right:5px}
+.plb.big{width:26px;height:18px;border-radius:3px;margin:0;vertical-align:middle}
+/* zakładki w widoku */
+.sub{display:flex;gap:2px;margin:16px 0 14px;background:var(--card2);border-radius:12px;padding:3px}
+.sub a{flex:1;text-align:center;padding:8px 6px;border-radius:10px;color:var(--muted);font-weight:700;font-size:14px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.sub a.on{background:var(--card);color:var(--text);box-shadow:var(--shadow)}
+.sub .cnt{display:inline-block;min-width:20px;padding:0 6px;margin-left:2px;border-radius:9px;background:var(--accent-soft);color:var(--accent-ink);font-size:12px}
+.pills{display:flex;gap:8px;margin:0 0 12px;flex-wrap:wrap}
+.pills a{padding:6px 14px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer}
+.pills a.on{background:var(--accent-soft);border-color:transparent;color:var(--accent-ink)}
+h2{font-size:19px;font-weight:600;letter-spacing:-.2px;margin:26px 0 12px}
+h2 small{font-family:Nunito,sans-serif;font-size:13px;font-weight:600;color:var(--muted)}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.sec-head a{font-size:13px;font-weight:700;color:var(--accent-ink);white-space:nowrap}
+.list{display:flex;flex-direction:column;gap:10px}
+.card{display:flex;gap:14px;background:var(--card);border-radius:var(--r);padding:11px;align-items:center;cursor:pointer;box-shadow:var(--shadow);transition:transform .15s}
+.card:hover{transform:translateY(-1px)}
+.card.skel{height:110px;animation:pulse 1.2s infinite ease-in-out}
+@keyframes pulse{50%{opacity:.5}}
+.poster{width:64px;aspect-ratio:2/3;border-radius:10px;object-fit:cover;background:var(--accent-soft);flex:none;display:flex;align-items:center;justify-content:center;font-family:Fraunces,serif;font-weight:700;color:var(--accent-ink);font-size:18px}
+.poster.sm{width:48px;border-radius:8px}
+.poster.xs{width:38px;border-radius:6px;font-size:12px}
+.card .body{flex:1;min-width:0}
+.card .t{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .e{color:var(--accent-ink);font-weight:700;font-size:13px;margin-top:1px}
+.card .n{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{height:5px;background:var(--card2);border-radius:5px;margin-top:8px;overflow:hidden}
+.bar b{display:block;height:100%;border-radius:5px;background:var(--accent)}
+.chk{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:var(--card);display:flex;align-items:center;justify-content:center;flex:none;font-size:17px;font-weight:800;color:var(--muted);transition:all .15s}
+.chk:hover{border-color:var(--ok);color:var(--ok)}
+.chk.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.chk:disabled{opacity:.3;cursor:default}
+.chk.sm{width:32px;height:32px;font-size:14px}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+.soon{color:var(--accent-ink);font-weight:700;font-size:12.5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty{text-align:center;padding:46px 24px;color:var(--muted);background:var(--card);border-radius:20px;box-shadow:var(--shadow);margin-top:10px}
+.empty b{display:block;color:var(--text);font-family:Fraunces,serif;font-size:20px;font-weight:600;margin-bottom:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--accent);color:#fff;font-weight:800;padding:11px 18px;border-radius:12px;transition:filter .15s,transform .15s}
+.btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.btn.ghost{background:var(--card);color:var(--text);border:1px solid var(--line)}
+.btn.ok{background:var(--ok);color:#fff}
+.btn.sm{padding:7px 13px;font-size:13px;border-radius:10px}
+.btn.heart{background:var(--card);border:1px solid var(--line);color:var(--muted);padding:11px 14px}
+.btn.heart.on{color:var(--heart);border-color:var(--heart)}
+.btn.danger,.danger{color:#c0392b}
+.btn:disabled{opacity:.5;cursor:default;transform:none}
+.link{color:var(--accent-ink);font-weight:700;font-size:13px;font-family:Nunito,sans-serif}
+.search{position:sticky;top:58px;z-index:4;padding:0 0 10px;background:var(--bg)}
+.search input{width:100%;padding:12px 16px 12px 42px;border-radius:12px;border:1px solid var(--line);background:var(--card) no-repeat 14px 50%/18px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a3937f' stroke-width='2.5'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");color:var(--text);font:inherit;outline:none}
+.search input:focus{border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.tile{position:relative;cursor:pointer}
+.tile .poster{width:100%;border-radius:12px;font-size:22px;box-shadow:var(--shadow);transition:transform .2s}
+.tile:hover .poster{transform:translateY(-2px)}
+.tile .nm{font-size:13px;margin-top:6px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .sub2{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .sub2 .soon{font-size:12px;margin:0}
+.tile .badge{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;background:var(--card);color:var(--accent);font-size:19px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.tile .badge.on{background:var(--ok);color:#fff;font-size:14px}
+.tag{display:inline-block;padding:1px 7px;border-radius:6px;background:var(--warn-bg);color:var(--warn-ink);font-weight:700;font-size:11px}
+.genres{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.genre{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;font-weight:800;background:hsl(var(--h) 45% 93%);color:hsl(var(--h) 35% 28%);transition:transform .15s}
+.genre:hover{transform:translateY(-2px)}
+.genre span{font-size:20px;width:38px;height:38px;flex:none;border-radius:11px;background:rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center}
+[data-dark="1"] .genre{background:hsl(var(--h) 20% 21%);color:hsl(var(--h) 45% 84%)}
+[data-dark="1"] .genre span{background:rgba(255,255,255,.08)}
+/* nagłówek serialu/filmu */
+.hero{position:relative;margin:12px 0 0;padding:16px;min-height:250px;overflow:hidden;border-radius:20px;color:#fff;background:#3a2d24}
+.hero .bg{position:absolute;inset:0;background-size:cover;background-position:center 25%}
+.hero .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,20,12,.1) 0%,rgba(30,20,12,.55) 50%,rgba(30,20,12,.9) 100%)}
+.hero .in{position:relative;display:flex;gap:16px;align-items:flex-end;padding-top:70px}
+.hero .poster{width:112px;font-size:28px;box-shadow:0 10px 26px rgba(0,0,0,.4)}
+.hero h1{margin:0 0 4px;font-size:26px;line-height:1.15;font-weight:600}
+.hero .muted{color:rgba(255,255,255,.8)}
+.hero .chip{background:rgba(255,255,255,.16);color:#fff;box-shadow:none}
+.hbadge{display:inline-block;margin:8px 6px 0 0;padding:4px 11px;border-radius:8px;background:rgba(255,250,240,.94);color:#8a3f22;font-weight:800;font-size:12.5px}
+.back{position:absolute;top:12px;left:12px;z-index:2;width:36px;height:36px;border-radius:50%;background:rgba(255,250,240,.92);color:#3a2d24;display:flex;align-items:center;justify-content:center;font-size:21px;font-weight:800}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--card2);color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.summary{font-size:15px;line-height:1.65;color:var(--text)}
+.src{font-size:12px;color:var(--muted);margin-top:6px}
+.src a{color:var(--accent-ink);font-weight:700}
+.panel{background:var(--card);border-radius:var(--r);padding:14px 16px;margin:16px 0;box-shadow:var(--shadow)}
+.panel .row{display:flex;gap:12px;align-items:flex-start;padding:7px 0;font-size:14px}
+.panel .row+.row{border-top:1px solid var(--line)}
+.panel .row>span:first-child{width:22px;flex:none;text-align:center;opacity:.85}
+.ptitle{font-family:Fraunces,serif;font-weight:600;font-size:16px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.plat{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:10px;background:var(--card2);font-weight:700;font-size:13px;margin:6px 6px 0 0}
+.plat:hover{box-shadow:inset 0 0 0 1px var(--accent)}
+.plat img{width:26px;height:26px;border-radius:7px}
+.plat.txt{padding:7px 12px}
+.wiki .warn{margin-top:8px;padding:8px 12px;border-radius:10px;background:var(--warn-bg);color:var(--warn-ink);font-weight:700;font-size:13px}
+.wiki .ok{margin-top:8px;padding:8px 12px;border-radius:10px;background:var(--ok-soft);color:var(--ok);font-weight:700;font-size:13px}
+.warnbox{background:var(--warn-bg);color:var(--warn-ink);border-radius:var(--r);padding:14px 16px;margin:16px 0;font-size:14px}
+.warnbox>div:first-child>b:first-child{display:block;margin-bottom:3px}
+/* sezony i odcinki */
+.season,.group{background:var(--card);border-radius:var(--r);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
+.season summary{list-style:none;display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;font-weight:800}
+.season summary::-webkit-details-marker{display:none}
+.season summary .sp{flex:1}
+.season summary::before{content:"›";display:inline-block;transition:transform .15s;color:var(--accent);font-size:20px;width:10px}
+.season[open] summary::before{transform:rotate(90deg)}
+.season ul,.group ul{list-style:none;margin:0;padding:0 0 4px}
+.group .head{display:flex;gap:12px;align-items:center;padding:11px 14px;cursor:pointer}
+.group .head:hover{background:var(--card2)}
+.group .head .body{flex:1;min-width:0}
+.group .head .t{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.group .head .n{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.group .count{min-width:30px;height:26px;padding:0 8px;border-radius:13px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+.group .caret{font-size:22px;color:var(--muted);transition:transform .2s;width:14px;text-align:center}
+.group.open .caret{transform:rotate(90deg)}
+.group.open .head{border-bottom:1px solid var(--line)}
+.group .stack{display:flex;flex:none}
+.group .stack .poster{width:36px;border-radius:6px;box-shadow:0 0 0 2px var(--card)}
+.group .stack .poster+.poster{margin-left:-14px}
+.group .more{display:block;width:100%;padding:11px;font-weight:700;color:var(--accent-ink);border-top:1px solid var(--line)}
+.group .gfoot{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-top:1px solid var(--line);background:var(--card2)}
+.group .gfoot a{font-weight:700;color:var(--accent-ink);font-size:13.5px}
+.ep{display:flex;align-items:center;gap:12px;padding:8px 14px;border-top:1px solid var(--line)}
+.group ul .ep:first-child{border-top:0}
+.ep .m{flex:1;min-width:0;cursor:pointer}
+.ep .m div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700;font-size:14px}
+.ep .m b{color:var(--accent-ink);margin-right:7px;font-size:12.5px}
+.ep .m small{color:var(--muted)}
+.ep.future .m{opacity:.6}
+.ep>span[data-act]{flex:none;line-height:0;cursor:pointer}
+.thumb{width:88px;aspect-ratio:16/9;border-radius:8px;object-fit:cover;flex:none;display:block;background:var(--card2) center/cover}
+.thumb.fb{position:relative;overflow:hidden}
+.thumb.fb::before{content:"";position:absolute;inset:0;background:rgba(40,25,15,.45)}
+.thumb.fb span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:12px}
+/* kalendarz */
+.day{margin-top:18px}
+.day h3{font-size:15px;font-weight:600;margin:0 0 8px;color:var(--accent-ink)}
+.day h3 small{font-family:Nunito,sans-serif;color:var(--muted);font-weight:600}
+/* kino */
+.ccard{display:flex;gap:14px;align-items:center;background:var(--card);border-radius:var(--r);padding:11px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s}
+.ccard:hover{transform:translateY(-1px)}
+.ccard .poster{width:70px}
+.ccard .body{flex:1;min-width:0}
+.ccard .t{font-weight:800;font-size:15.5px}
+.ccard .n{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ccard .when{display:inline-block;margin:5px 0 2px;padding:2px 9px;border-radius:7px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;font-size:12.5px}
+/* profil */
+.pcard{background:var(--card);border-radius:18px;padding:14px 16px;margin-top:16px;box-shadow:var(--shadow)}
+.prow{display:flex;align-items:center;gap:12px}
+.prow .body{flex:1;min-width:0}
+.prow b{font-family:Fraunces,serif;font-size:18px;font-weight:600;display:block}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-family:Fraunces,serif;font-weight:700;font-size:18px;flex:none}
+.pstats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));margin-top:12px;padding-top:12px;border-top:1px solid var(--line);text-align:center;font-size:11.5px;color:var(--muted);font-weight:600}
+.pstats b{display:block;font-size:17px;color:var(--text);font-weight:800}
+.ptime{display:flex;justify-content:center;gap:18px;margin-top:10px;font-size:12.5px;color:var(--muted)}
+.ptime b{color:var(--text)}
+.shelf h2{margin:22px 0 8px;font-size:17px}
+.hscroll{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 10px;scroll-snap-type:x proximity;scrollbar-width:thin}
+.mini{flex:none;width:80px;scroll-snap-align:start;position:relative}
+.mini .poster{width:80px;border-radius:10px;font-size:16px}
+.mini .nm{font-size:12px;font-weight:700;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini .sub2{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini .bar{height:3px;margin-top:3px}
+.mini .ms{position:absolute;top:5px;left:5px;padding:0 5px;border-radius:6px;background:rgba(30,20,12,.7);color:var(--gold);font-size:10px;letter-spacing:1px}
+.shelf-empty{padding:12px 14px;border-radius:12px;background:var(--card);color:var(--muted);font-size:13px;border:1px dashed var(--line)}
+.revcard{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;margin-bottom:8px;border-radius:14px;background:var(--card);box-shadow:var(--shadow)}
+.revcard .body{flex:1;min-width:0}
+.revcard .t{font-weight:800;font-size:14px}
+.grow{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13.5px;font-weight:600}
+.grow .lbl{width:120px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grow .bar{flex:1;margin:0;height:7px}
+.hist{display:flex;justify-content:space-between;gap:10px;padding:9px 2px;font-size:13.5px;border-bottom:1px solid var(--line)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.stat{background:var(--card);border-radius:12px;padding:10px 6px;text-align:center;box-shadow:var(--shadow)}
+.stat b{display:block;font-size:19px}
+.stat span{font-size:11.5px;color:var(--muted)}
+/* recenzje i notatki */
+.review{border-left:4px solid var(--accent)}
+.rtext{margin:6px 0 4px;font-size:14.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.rtext.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;font-size:13px}
+.stars{color:var(--gold);font-size:13px;letter-spacing:1px;margin-top:2px}
+.stars .off{color:var(--line)}
+.stars.big{font-size:20px;letter-spacing:2px}
+.rw{font-size:12.5px;font-weight:700;color:var(--muted);letter-spacing:0}
+.rate{display:flex;gap:2px}
+.rate button{font-size:30px;color:var(--line);padding:0 3px;transition:color .15s,transform .15s}
+.rate button.on{color:var(--gold)}
+.rate button:hover{transform:scale(1.12)}
+textarea{width:100%;min-height:100px;margin-top:10px;padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;font-size:14.5px;line-height:1.5;resize:vertical;outline:none}
+textarea:focus{border-color:var(--accent)}
+.addbox{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;margin:16px 0;border-radius:var(--r);border:1px dashed var(--accent);background:var(--card);color:var(--text)}
+.addbox:hover{background:var(--accent-soft)}
+.addbox>span{font-size:20px}
+.addbox b{display:block;font-weight:800}
+.addbox small{color:var(--muted);font-size:12.5px}
+.notelink{display:block;margin:12px 0 0;color:var(--accent-ink);font-weight:700;font-size:13.5px}
+.notelink:hover{text-decoration:underline}
+.notebox{background:var(--card2);border-radius:14px;padding:12px 14px;margin-top:14px}
+.notebox .ptitle{font-size:14.5px}
+.notebox textarea{background:var(--card)}
+.date{display:block;margin-top:6px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px 11px;font:inherit}
+/* karta odcinka */
+.sheet-wrap,.dialog-wrap{position:fixed;inset:0;z-index:20;background:rgba(35,22,12,.42);display:flex;align-items:flex-end;justify-content:center}
+.sheet-wrap.hidden,.dialog-wrap.hidden{display:none}
+.sheet{background:var(--card);width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:22px 22px 0 0;padding:0 18px 24px;animation:up .2s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.ep-hero{position:relative;margin:0 -18px;min-height:190px;background:#3a2d24 center/cover;display:flex;align-items:flex-end;border-radius:22px 22px 0 0;overflow:hidden}
+.ep-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,20,12,.05),rgba(30,20,12,.85))}
+.ep-hero .cap{position:relative;padding:16px 18px;color:#fff}
+.ep-hero .cap .small{opacity:.85;font-weight:700}
+.ep-hero h3{margin:2px 0 0;font-size:22px;font-weight:600;line-height:1.2}
+.ep-hero .x{position:absolute;top:12px;right:12px;z-index:1;width:34px;height:34px;border-radius:50%;background:rgba(255,250,240,.92);color:#3a2d24;font-weight:800}
+.ep-meta{display:flex;flex-wrap:wrap;gap:4px 0;margin:12px 0 4px;font-size:13px;color:var(--muted);font-weight:700}
+.ep-meta i{font-style:normal;margin:0 7px;opacity:.6}
+.ep-meta .seen{color:var(--ok)}
+.ep-desc{font-size:15.5px;line-height:1.65;margin:8px 0 4px}
+.ep-ctx{background:var(--card2);border-radius:12px;padding:11px 13px;font-size:14px;line-height:1.55;color:var(--text)}
+.ep-ctx .small{color:var(--muted);font-weight:800;margin-bottom:2px}
+.ep-nav{display:flex;justify-content:space-between;margin-top:18px;padding-top:12px;border-top:1px solid var(--line)}
+.ep-nav button{font-weight:800;color:var(--accent-ink);padding:6px 4px}
+.react{display:flex;justify-content:space-between;gap:4px;margin:8px 0}
+.react button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:24px;padding:7px 4px;border-radius:12px;flex:1;opacity:.55;transition:all .15s}
+.react button span{font-size:11px;color:var(--muted);font-weight:700}
+.react button.on{opacity:1;background:var(--accent-soft)}
+.react button:hover{opacity:1}
+/* okienko pytania */
+.dialog-wrap{align-items:center;z-index:40;padding:16px}
+.dlg{background:var(--card);border-radius:18px;padding:20px;max-width:380px;width:100%;box-shadow:var(--shadow2);animation:up .15s ease-out}
+.dlg h3{margin:0 0 6px;font-size:20px;font-weight:600}
+.dlg p{margin:0 0 16px;color:var(--muted);font-size:14.5px}
+.dlg-btns{display:flex;flex-direction:column;gap:8px}
+.dlg-btns .btn{width:100%;padding:11px}
+/* logowanie */
+.login{max-width:400px;margin:40px auto;text-align:center;background:var(--card);border-radius:22px;padding:28px 24px;box-shadow:var(--shadow)}
+.login .logo{font-size:32px;display:inline-flex;margin-bottom:4px}
+.login .logo i{width:30px;height:30px;border-radius:9px}
+.login .logo i::after{left:11px;top:8px;border-width:7px;border-left-width:10px}
+.login .empty{box-shadow:none;background:none;padding:20px 0 0}
+.login form{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.login input{padding:13px 15px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;outline:none}
+.login input:focus{border-color:var(--accent)}
+.login .err{color:#c0392b;font-size:14px;min-height:20px;font-weight:700}
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:20px 0 0;font-size:12px;color:var(--muted);font-weight:700}
+.feat div{background:var(--card2);border-radius:12px;padding:12px 6px}
+.feat b{display:block;font-size:22px;margin-bottom:4px}
+.yt{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--r);overflow:hidden;background:#2a211b center/cover;cursor:pointer;box-shadow:var(--shadow)}
+.yt::before{content:"";position:absolute;inset:0;background:rgba(30,20,12,.25);transition:background .2s}
+.yt:hover::before{background:rgba(30,20,12,.1)}
+.yt .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:50%;background:rgba(255,250,240,.95);color:var(--accent);font-size:24px;display:flex;align-items:center;justify-content:center;padding-left:5px;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.yt .ylabel{position:absolute;left:12px;bottom:12px;padding:4px 10px;border-radius:8px;background:rgba(30,20,12,.7);color:#fff;font-weight:700;font-size:12.5px}
+.yt.on{cursor:default}
+.yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.hscroll.rel .tile{flex:none;width:108px;scroll-snap-align:start}
+.dropbox{display:flex;gap:12px;align-items:center;justify-content:space-between;background:var(--card2);border-radius:var(--r);padding:12px 14px;margin:0 0 16px;font-size:13.5px;color:var(--muted)}
+.dropbox b{display:block;color:var(--text);font-size:14.5px}
+.card.dropped{opacity:.85}
+.card.dropped .poster{filter:grayscale(.6)}
+.picker{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+.picker label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;font-weight:800;color:var(--muted)}
+.picker select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;font-size:14px;font-weight:600}
+.picker select:disabled{opacity:.6}
+.pills.days{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+.pills.days a{white-space:nowrap}
+.ccard.prog{align-items:flex-start}
+.times{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px}
+.time{display:inline-flex;flex-direction:column;align-items:center;min-width:58px;padding:5px 9px;border-radius:9px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;font-size:14px;line-height:1.2}
+.time small{font-size:10px;font-weight:700;opacity:.85}
+.time:hover{background:var(--accent);color:#fff}
+.time.past{background:var(--card2);color:var(--muted);opacity:.6;cursor:default;text-decoration:line-through}
+.why{font-size:11px;color:var(--accent-ink);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fy-head{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.fy-head .btn{flex:none}
+.tabs a{font-size:10.5px}
+@media (max-width:400px){.tabs a{font-size:9.5px}.tabs a svg{width:20px;height:20px}.picker{grid-template-columns:1fr}}
+/* ---------- strona serialu ---------- */
+.hfav{position:absolute;top:12px;right:12px;z-index:2;width:38px;height:38px;border-radius:50%;background:rgba(255,250,240,.92);color:#8a7a6c;font-size:19px;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.hfav:hover{transform:scale(1.08)}
+.hfav.on{color:var(--heart)}
+.tbar{display:flex;align-items:center;gap:8px;margin:14px 0 12px}
+.inlib{flex:1;display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:14px;color:var(--ok)}
+.ibtn{width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:20px;font-weight:800;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.ibtn:hover{color:var(--text)}
+.btn.wide{display:flex;width:100%;margin:14px 0 12px;padding:13px}
+.pcard-show{background:var(--card);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:12px}
+.pc-top{display:flex;align-items:center;gap:12px}
+.pc-ico{width:34px;height:34px;flex:none;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;background:var(--accent-soft);color:var(--accent-ink)}
+.pc-txt{flex:1;min-width:0}
+.pc-txt b{display:block;font-size:15.5px}
+.pc-txt small{color:var(--muted);font-size:12.5px;font-weight:600}
+.pc-num{font-family:Fraunces,serif;font-size:22px;font-weight:600}
+.pc-num i{font-style:normal;font-size:14px;color:var(--muted)}
+.pbar{height:10px;border-radius:6px;background:var(--card2);overflow:hidden;margin-top:12px}
+.pbar b{display:block;height:100%;border-radius:6px;background:var(--accent);transition:width .4s ease}
+.st-current .pbar b,.bar.st-current b{background:var(--ok)}
+.st-current .pc-ico{background:var(--ok-soft);color:var(--ok)}
+.st-current .pc-txt b{color:var(--ok)}
+.st-finished .pbar b,.bar.st-finished b{background:#c2413a}
+.st-finished .pc-ico{background:#f8dcd8;color:#a8322b}
+.st-finished .pc-txt b{color:#b13a32}
+[data-dark="1"] .st-finished .pc-ico{background:#4a201c;color:#f29188}
+[data-dark="1"] .st-finished .pc-txt b{color:#f29188}
+.st-dropped .pbar b,.bar.st-dropped b{background:var(--muted)}
+.st-dropped .pc-ico{background:var(--card2);color:var(--muted)}
+.nextcard{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:var(--r);padding:10px;box-shadow:var(--shadow);margin-bottom:12px;cursor:pointer;border-left:4px solid var(--accent)}
+.nextcard .thumb{width:110px}
+.nextcard .body{flex:1;min-width:0;display:flex;flex-direction:column}
+.nextcard small{color:var(--accent-ink);font-weight:800;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px}
+.nextcard b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stabs{display:flex;gap:4px;margin:18px 0 12px;border-bottom:1px solid var(--line)}
+.stabs a{padding:10px 14px;font-weight:800;font-size:14.5px;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px;cursor:pointer}
+.stabs a.on{color:var(--text);border-bottom-color:var(--accent)}
+.season summary .sp{display:flex;flex-direction:column;gap:5px}
+.sbar{display:block;width:90px;height:4px;border-radius:3px;background:var(--card2);overflow:hidden}
+.sbar b{display:block;height:100%;background:var(--accent)}
+.ep.seen .m div{color:var(--muted)}
+/* menu „⋯” */
+.menu{padding:14px 0 4px}
+.menu-head{display:flex;align-items:center;gap:10px;padding:4px 2px 12px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.menu-head b{font-family:Fraunces,serif;font-size:17px;font-weight:600}
+.menu button{display:grid;grid-template-columns:34px 1fr;align-items:center;width:100%;text-align:left;padding:11px 4px;font-weight:800;font-size:15px;border-radius:10px}
+.menu button:hover{background:var(--card2)}
+.menu button span{grid-row:span 2;width:30px;height:30px;border-radius:9px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:13px}
+.menu button small{grid-column:2;color:var(--muted);font-weight:600;font-size:12.5px}
+.menu button.danger{color:#b13a32}
+.menu button.cancel{display:block;text-align:center;margin-top:6px;color:var(--muted)}
+/* przyciski na stronie filmu */
+.mbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.mopt{display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 10px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-weight:800;font-size:14px;color:var(--text)}
+.mopt span{font-size:15px}
+.mopt.on{background:var(--accent-soft);border-color:transparent;color:var(--accent-ink)}
+.mopt.main{background:var(--ok);border-color:transparent;color:#fff}
+.inlib.ok{color:var(--ok)}
+/* wybór motywu */
+.themes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.th{display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 4px;border-radius:12px;border:2px solid transparent;cursor:pointer;font-size:11px;font-weight:700;color:var(--muted)}
+.th.on{border-color:var(--accent);color:var(--text)}
+.th .sw{width:100%;aspect-ratio:1.4;border-radius:9px;position:relative;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);overflow:hidden}
+.th .sw i{position:absolute;right:6px;bottom:6px;width:16px;height:16px;border-radius:50%}
+.th .sw u{position:absolute;left:6px;top:6px;right:14px;height:9px;border-radius:4px;text-decoration:none}
+@media (max-width:400px){.themes{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.golink{cursor:pointer}
+.group .head .t .golink:hover{color:var(--accent-ink);text-decoration:underline;text-underline-offset:3px}
+span.golink{line-height:0}
+.group .head .t span.golink{line-height:inherit}
+.openbtn{flex:none;padding:6px 11px;border-radius:9px;background:var(--card2);color:var(--accent-ink);font-weight:800;font-size:12.5px}
+.openbtn:hover{background:var(--accent);color:#fff}
+.skipbtn{width:30px;height:30px;flex:none;border-radius:50%;border:1px dashed var(--line);color:var(--muted);font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;background:var(--card)}
+.skipbtn:hover{border-color:var(--muted);color:var(--text)}
+.ep.skipped .m,.ep.skipped>span[data-act]{opacity:.45}
+.ep.skipped .m div{text-decoration:line-through;text-decoration-color:var(--muted)}
+.skiptag{display:inline-block;padding:0 6px;border-radius:5px;background:var(--card2);color:var(--muted);font-weight:800;font-size:11px}
+.season summary.skipped .sp{opacity:.5}
+.castrow{gap:12px}
+.castgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:16px 10px}
+.castgrid .person{width:auto}
+.person{flex:none;width:92px;display:flex;flex-direction:column;align-items:center;text-align:center;scroll-snap-align:start}
+.person img,.person .ph{width:84px;height:84px;border-radius:50%;object-fit:cover;object-position:center 20%;background:var(--accent-soft);box-shadow:var(--shadow);transition:transform .15s}
+.person:hover img,.person:hover .ph{transform:scale(1.05)}
+.person .ph{display:flex;align-items:center;justify-content:center;font-family:Fraunces,serif;font-weight:700;color:var(--accent-ink);font-size:20px}
+.person b{font-size:12.5px;margin-top:7px;line-height:1.25}
+.person small{font-size:11.5px;color:var(--muted);line-height:1.25;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.phead{position:relative;display:flex;gap:16px;align-items:flex-end;margin-top:12px;padding:56px 16px 16px;border-radius:20px;background:var(--card);box-shadow:var(--shadow)}
+.phead .back{background:var(--card2);color:var(--text)}
+.pphoto{width:120px;aspect-ratio:2/3;border-radius:14px;object-fit:cover;flex:none;box-shadow:var(--shadow2)}
+.pphoto.ph{display:flex;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent-ink);font-family:Fraunces,serif;font-size:32px;font-weight:700}
+.phead .body{flex:1;min-width:0}
+.phead h1{margin:0 0 4px;font-size:26px;font-weight:600;line-height:1.15}
+.pcount{display:flex;gap:14px;margin-top:10px;font-size:13px;color:var(--muted);font-weight:700}
+.pcount b{color:var(--text);font-size:16px}
+.summary.bio{white-space:pre-line}
+.tile .orig{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:italic;margin-top:-1px}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:12px;font-weight:700;font-size:14px;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+.loading{padding:60px;text-align:center;color:var(--muted);font-weight:700}
+code{background:var(--card2);padding:1px 6px;border-radius:6px}
+@media (max-width:400px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pstats{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:8px}.sub a{font-size:13px}.tabs a{font-size:10.5px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><a href="#/shows" class="logo"><i></i>Seria<span>Log</span></a><span class="muted" id="count"></span></header>
+  <main id="view"></main>
+</div>
+<nav class="tabs"><div class="in">
+  <a href="#/shows" data-tab="shows"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Seriale</a>
+  <a href="#/movies" data-tab="movies"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4M3 12h18"/></svg>Filmy</a>
+  <a href="#/cinema" data-tab="cinema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a3 3 0 0 0 0 6v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a3 3 0 0 0 0-6z"/><path d="M14 4v16" stroke-dasharray="2 2.5"/></svg>Kino</a>
+  <a href="#/foryou" data-tab="foryou"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.4 5.6L20 9.3l-4.3 3.9 1.2 5.8L12 16.1 7.1 19l1.2-5.8L4 9.3l5.6-.7z"/></svg>Dla Ciebie</a>
+  <a href="#/upcoming" data-tab="upcoming"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><circle cx="12" cy="15" r="2"/></svg>Nadchodzące<span class="dot" id="todayDot" hidden></span></a>
+  <a href="#/profile" data-tab="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Profil</a>
+</div></nav>
+<div class="sheet-wrap hidden" id="sheetWrap"><div class="sheet" id="sheet"></div></div>
+<div class="dialog-wrap hidden" id="dialog"></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="importFile" accept="application/json" hidden>
+
+<script>
+// Dane o filmach i serialach: TMDB (po polsku, region PL) przez pośrednika w server.py.
+const IMG = 'https://image.tmdb.org/t/p/';
+const img = (p, size = 'w342') => p ? IMG + size + p : null;
+const LS = 'serialog.v1';
+const REACTIONS = [['😂','Śmieszne'],['😮','Szok'],['😢','Smutne'],['😍','Kocham'],['😡','Złość'],['🤯','Odlot']];
+// TMDB nie tłumaczy części nazw gatunków serialowych
+const GENRE_PL = { 'Kids': 'Dla dzieci', 'News': 'Wiadomości', 'Reality': 'Reality show', 'Sci-Fi & Fantasy': 'Sci-Fi i Fantasy', 'Soap': 'Telenowela', 'Talk': 'Talk-show', 'War & Politics': 'Wojna i polityka', 'film TV': 'Film telewizyjny', 'Action & Adventure': 'Akcja i Przygoda' };
+const GENRE_ICON = { 28: '💥', 12: '🗺️', 16: '🎨', 35: '😂', 80: '🕵️', 99: '📽️', 18: '🎭', 10751: '👨‍👩‍👧', 14: '🐉', 36: '🏛️', 27: '👻', 10402: '🎵', 9648: '🔍', 10749: '❤️', 878: '🚀', 10770: '📺', 53: '😱', 10752: '🎖️', 37: '🤠', 10759: '💥', 10762: '🧸', 10763: '📰', 10764: '🏝️', 10765: '🐉', 10766: '💔', 10767: '🎙️', 10768: '🏛️' };
+const GENRE_HUES = [18, 35, 95, 150, 190, 210, 260, 320, 350, 50, 120, 175];
+const STATUS_PL = { 'Returning Series': 'Emitowany', 'Ended': 'Zakończony', 'Canceled': 'Anulowany', 'In Production': 'W produkcji', 'Planned': 'Planowany', 'Pilot': 'Pilot' };
+// linki do polskich wersji serwisów (dopasowanie po nazwie z TMDB/JustWatch)
+const PROVIDER_LINKS = [
+  [/netflix/i, t => `https://www.netflix.com/pl/search?q=${t}`],
+  [/hbo|max/i, t => `https://play.max.com/search?q=${t}`],
+  [/disney/i, () => 'https://www.disneyplus.com/pl-pl'],
+  [/prime|amazon/i, t => `https://www.primevideo.com/search/ref=atv_nb_sr?phrase=${t}`],
+  [/apple/i, t => `https://tv.apple.com/pl/search?term=${t}`],
+  [/player/i, () => 'https://player.pl/'],
+  [/polsat/i, t => `https://polsatboxgo.pl/wyszukiwarka?q=${t}`],
+  [/tvp/i, t => `https://vod.tvp.pl/szukaj?query=${t}`],
+  [/skyshowtime/i, () => 'https://www.skyshowtime.com/pl'],
+  [/canal/i, () => 'https://www.canalplus.com/pl/'],
+];
+const LISTS = {
+  tv: {
+    popular: { pages: 5, title: 'Popularne w polskich serwisach', path: 'discover/tv', params: { watch_region: 'PL', with_watch_monetization_types: 'flatrate', sort_by: 'popularity.desc' } },
+    polish: { pages: 3, title: '<i class="plb" title="Polska produkcja"></i>Polskie seriale i programy', path: 'discover/tv', params: { with_origin_country: 'PL', sort_by: 'popularity.desc' } },
+    trending: { pages: 3, title: 'Na czasie w tym tygodniu', path: 'trending/tv/week', params: {} },
+    best: { pages: 5, title: 'Najwyżej oceniane seriale', path: 'discover/tv', params: { sort_by: 'vote_average.desc', 'vote_count.gte': 1500 } },
+  },
+  // wszystkie filmy (kino ma osobną zakładkę)
+  movie: {
+    popular: { pages: 10, title: 'Popularne filmy', path: 'discover/movie', params: { sort_by: 'popularity.desc', 'vote_count.gte': 200 } },
+    streaming: { pages: 10, title: 'Do obejrzenia w polskich serwisach', path: 'discover/movie', params: { watch_region: 'PL', with_watch_monetization_types: 'flatrate', sort_by: 'popularity.desc' } },
+    alltime: { pages: 15, title: 'Najpopularniejsze wszech czasów', path: 'discover/movie', params: { sort_by: 'vote_count.desc' } },
+    best: { pages: 10, title: 'Najwyżej oceniane', path: 'discover/movie', params: { sort_by: 'vote_average.desc', 'vote_count.gte': 3000 } },
+    polish: { pages: 5, title: '<i class="plb" title="Polska produkcja"></i>Polskie filmy', path: 'discover/movie', params: { with_origin_country: 'PL', sort_by: 'vote_count.desc' } },
+    classic: { pages: 10, title: 'Klasyka kina', path: 'discover/movie', params: { 'primary_release_date.lte': '1985-12-31', sort_by: 'vote_count.desc' } },
+  },
+};
+
+const $ = s => document.querySelector(s);
+const view = $('#view');
+const emptyState = () => ({ v: 2, shows: {}, watched: {}, reactions: {}, movies: {}, favs: {}, notes: {}, prefs: {}, skipped: {} });
+// losowość „na wizytę”: przy każdym wejściu w widok propozycje są inne, ale nie skaczą przy kliknięciach
+let visitSeed = Math.random();
+const rng = seed => () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+const shuffled = (arr, salt = 0) => { const r = rng(Math.floor(visitSeed * 233280) + salt * 7919); const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const inLibrary = (kind, id) => kind === 'tv' ? !!state.shows[id] : !!state.movies[id];
+let mode = 'local', user = null, authTab = 'login', hasTmdb = false;
+let state = emptyState();
+const showCache = {};   // id serialu -> {show, episodes}
+const epIndex = {};     // "serial:sezon:odcinek" -> odcinek
+const movieCache = {};  // id filmu -> pełne dane filmu
+const seen = { tv: {}, movie: {} };  // pozycje z list i wyszukiwania
+const sectionCache = {};
+const openSeasons = {};
+const genres = { tv: {}, movie: {} };
+const searchQ = { tv: '', movie: '' };
+let searchTimer = null, renderToken = 0, listView = null, plOnly = true, sheetKey = null;
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const epKey = (sid, s, n) => `${sid}:${s}:${n}`;
+const code = e => `S${pad(e.season)}E${pad(e.number)}`;
+const ymd = t => { const d = new Date(t); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+const todayStr = () => ymd(Date.now());
+const parseDate = d => typeof d === 'string' && d.length === 10 ? new Date(d + 'T12:00:00') : new Date(d);
+const isAired = e => !!e.air && e.air <= todayStr();
+const isSkipped = e => !!(state.skipped && state.skipped[e.key]);
+const counts = e => isAired(e) && !isSkipped(e);
+const fmtDate = d => parseDate(d).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short', year: 'numeric' });
+const daysFrom = d => Math.round((parseDate(String(d).slice(0, 10)) - parseDate(todayStr())) / 864e5);
+const dayWord = d => { const n = daysFrom(d); return n === 0 ? 'dziś' : n === 1 ? 'jutro' : n === -1 ? 'wczoraj' : n > 1 && n < 7 ? `za ${n} dni (${fmtDate(d)})` : fmtDate(d); };
+const soon = d => daysFrom(d) >= 0 ? ' — już wkrótce!' : '';
+const initials = name => esc((name || '?').split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase());
+const poster = (url, name, cls = '') => url ? `<img class="poster ${cls}" src="${esc(url)}" alt="" loading="lazy">` : `<div class="poster ${cls}">${initials(name)}</div>`;
+const plural = (n, one, few, many) => `${n} ${n === 1 ? one : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? few : many}`;
+const gname = n => GENRE_PL[n] || n;
+const providerUrl = (name, title, fallback) => { const hit = PROVIDER_LINKS.find(([re]) => re.test(name)); return hit ? hit[1](encodeURIComponent(title)) : fallback; };
+const isPolish = x => (x.origin_country || []).includes('PL') || x.original_language === 'pl';
+
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ---------- serwer: konta i TMDB ----------
+async function api(path, opts = {}) {
+  const r = await fetch(path, { ...opts, headers: opts.body ? { 'Content-Type': 'application/json' } : {}, cache: 'no-store' });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(data.error || 'Błąd serwera'), { status: r.status });
+  return data;
+}
+async function tmdb(path, params = {}) {
+  const r = await fetch(`/api/tmdb/${path}?${new URLSearchParams(params)}`);
+  if (r.status === 401) { user = null; render(); throw new Error('Zaloguj się ponownie'); }
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || data.status_message || 'Błąd TMDB ' + r.status);
+  return data;
+}
+function save() { clearTimeout(save.t); save.t = setTimeout(pushState, 600); }
+async function pushState() {
+  save.t = null;
+  try { await api('/api/state', { method: 'PUT', body: JSON.stringify(state) }); }
+  catch (e) { if (e.status === 401) { user = null; render(); } else toast('Nie udało się zapisać danych na koncie'); }
+}
+window.addEventListener('pagehide', () => {
+  if (save.t) { clearTimeout(save.t); fetch('/api/state', { method: 'PUT', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state) }); }
+});
+const hasData = d => d && (Object.keys(d.shows || {}).length || Object.keys(d.movies || {}).length);
+async function pullState() {
+  let raw = await api('/api/state');
+  let local = null;
+  try { local = JSON.parse(localStorage.getItem(LS) || 'null'); } catch (e) {}
+  if (hasData(local) && !hasData(raw) && confirm('W tej przeglądarce są zapisane seriale i filmy. Przenieść je na Twoje konto?')) {
+    raw = local;
+    try { localStorage.removeItem(LS); } catch (e) {}
+  }
+  if (hasData(raw) && raw.v !== 2) {
+    view.innerHTML = '<div class="loading">Przenoszę Twoje seriale i filmy do nowej, polskiej bazy…</div>';
+    state = await migrateV1(raw);
+    await pushState();
+    toast('Dane przeniesione do nowej bazy ✓');
+  } else state = Object.assign(emptyState(), raw, { v: 2 });
+}
+// dane z poprzedniej wersji (TVMaze + Wikidata) -> identyfikatory TMDB
+async function migrateV1(raw) {
+  const out = emptyState(), showMap = {}, movieMap = {}, epMap = {};
+  await Promise.all(Object.entries(raw.shows || {}).map(async ([oldId, s]) => {
+    try {
+      const ex = (await fetch(`https://api.tvmaze.com/shows/${encodeURIComponent(oldId)}`).then(r => r.json())).externals || {};
+      let hit = null;
+      if (ex.imdb) hit = (await tmdb(`find/${ex.imdb}`, { external_source: 'imdb_id' })).tv_results[0];
+      if (!hit && ex.thetvdb) hit = (await tmdb(`find/${ex.thetvdb}`, { external_source: 'tvdb_id' })).tv_results[0];
+      if (!hit) hit = (await tmdb('search/tv', { query: s.name })).results[0];
+      if (!hit) return;
+      showMap[oldId] = hit.id;
+      out.shows[hit.id] = { id: hit.id, name: hit.name, poster: img(hit.poster_path), genres: (hit.genre_ids || []).map(g => genres.tv[g]).filter(Boolean), addedAt: s.addedAt || Date.now() };
+    } catch (e) { /* pomijamy serial, którego nie udało się znaleźć */ }
+  }));
+  Object.entries(raw.watched || {}).forEach(([oldEp, w]) => {
+    const sid = showMap[w.s], m = /^S(\d+)E(\d+)$/.exec(w.c || '');
+    if (!sid || !m) return;
+    epMap[oldEp] = epKey(sid, +m[1], +m[2]);
+    out.watched[epMap[oldEp]] = { ...w, s: sid };
+  });
+  Object.entries(raw.reactions || {}).forEach(([oldEp, r]) => { if (epMap[oldEp]) out.reactions[epMap[oldEp]] = r; });
+  const qids = Object.keys(raw.movies || {}).filter(q => /^Q\d+$/.test(q));
+  if (qids.length) {
+    try {  // Wikidata zna identyfikator TMDB filmu (P4947)
+      const r = await fetch('https://query.wikidata.org/sparql?format=json&query=' + encodeURIComponent(`SELECT ?item ?t WHERE { VALUES ?item { ${qids.map(q => 'wd:' + q).join(' ')} } ?item wdt:P4947 ?t }`)).then(r => r.json());
+      r.results.bindings.forEach(b => movieMap[b.item.value.split('/').pop()] = +b.t.value);
+    } catch (e) {}
+    for (const q of qids) {
+      const m = raw.movies[q];
+      if (!movieMap[q]) { try { const hit = (await tmdb('search/movie', { query: m.title, ...(m.year ? { year: m.year } : {}) })).results[0]; if (hit) movieMap[q] = hit.id; } catch (e) {} }
+      if (movieMap[q]) out.movies[movieMap[q]] = { ...m, id: movieMap[q] };
+    }
+  }
+  Object.entries(raw.favs || {}).forEach(([k, f]) => {
+    const [type, oldId] = k.split(':'), nid = type === 'tv' ? showMap[oldId] : movieMap[oldId];
+    if (nid) out.favs[`${type}:${nid}`] = { ...f, id: nid };
+  });
+  state = out;
+  Object.keys(out.movies).forEach(id => loadMovie(id).then(() => { storeMovie(id, {}); save(); }).catch(() => {}));
+  return out;
+}
+async function loadGenres() {
+  if (Object.keys(genres.tv).length) return;
+  const [t, m] = await Promise.all([tmdb('genre/tv/list'), tmdb('genre/movie/list')]);
+  t.genres.forEach(g => genres.tv[g.id] = gname(g.name));
+  m.genres.forEach(g => genres.movie[g.id] = gname(g.name));
+}
+async function afterLogin() {
+  await loadGenres();
+  await pullState();
+  if (state.prefs && state.prefs.theme) setTheme(state.prefs.theme);
+  loadFollowed().then(updateTodayDot);
+}
+
+function renderLogin() {
+  document.body.classList.add('auth');
+  const reg = authTab === 'register';
+  view.innerHTML = `<div class="login">
+    <span class="logo"><i></i>Seria<span>Log</span></span>
+    <div class="muted">Twoje seriale i filmy w jednym miejscu</div>
+    <div class="sub" style="margin-top:24px"><a class="${reg ? '' : 'on'}" data-act="authTab" data-t="login">Logowanie</a><a class="${reg ? 'on' : ''}" data-act="authTab" data-t="register">Załóż konto</a></div>
+    <form id="authForm">
+      <input name="username" placeholder="Nazwa użytkownika" autocomplete="username" required minlength="3" maxlength="30">
+      <input name="password" type="password" placeholder="${reg ? 'Hasło (min. 6 znaków)' : 'Hasło'}" autocomplete="${reg ? 'new-password' : 'current-password'}" required minlength="${reg ? 6 : 1}">
+      ${reg ? '<input name="password2" type="password" placeholder="Powtórz hasło" autocomplete="new-password" required>' : ''}
+      <button class="btn" type="submit">${reg ? 'Załóż konto' : 'Zaloguj się'}</button>
+      <div class="err" id="authErr"></div>
+    </form>
+    <div class="feat"><div><b>📺</b>Odcinki i sezony</div><div><b>🎬</b>Filmy i kina w Polsce</div><div><b>📅</b>Kalendarz premier</div></div>
+  </div>`;
+  $('#authForm').addEventListener('submit', async ev => {
+    ev.preventDefault();
+    const f = new FormData(ev.target), btn = ev.target.querySelector('button');
+    if (reg && f.get('password') !== f.get('password2')) { $('#authErr').textContent = 'Hasła nie są takie same'; return; }
+    btn.disabled = true;
+    try {
+      const r = await api(reg ? '/api/register' : '/api/login', { method: 'POST', body: JSON.stringify({ username: f.get('username'), password: f.get('password') }) });
+      user = r.username;
+      document.body.classList.remove('auth');
+      if (hasTmdb) await afterLogin();
+      toast(reg ? `Witaj, ${user}! Konto utworzone.` : `Witaj ponownie, ${user}!`);
+      location.hash = '#/shows'; render();
+    } catch (e) { $('#authErr').textContent = e.message; btn.disabled = false; }
+  });
+}
+function renderInfo(title, text) {
+  document.body.classList.add('auth');
+  view.innerHTML = `<div class="login"><span class="logo"><i></i>Seria<span>Log</span></span><div class="empty" style="padding-top:30px"><b>${title}</b>${text}</div></div>`;
+}
+
+// ---------- seriale ----------
+const normEp = (e, sid) => ({
+  key: epKey(sid, e.season_number, e.episode_number), showId: sid, season: e.season_number, number: e.episode_number,
+  name: e.name, overview: e.overview, air: e.air_date || null, runtime: e.runtime, still: e.still_path, vote: e.vote_average,
+});
+const pending = {};
+function loadShow(id) {
+  id = +id;
+  if (showCache[id]) return Promise.resolve(showCache[id]);
+  return pending['tv' + id] ||= (async () => {
+    const show = await tmdb(`tv/${id}`, { append_to_response: 'watch/providers,external_ids,aggregate_credits,videos,recommendations,similar', include_video_language: 'pl,en,null' });
+    const nums = (show.seasons || []).map(s => s.season_number).filter(n => n > 0);
+    const episodes = [];
+    for (let i = 0; i < nums.length; i += 20) {  // TMDB dołącza najwyżej 20 sezonów do jednego zapytania
+      const part = nums.slice(i, i + 20);
+      const d = await tmdb(`tv/${id}`, { append_to_response: part.map(n => 'season/' + n).join(',') });
+      part.forEach(n => ((d['season/' + n] || {}).episodes || []).forEach(e => episodes.push(normEp(e, id))));
+    }
+    episodes.sort((a, b) => a.season - b.season || a.number - b.number);
+    episodes.forEach(e => epIndex[e.key] = e);
+    seen.tv[id] = show;
+    return showCache[id] = { show, episodes };
+  })().finally(() => delete pending['tv' + id]);
+}
+const nextToWatch = d => d.episodes.find(e => counts(e) && !state.watched[e.key]);
+const plProviders = show => { const pl = show['watch/providers'] && show['watch/providers'].results.PL; return pl ? [...(pl.flatrate || []), ...(pl.free || []), ...(pl.ads || [])].map(p => p.provider_name) : []; };
+const tvChannel = show => isPolish(show) && show.networks && show.networks.length ? show.networks.map(n => n.name).join(', ') : '';
+async function loadFollowed() {
+  return (await Promise.all(Object.keys(state.shows).map(id => loadShow(id).catch(() => null)))).filter(Boolean);
+}
+
+// ---------- filmy ----------
+function loadMovie(id) {
+  id = +id;
+  if (movieCache[id]) return Promise.resolve(movieCache[id]);
+  return pending['m' + id] ||= tmdb(`movie/${id}`, { append_to_response: 'watch/providers,release_dates,credits,videos,recommendations,similar', include_video_language: 'pl,en,null' })
+    .then(m => { seen.movie[id] = m; return movieCache[id] = m; }).finally(() => delete pending['m' + id]);
+}
+function plDates(m) {
+  const pl = ((m.release_dates || {}).results || []).find(r => r.iso_3166_1 === 'PL');
+  const list = pl ? pl.release_dates : [];
+  const first = types => list.filter(r => types.includes(r.type)).map(r => r.release_date.slice(0, 10)).sort()[0] || null;
+  return { cinema: first([2, 3]), digital: first([4]), tv: first([6]) };
+}
+const movieRelease = m => { const d = plDates(m); return d.cinema || d.digital || d.tv || m.release_date || null; };
+function storeMovie(id, patch) {
+  id = +id;
+  const full = movieCache[id], base = full || seen.movie[id];
+  const info = {};
+  if (base) {
+    Object.assign(info, { title: base.title, year: (base.release_date || '').slice(0, 4) || null, poster: img(base.poster_path),
+      genres: full ? full.genres.map(g => gname(g.name)) : (base.genre_ids || []).map(g => genres.movie[g]).filter(Boolean),
+      release: full ? movieRelease(full) : base.release_date || null });
+    if (full) info.runtime = full.runtime;
+  }
+  state.movies[id] = Object.assign({ id, addedAt: Date.now() }, state.movies[id], info, patch);
+}
+// listy (popularne, kina w Polsce, gatunki)
+function listConfig(kind, key) {
+  if (LISTS[kind][key]) return LISTS[kind][key];
+  const m = /^g(\d+)$/.exec(key || '');
+  if (!m) return null;
+  const params = { with_genres: m[1], sort_by: 'popularity.desc', 'vote_count.gte': kind === 'movie' ? 50 : 5 };
+  if (plOnly) Object.assign(params, { watch_region: 'PL', with_watch_monetization_types: 'flatrate|free|ads|rent|buy' });
+  return { title: `${GENRE_ICON[m[1]] || '🎬'} ${genres[kind][m[1]] || 'Gatunek'}`, path: `discover/${kind}`, params, genre: true };
+}
+async function fetchList(kind, cfg, page = 1) {
+  const d = await tmdb(cfg.path, { ...cfg.params, page });
+  const items = d.results || [];
+  items.forEach(x => seen[kind][x.id] = x);
+  return { items, page: d.page || page, pages: Math.min(d.total_pages || 1, 500), total: d.total_results || items.length };
+}
+async function searchTitles(kind, q) {
+  const d = await tmdb(`search/${kind}`, { query: q, include_adult: 'false' });
+  // polskie produkcje na górze wyników
+  const items = (d.results || []).map((x, i) => ({ x, i })).sort((a, b) => (isPolish(b.x) - isPolish(a.x)) || a.i - b.i).map(o => o.x);
+  items.forEach(x => seen[kind][x.id] = x);
+  return items;
+}
+
+// ---------- akcje ----------
+function follow(show) {
+  const g = show.genres ? show.genres.map(x => gname(x.name)) : (show.genre_ids || []).map(x => genres.tv[x]).filter(Boolean);
+  state.shows[show.id] = Object.assign({ addedAt: Date.now() }, state.shows[show.id], { id: show.id, name: show.name, poster: img(show.poster_path), genres: g });
+  save();
+}
+function setWatched(e, on) {
+  if (on) {
+    const s = showCache[e.showId] && showCache[e.showId].show;
+    if (state.skipped) delete state.skipped[e.key];
+    state.watched[e.key] = { t: Date.now(), m: e.runtime || (s && s.episode_run_time && s.episode_run_time[0]) || 0, s: e.showId, n: e.name, c: code(e) };
+    if (!state.shows[e.showId] && s) follow(s);
+  } else delete state.watched[e.key];
+}
+function toggleFav(key, data) {
+  if (state.favs[key]) { delete state.favs[key]; toast('Usunięto z ulubionych'); }
+  else { state.favs[key] = Object.assign({ t: Date.now() }, data); toast('Dodano do ulubionych ❤'); }
+  save();
+}
+const refreshMovie = id => loadMovie(id).then(() => { if (state.movies[id]) { storeMovie(id, {}); save(); } }).catch(() => {});
+
+const actions = {
+  open: d => location.hash = '#/show/' + d.id,
+  back: () => history.length > 1 ? history.back() : location.hash = '#/shows',
+  async follow(d) {
+    const id = +d.id;
+    if (state.shows[id]) { delete state.shows[id]; save(); toast('Usunięto z moich seriali'); }
+    else { follow(seen.tv[id] || (await loadShow(id)).show); toast('Dodano do moich seriali'); loadShow(id).then(updateTodayDot).catch(() => {}); }
+    rerender();
+  },
+  watchNext(d) { const e = epIndex[d.id]; setWatched(e, true); save(); toast(`Obejrzano ${code(e)} ✓`); rerender(); },
+  async ep(d) {
+    const e = epIndex[d.id];
+    if (state.watched[e.key]) setWatched(e, false);
+    else { const n = await markWithPrevious([e], `odcinkiem ${code(e)}`); if (!n) return; if (n > 1) toast(`Oznaczono ${plural(n, 'odcinek', 'odcinki', 'odcinków')} ✓`); }
+    save(); rerender();
+    if (sheetKey === e.key) openEpisode(e.key);
+  },
+  async season(d) {
+    const eps = showCache[d.show].episodes.filter(e => e.season == d.season && counts(e));
+    if (eps.every(e => state.watched[e.key])) { eps.forEach(e => setWatched(e, false)); toast(`Odznaczono sezon ${d.season}`); }
+    else {
+      const n = await markWithPrevious(eps.filter(e => !state.watched[e.key]), `sezonem ${d.season}`);
+      if (!n) return;
+      toast(`Oznaczono ${plural(n, 'odcinek', 'odcinki', 'odcinków')} jako obejrzane ✓`);
+    }
+    save(); rerender();
+  },
+  async allSeen(d) {
+    const eps = showCache[d.id].episodes.filter(e => counts(e) && !state.watched[e.key]);
+    const v = await ask('Obejrzane wszystko?', `Oznaczyć ${plural(eps.length, 'pozostały odcinek', 'pozostałe odcinki', 'pozostałych odcinków')} „${esc(showCache[d.id].show.name)}” jako obejrzane? Przyszłe odcinki pojawią się w „Do obejrzenia”, gdy tylko wyjdą.`,
+      [{ label: 'Tak, wszystko obejrzane', value: true }, { label: 'Anuluj', value: false, ghost: true }]);
+    if (!v) return;
+    eps.forEach(e => setWatched(e, true)); save();
+    toast('Wszystkie odcinki obejrzane ✓'); rerender();
+  },
+  play(d, el) { el.outerHTML = `<div class="yt on"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(d.k)}?autoplay=1&rel=0" title="Zwiastun" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`; },
+  playSwap(d) { const box = document.querySelector('.yt'); if (box) { box.outerHTML = `<div class="yt on"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(d.k)}?autoplay=1&rel=0" title="Zwiastun" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`; } },
+  async drop(d) {
+    const id = +d.id, last = showCache[id] && lastSeenEp(showCache[id]);
+    const v = await ask('Przerwać oglądanie?', `„${esc(state.shows[id].name)}” trafi do „Przerwane”. ${last ? `Twój postęp (obejrzane do ${code(last)}) zostanie zapisany` : 'Serial zostanie na Twoim koncie'} i w każdej chwili możesz wznowić oglądanie.`,
+      [{ label: 'Tak, przerwij oglądanie', value: true }, { label: 'Anuluj', value: false, ghost: true }]);
+    if (!v) return;
+    state.shows[id].dropped = Date.now(); save(); toast('Przeniesiono do „Przerwane”'); updateTodayDot(); rerender();
+  },
+  resume(d) { const id = +d.id; delete state.shows[id].dropped; save(); toast('Wznowiono oglądanie ✓'); updateTodayDot(); rerender(); },
+  skipEp(d) {
+    const e = epIndex[d.id], sk = state.skipped ||= {};
+    if (sk[e.key]) { delete sk[e.key]; toast(`${code(e)} przywrócony`); }
+    else { sk[e.key] = Date.now(); toast(`${code(e)} — nie liczy się do postępu`); }
+    save(); rerender();
+    if (sheetKey === e.key) openEpisode(e.key);
+  },
+  async skipSeason(d) {
+    const sk = state.skipped ||= {};
+    const list = showCache[d.show].episodes.filter(e => e.season == d.season && !state.watched[e.key]);
+    const todo = list.filter(e => isAired(e) && !sk[e.key]);
+    if (!todo.length) { list.forEach(e => delete sk[e.key]); save(); toast(`Sezon ${d.season} przywrócony`); rerender(); return; }
+    const v = await ask(`Nie obejrzysz sezonu ${d.season}?`,
+      `${plural(todo.length, 'nieobejrzany odcinek', 'nieobejrzane odcinki', 'nieobejrzanych odcinków')} tego sezonu przestanie się liczyć do Twojego postępu i zniknie z „Do obejrzenia”. Możesz to cofnąć w każdej chwili.`,
+      [{ label: 'Tak, pomiń ten sezon', value: true }, { label: 'Anuluj', value: false, ghost: true }]);
+    if (!v) return;
+    list.forEach(e => sk[e.key] = Date.now());
+    save(); toast(`Sezon ${d.season} pominięty`); rerender();
+  },
+  showTab(d) { showTab[d.id] = d.t; rerender(); },
+  castMore() { const k = location.hash; castOpen.has(k) ? castOpen.delete(k) : castOpen.add(k); rerender(); },
+  showMenu(d) { openShowMenu(+d.id); },
+  async unfollow(d) {
+    const id = +d.id, name = state.shows[id] && state.shows[id].name;
+    const v = await ask('Usunąć serial?', `„${esc(name)}” zniknie z Twoich seriali razem z zaznaczonymi odcinkami i notatkami. Jeśli chcesz tylko przestać oglądać, wybierz „Przerwij oglądanie”.`,
+      [{ label: 'Tak, usuń', value: true }, { label: 'Anuluj', value: false, ghost: true }]);
+    if (!v) return;
+    delete state.shows[id];
+    for (const k of Object.keys(state.watched)) if (k.startsWith(id + ':')) delete state.watched[k];
+    for (const k of Object.keys(state.notes || {})) if (k.startsWith(id + ':')) delete state.notes[k];
+    save(); toast('Usunięto z moich seriali'); updateTodayDot(); rerender();
+  },
+  progDay(d) { progDay = d.d; rerender(); },
+  async cinemaFind(d) {
+    // film z repertuaru kina → strona filmu (szukamy po tytule, potem po tytule oryginalnym)
+    toast('Szukam filmu…');
+    const tries = [[d.t, d.y], [d.o, d.y], [d.t, '']].filter(([q]) => q);
+    for (const [q, y] of tries) {
+      const res = await tmdb('search/movie', { query: q, ...(y ? { year: y } : {}) }).catch(() => ({ results: [] }));
+      if (res.results && res.results[0]) { location.hash = '#/movie/' + res.results[0].id; return; }
+    }
+    toast('Nie znaleziono tego filmu w bazie');
+  },
+  forYouRefresh() { forYou = null; rerender(); },
+  toggleGroup(d) { openGroups.has(d.k) ? openGroups.delete(d.k) : openGroups.add(d.k); rerender(); },
+  epInfo: d => openEpisode(d.id),
+  react(d) {
+    if (state.reactions[d.id] === d.r) delete state.reactions[d.id]; else state.reactions[d.id] = d.r;
+    save(); openEpisode(d.id);
+  },
+  favShow(d) { const s = showCache[d.id].show; toggleFav('tv:' + s.id, { type: 'tv', id: s.id, title: s.name, poster: img(s.poster_path) }); rerender(); },
+  favMovie(d) { const m = movieCache[d.id]; toggleFav('movie:' + d.id, { type: 'movie', id: +d.id, title: m.title, poster: img(m.poster_path) }); rerender(); },
+  close: () => { $('#sheetWrap').classList.add('hidden'); sheetKey = null; if (editing && editing.startsWith('note:')) editing = null; },
+  mOpen: d => location.hash = '#/movie/' + d.id,
+  mList(d) {
+    const id = +d.id, st = state.movies[id];
+    if (st && st.status === 'seen') return actions.mOpen(d);
+    if (st) { delete state.movies[id]; toast('Usunięto z listy'); }
+    else { storeMovie(id, { status: 'watch', addedAt: Date.now() }); toast('Dodano do „Chcę obejrzeć”'); refreshMovie(id); }
+    save(); rerender();
+  },
+  mSeen(d) {
+    const id = +d.id, st = state.movies[id];
+    if (st && st.status === 'seen') { st.status = 'watch'; delete st.seenAt; toast('Przeniesiono do „Chcę obejrzeć”'); }
+    else { storeMovie(id, { status: 'seen', seenAt: Date.now() }); toast('Film obejrzany ✓'); refreshMovie(id); }
+    save(); rerender();
+  },
+  mRate(d) { const st = state.movies[d.id]; st.rating = st.rating == d.n ? 0 : +d.n; save(); rerender(); },
+  mReact(d) { const st = state.movies[d.id]; st.reaction = st.reaction === d.r ? null : d.r; save(); rerender(); },
+  plOnly(d) { plOnly = d.v === '1'; listView = null; rerender(); },
+  revEdit(d) { const e = reviewEntry(d.k); editing = d.k; draft = { rating: e.rating || 0, text: e.review || '' }; rerender(); },
+  revRate(d) { const t = $('#revText'); if (t) draft.text = t.value; draft.rating = draft.rating === +d.n ? 0 : +d.n; rerender(); },
+  revSave(d) {
+    const e = reviewEntry(d.k), text = ($('#revText') || {}).value || '';
+    if (!draft.rating && !text.trim()) { toast('Dodaj ocenę lub kilka słów'); return; }
+    e.rating = draft.rating; e.review = text.trim(); e.reviewAt = Date.now();
+    editing = draft = null; save(); toast('Recenzja zapisana ✓'); rerender();
+  },
+  revDel(d) {
+    if (!confirm('Usunąć recenzję?')) return;
+    const e = reviewEntry(d.k); delete e.rating; delete e.review; delete e.reviewAt;
+    editing = draft = null; save(); toast('Recenzja usunięta'); rerender();
+  },
+  cancelEdit(d) { editing = draft = null; if (d.k) openEpisode(d.k); else rerender(); },
+  noteEdit(d) { editing = 'note:' + d.k; openEpisode(d.k); setTimeout(() => { const t = $('#noteText'); if (t) t.focus(); }, 50); },
+  noteSave(d) {
+    const text = (($('#noteText') || {}).value || '').trim();
+    if (!text) return actions.noteDel(d, null, true);
+    state.notes[d.k] = { text, t: Date.now() };
+    editing = null; save(); toast('Notatka zapisana ✓'); openEpisode(d.k); rerender();
+  },
+  noteDel(d, el, silent) {
+    if (!silent && !confirm('Usunąć notatkę?')) return;
+    delete state.notes[d.k]; editing = null; save(); openEpisode(d.k); rerender();
+  },
+  async swapShow(d) {
+    const from = +d.from, to = +d.to, main = await loadShow(to);
+    delete state.shows[from];
+    follow(main.show);
+    if (state.favs['tv:' + from]) { state.favs['tv:' + to] = { ...state.favs['tv:' + from], id: to, title: main.show.name, poster: img(main.show.poster_path) }; delete state.favs['tv:' + from]; }
+    save(); toast(`Zamieniono na „${main.show.name}” ✓`); location.hash = '#/show/' + to;
+  },
+  expand(d) { const id = +d.id; expanded.has(id) ? expanded.delete(id) : expanded.add(id); rerender(); },
+  theme(d) { setTheme(d.v, true); rerender(); },
+  async more(d, el) {
+    el.disabled = true; el.textContent = 'Ładowanie…';
+    const res = await fetchList(listView.kind, listConfig(listView.kind, listView.key), listView.page + 1);
+    const ids = new Set(listView.items.map(x => x.id));
+    listView.items.push(...res.items.filter(x => !ids.has(x.id)));
+    listView.page = res.page;
+    rerender();
+  },
+  authTab(d) { authTab = d.t; renderLogin(); },
+  async logout() {
+    if (save.t) { clearTimeout(save.t); await pushState(); }
+    await api('/api/logout', { method: 'POST' }).catch(() => {});
+    user = null; state = emptyState(); authTab = 'login';
+    location.hash = '#/shows'; render();
+  },
+  export() {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'serialog-backup.json'; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  },
+  import: () => $('#importFile').click(),
+  reset() {
+    if (!confirm('Na pewno usunąć wszystkie dane (seriale, filmy, obejrzane, ulubione)?')) return;
+    state = emptyState(); save(); toast('Dane wyczyszczone'); rerender();
+  },
+};
+
+document.body.addEventListener('click', ev => {
+  if (ev.target.id === 'sheetWrap') return actions.close();
+  const a = ev.target.closest('[data-act]');
+  if (!a || a.disabled) return;
+  ev.preventDefault(); ev.stopPropagation();
+  if (a.closest('.menu') && a.dataset.act !== 'close') actions.close();  // wybór z menu zamyka je
+  Promise.resolve(actions[a.dataset.act](a.dataset, a)).catch(err => toast(err.message || 'Błąd'));
+});
+view.addEventListener('toggle', ev => {
+  const el = ev.target;
+  if (!el.matches || !el.matches('details.season')) return;
+  const set = openSeasons[el.dataset.show] || (openSeasons[el.dataset.show] = new Set());
+  el.open ? set.add(+el.dataset.season) : set.delete(+el.dataset.season);
+}, true);
+view.addEventListener('change', ev => {
+  const el = ev.target;
+  if (el.dataset.change !== 'mDate' || !el.value || !state.movies[el.dataset.id]) return;
+  const [y, mo, da] = el.value.split('-').map(Number);
+  state.movies[el.dataset.id].seenAt = new Date(y, mo - 1, da, 12).getTime();
+  save(); toast('Zapisano datę obejrzenia');
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') actions.close(); });
+$('#importFile').addEventListener('change', async ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    if (typeof data.shows !== 'object' || typeof data.watched !== 'object') throw new Error('zły format');
+    state = data.v === 2 ? Object.assign(emptyState(), data) : await migrateV1(data);
+    save(); toast('Zaimportowano dane'); rerender();
+  } catch (e) { toast('Nie udało się zaimportować: ' + e.message); }
+  ev.target.value = '';
+});
+
+// ---------- routing ----------
+async function rerender() { const y = scrollY; await render(); scrollTo(0, y); }
+async function render() {
+  const token = ++renderToken;
+  if (mode === 'local') return renderInfo('Uruchom aplikację przez start.bat', 'Aplikacja potrzebuje serwera (konta i polska baza filmów). Kliknij dwa razy plik <b>start.bat</b> w folderze aplikacji — otworzy się adres http://localhost:8000.');
+  if (!user) return renderLogin();
+  if (!hasTmdb) return renderInfo('Brak klucza TMDB', 'Wklej klucz API z themoviedb.org do pliku <b>tmdb_klucz.txt</b> w folderze aplikacji i uruchom ponownie start.bat.');
+  document.body.classList.remove('auth');
+  const [, page = 'shows', arg] = location.hash.split('/');
+  const tab = page.startsWith('show') ? 'shows' : page.startsWith('movie') ? 'movies' : page.startsWith('cinema') ? 'cinema' : page === 'towatch' ? 'upcoming' : page;
+  document.querySelectorAll('.tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
+  const nS = Object.keys(state.shows).length, nM = Object.keys(state.movies).length;
+  $('#count').textContent = [nS && plural(nS, 'serial', 'seriale', 'seriali'), nM && plural(nM, 'film', 'filmy', 'filmów')].filter(Boolean).join(' · ');
+  try {
+    switch (page) {
+      case 'show': return await renderShow(+arg, token);
+      case 'shows-search': return await renderSearch(token, 'tv');
+      case 'shows-genres': return renderGenres('tv');
+      case 'shows-list': return await renderList('tv', arg, token);
+      case 'movie': return await renderMovie(+arg, token);
+      case 'person': return await renderPerson(+arg, token);
+      case 'movies': case 'movies-seen': return renderMovies(page === 'movies-seen' ? 'seen' : 'watch');
+      case 'movies-search': return await renderSearch(token, 'movie');
+      case 'movies-genres': return renderGenres('movie');
+      case 'movies-list': return await renderList('movie', arg, token);
+      case 'cinema': return await renderProgram(token);
+      case 'cinema-now': case 'cinema-soon': return await renderCinema(token, page === 'cinema-soon' ? 'soon' : 'now');
+      case 'foryou': return await renderForYou(token);
+      case 'upcoming': return await renderUpcoming(token);
+      case 'towatch': return await renderToWatch(token);
+      case 'profile': return await renderProfile(token);
+      default: return await renderWatch(token);
+    }
+  } catch (e) {
+    if (token === renderToken) view.innerHTML = `<div class="empty"><b>Coś poszło nie tak</b>${esc(e.message)}<br><br><button class="btn ghost" onclick="render()">Spróbuj ponownie</button></div>`;
+  }
+}
+window.addEventListener('hashchange', () => { actions.close(); editing = draft = null; visitSeed = Math.random(); render().then(() => scrollTo(0, 0)); });
+
+const subTabs = (items, on) => `<div class="sub">${items.map(([href, label, key]) => `<a href="${href}" class="${key === on ? 'on' : ''}">${label}</a>`).join('')}</div>`;
+const showTabs = on => subTabs([['#/shows', 'Moje seriale', 'mine'], ['#/shows-search', 'Szukaj', 'search'], ['#/shows-genres', 'Gatunki', 'genres']], on);
+const movieTabs = on => subTabs([['#/movies', 'Moje filmy', 'mine'], ['#/movies-search', 'Szukaj', 'search'], ['#/movies-genres', 'Gatunki', 'genres']], on);
+const emptyBox = (title, text, href, label) => `<div class="empty"><b>${title}</b>${text}<br><br><a class="btn" href="${href}">${label}</a></div>`;
+
+function tile(kind, x) {
+  const title = kind === 'tv' ? x.name : x.title, date = kind === 'tv' ? x.first_air_date : x.release_date;
+  const future = date && date > todayStr();
+  let on, sym, act, open;
+  if (kind === 'tv') { on = !!state.shows[x.id]; sym = on ? '✓' : '+'; act = 'follow'; open = 'open'; }
+  else { const s = state.movies[x.id] && state.movies[x.id].status; on = !!s; sym = s === 'seen' ? '👁' : s ? '✓' : '+'; act = 'mList'; open = 'mOpen'; }
+  return `<div class="tile" data-act="${open}" data-id="${x.id}">
+    ${poster(img(x.poster_path), title)}
+    <button class="badge ${on ? 'on' : ''}" data-act="${act}" data-id="${x.id}" title="${on ? 'Na liście' : kind === 'tv' ? 'Dodaj do moich seriali' : 'Chcę obejrzeć'}">${sym}</button>
+    <div class="nm">${isPolish(x) ? '<i class="plb" title="Polska produkcja"></i>' : ''}${esc(title)}</div>
+    ${(kind === 'tv' ? x.original_name : x.original_title) && (kind === 'tv' ? x.original_name : x.original_title) !== title && !isPolish(x) ? `<div class="orig">${esc(kind === 'tv' ? x.original_name : x.original_title)}</div>` : ''}
+    <div class="sub2">${kind === 'tv' && isCompanion(title) ? '<span class="tag">dodatek do programu</span>' : future ? `<span class="soon">📅 ${fmtDate(date)}</span>` : [date && date.slice(0, 4), x.vote_average ? '★ ' + x.vote_average.toFixed(1) : ''].filter(Boolean).join(' · ')}</div>
+  </div>`;
+}
+// najbliższa znana premiera serialu: odcinek z datą albo zapowiedziany sezon
+function showNextDate(d) {
+  const ep = d.episodes.find(e => e.air && !isAired(e));
+  if (ep) return { label: `Nowy odcinek ${code(ep)}`, date: ep.air, ep };
+  const ss = (d.show.seasons || []).find(s => s.season_number > 0 && s.air_date && s.air_date > todayStr());
+  return ss ? { label: `Premiera sezonu ${ss.season_number}`, date: ss.air_date } : null;
+}
+
+// ---------- widok: moje seriale ----------
+async function renderWatch(token) {
+  const ids = Object.keys(state.shows);
+  if (!ids.length) { view.innerHTML = showTabs('mine') + emptyBox('Nie masz jeszcze żadnych seriali', 'Znajdź serial po tytule albo wybierz gatunek.', '#/shows-search', 'Szukaj seriali'); return; }
+  if (ids.some(id => !showCache[id])) view.innerHTML = showTabs('mine') + '<div class="list">' + ids.map(() => '<div class="card skel"></div>').join('') + '</div>';
+  const all = await loadFollowed();
+  if (token !== renderToken) return;
+  const last = {};
+  for (const w of Object.values(state.watched)) last[w.s] = Math.max(last[w.s] || 0, w.t);
+  let rows = all.map(d => {
+    const aired = d.episodes.filter(counts), done = aired.filter(e => state.watched[e.key]).length;
+    return { d, next: nextToWatch(d), left: aired.length - done, done, aired: aired.length, act: last[d.show.id] || (state.shows[d.show.id] || {}).addedAt || 0 };
+  });
+  const dropped = rows.filter(r => isDropped(r.d.show.id)).sort((a, b) => state.shows[b.d.show.id].dropped - state.shows[a.d.show.id].dropped);
+  rows = rows.filter(r => !isDropped(r.d.show.id));
+  const toWatch = rows.filter(r => r.next).sort((a, b) => b.act - a.act);
+  const started = toWatch.filter(r => r.done > 0), notStarted = toWatch.filter(r => r.done === 0);
+  const caught = rows.filter(r => !r.next);
+  const card = r => {
+    const s = r.d.show, ps = progressState(r.d), pct = ['current', 'finished'].includes(ps.st) ? 100 : ps.pct, prov = plProviders(s)[0], nd = showNextDate(r.d);
+    return `<div class="card" data-act="open" data-id="${s.id}">
+      ${poster(img(s.poster_path), s.name)}
+      <div class="body">
+        <div class="t">${state.favs['tv:' + s.id] ? '❤ ' : ''}${esc(s.name)}</div>
+        ${r.next ? `<div class="e">${code(r.next)}</div><div class="n">${esc(r.next.name)}</div><div class="n">${r.left > 1 ? `jeszcze ${r.left} odc.` : 'ostatni dostępny'}${prov ? ' · ' + esc(prov) : ''}</div>`
+                 : `<div class="n">${s.status === 'Ended' || s.status === 'Canceled' ? 'Zakończony — wszystko obejrzane 🎉' : 'Jesteś na bieżąco'}</div>`}
+        ${nd ? `<div class="soon">📅 ${esc(nd.label)} — ${dayWord(nd.date)}</div>` : ''}
+        <div class="bar st-${ps.st}"><b style="width:${pct}%"></b></div>
+      </div>
+      ${r.next ? `<button class="chk" title="Oznacz jako obejrzany" data-act="watchNext" data-id="${r.next.key}">✓</button>` : ''}
+    </div>`;
+  };
+  view.innerHTML = showTabs('mine') +
+    (started.length ? `<h2>Oglądasz</h2><div class="list">${started.map(card).join('')}</div>` : '') +
+    (notStarted.length ? `<h2>Chcę obejrzeć</h2><div class="list">${notStarted.map(card).join('')}</div>` : '') +
+    (caught.length ? `<h2>Na bieżąco</h2><div class="list">${caught.map(card).join('')}</div>` : '') +
+    (dropped.length ? `<h2>Przerwane <small>(${dropped.length})</small></h2><div class="list">${dropped.map(r => {
+      const s = r.d.show, last = lastSeenEp(r.d);
+      return `<div class="card dropped" data-act="open" data-id="${s.id}">${poster(img(s.poster_path), s.name)}
+        <div class="body"><div class="t">${esc(s.name)}</div><div class="n">${last ? `Obejrzane do ${code(last)}` : 'Nic nie obejrzano'} · ${r.done}/${r.aired} odc.</div><div class="n">Przerwane ${fmtDate(state.shows[s.id].dropped)}</div>
+        <div class="bar"><b style="width:${r.aired ? r.done / r.aired * 100 : 0}%"></b></div></div>
+        <button class="btn ghost sm" data-act="resume" data-id="${s.id}">Wznów</button></div>`;
+    }).join('')}</div>` : '');
+}
+
+// ---------- widok: do obejrzenia (zaległe odcinki i filmy) ----------
+const expanded = new Set();  // seriale z rozwiniętą pełną listą zaległych odcinków
+const openGroups = new Set();  // rozwinięte grupy w „Do obejrzenia” (domyślnie wszystko zwinięte)
+function todoData() {
+  const today = todayStr(), last = {};
+  for (const w of Object.values(state.watched)) last[w.s] = Math.max(last[w.s] || 0, w.t);
+  const groups = Object.keys(state.shows).filter(id => showCache[id] && !isDropped(id)).map(id => ({ d: showCache[id], eps: showCache[id].episodes.filter(e => counts(e) && !state.watched[e.key]) }))
+    .filter(g => g.eps.length)
+    .sort((a, b) => (last[b.d.show.id] || state.shows[b.d.show.id].addedAt || 0) - (last[a.d.show.id] || state.shows[a.d.show.id].addedAt || 0));
+  const movies = Object.values(state.movies).filter(m => m.status === 'watch' && (!m.release || m.release.slice(0, 10) <= today)).sort((a, b) => b.addedAt - a.addedAt);
+  return { groups, movies, count: groups.reduce((a, g) => a + g.eps.length, 0) + movies.length };
+}
+const upTabs = on => { const n = todoData().count; return subTabs([['#/upcoming', 'Nadchodzące', 'soon'], ['#/towatch', `Do obejrzenia${n ? ` <span class="cnt">${n}</span>` : ''}`, 'todo']], on); };
+async function renderToWatch(token) {
+  if (!Object.keys(state.shows).length && !Object.keys(state.movies).length) {
+    view.innerHTML = upTabs('todo') + emptyBox('Nic tu jeszcze nie ma', 'Dodaj seriale lub filmy — tutaj zobaczysz po kolei wszystko, czego jeszcze nie obejrzano.', '#/shows-search', 'Szukaj seriali');
+    return;
+  }
+  if (Object.keys(state.shows).some(id => !showCache[id])) view.innerHTML = upTabs('todo') + '<div class="loading">Ładowanie…</div>';
+  await loadFollowed();
+  if (token !== renderToken) return;
+  const { groups, movies } = todoData();
+  const nEps = groups.reduce((a, g) => a + g.eps.length, 0);
+  if (!groups.length && !movies.length) {
+    view.innerHTML = upTabs('todo') + '<div class="empty"><b>Wszystko obejrzane 🎉</b>Nie ma zaległych odcinków ani filmów. Nowe pojawią się tu, gdy tylko wyjdą.</div>';
+    return;
+  }
+  view.innerHTML = upTabs('todo') +
+    `<div class="muted small">${[nEps && plural(nEps, 'odcinek', 'odcinki', 'odcinków'), movies.length && plural(movies.length, 'film', 'filmy', 'filmów')].filter(Boolean).join(' i ')} do obejrzenia</div>` +
+    (groups.length ? `<h2>Seriale</h2>${groups.map(({ d, eps }) => {
+      const s = d.show, gk = 'tv:' + s.id, open = openGroups.has(gk), shown = eps;
+      const prov = plProviders(s)[0], nd = showNextDate(d), first = eps[0];
+      return `<div class="group ${open ? 'open' : ''}">
+        <div class="head" data-act="toggleGroup" data-k="${gk}">
+          <span class="golink" data-act="open" data-id="${s.id}" title="Otwórz serial">${poster(img(s.poster_path), s.name, 'sm')}</span>
+          <div class="body"><div class="t"><span class="golink" data-act="open" data-id="${s.id}" title="Otwórz serial">${esc(s.name)}</span></div>
+            <div class="n">${plural(eps.length, 'odcinek', 'odcinki', 'odcinków')} · następny ${code(first)}${prov ? ' · ' + esc(prov) : ''}</div>
+            ${nd ? `<div class="soon">${esc(nd.label)} — ${dayWord(nd.date)}</div>` : ''}</div>
+          <button class="openbtn" data-act="open" data-id="${s.id}" title="Otwórz stronę serialu">Otwórz</button>
+          <span class="count">${eps.length}</span><span class="caret">›</span>
+        </div>
+        ${open ? `<ul>${shown.map(e => `<li class="ep">
+          <span data-act="epInfo" data-id="${e.key}">${thumb(e, s)}</span>
+          <div class="m" data-act="epInfo" data-id="${e.key}"><div><b>${code(e)}</b>${esc(e.name)}</div><small>${fmtDate(e.air)}</small></div>
+          <button class="chk sm" data-act="ep" data-id="${e.key}" title="Obejrzany">✓</button>
+        </li>`).join('')}</ul>
+        <div class="gfoot"><a href="#/show/${s.id}">Otwórz serial ›</a><button class="btn ghost sm" data-act="allSeen" data-id="${s.id}">Obejrzane wszystko</button></div>` : ''}
+      </div>`;
+    }).join('')}` : '') +
+    (movies.length ? `<h2>Filmy</h2><div class="group ${openGroups.has('movies') ? 'open' : ''}">
+      <div class="head" data-act="toggleGroup" data-k="movies">
+        <div class="stack">${movies.slice(0, 3).map(m => poster(m.poster, m.title, 'sm')).join('')}</div>
+        <div class="body"><div class="t">Filmy do obejrzenia</div><div class="n">${esc(movies.slice(0, 3).map(m => m.title).join(', '))}${movies.length > 3 ? '…' : ''}</div></div>
+        <span class="count">${movies.length}</span><span class="caret">›</span>
+      </div>
+      ${openGroups.has('movies') ? `<ul>${movies.map(m => `<li class="ep">
+        <span data-act="mOpen" data-id="${m.id}">${poster(m.poster, m.title, 'xs')}</span>
+        <div class="m" data-act="mOpen" data-id="${m.id}"><div><span class="golink">${esc(m.title)}</span></div><small>${[m.year, m.runtime && m.runtime + ' min', (m.genres || [])[0]].filter(Boolean).map(esc).join(' · ')}</small></div>
+        <button class="openbtn" data-act="mOpen" data-id="${m.id}" title="Otwórz stronę filmu">Otwórz</button>
+        <button class="chk sm" title="Oznacz jako obejrzany" data-act="mSeen" data-id="${m.id}">✓</button>
+      </li>`).join('')}</ul>` : ''}
+    </div>` : '');
+}
+
+// ---------- widok: nadchodzące ----------
+async function renderUpcoming(token) {
+  const head = upTabs('soon');
+  if (!Object.keys(state.shows).length && !Object.keys(state.movies).length) {
+    view.innerHTML = head + emptyBox('Kalendarz jest pusty', 'Dodaj seriale lub filmy — tutaj zobaczysz po kolei, kiedy wychodzą nowe odcinki i premiery.', '#/shows-search', 'Szukaj seriali');
+    return;
+  }
+  if (Object.keys(state.shows).some(id => !showCache[id])) view.innerHTML = head + '<div class="loading">Ładowanie kalendarza…</div>';
+  const all = await loadFollowed();
+  if (token !== renderToken) return;
+  const today = todayStr();
+  const items = all.filter(d => !isDropped(d.show.id)).flatMap(d => d.episodes.filter(e => e.air && e.air >= today && !isSkipped(e)).map(e => ({ kind: 'ep', day: e.air, e, s: d.show })));
+  Object.values(state.movies).forEach(m => { if (m.release && m.release.slice(0, 10) >= today) items.push({ kind: 'movie', day: m.release.slice(0, 10), m }); });
+  items.sort((a, b) => a.day.localeCompare(b.day) || (a.s && b.s ? a.s.name.localeCompare(b.s.name) : 0));
+  if (!items.length) { view.innerHTML = head + '<div class="empty"><b>Brak zapowiedzianych premier</b>Twoje seriale i filmy nie mają jeszcze ogłoszonych dat.</div>'; return; }
+  const label = d => {
+    const n = daysFrom(d), date = parseDate(d).toLocaleDateString('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' });
+    return n === 0 ? `Dziś <small>· ${date}</small>` : n === 1 ? `Jutro <small>· ${date}</small>` : n < 7 ? date[0].toUpperCase() + date.slice(1) : `${date[0].toUpperCase() + date.slice(1)} <small>· za ${n} dni</small>`;
+  };
+  const groups = new Map();
+  items.slice(0, 200).forEach(it => { const k = label(it.day); groups.has(k) ? groups.get(k).push(it) : groups.set(k, [it]); });
+  const todayCount = items.filter(it => it.day === today).length;
+  view.innerHTML = upTabs('soon') + `<div class="muted small">${plural(items.length, 'premiera', 'premiery', 'premier')} w kalendarzu${todayCount ? ` · dziś: ${todayCount}` : ''}</div>` +
+    [...groups].map(([day, its]) => `<div class="day"><h3>${day}</h3><div class="list">${its.map(it => {
+      if (it.kind === 'movie') return `<div class="card" data-act="mOpen" data-id="${it.m.id}">
+        ${poster(it.m.poster, it.m.title, 'sm')}
+        <div class="body"><div class="t">${esc(it.m.title)}</div><div class="e">🎬 Premiera filmu w Polsce</div><div class="n">${esc((it.m.genres || []).slice(0, 2).join(', '))}</div></div></div>`;
+      const { e, s } = it, on = !!state.watched[e.key], where = plProviders(s)[0] || tvChannel(s);
+      return `<div class="card" data-act="open" data-id="${s.id}">
+        ${poster(img(s.poster_path), s.name, 'sm')}
+        <div class="body"><div class="t">${esc(s.name)}</div><div class="e">${code(e)}${where ? ` · <span class="muted">${esc(where)}</span>` : ''}</div>
+          <div class="n">${esc(e.name)}</div></div>
+        ${isAired(e) ? `<button class="chk sm ${on ? 'on' : ''}" data-act="ep" data-id="${e.key}" title="Obejrzany">✓</button>` : ''}
+      </div>`;
+    }).join('')}</div></div>`).join('') +
+    '<p class="src" style="margin-top:20px">Odcinki zagranicznych seriali mają daty światowej premiery — w polskich serwisach pojawiają się zwykle tego samego dnia. Przy odcinku podany jest serwis dostępny w Polsce.</p>';
+}
+
+// ---------- widok: kino (Polska) ----------
+const cinemaCache = {};
+async function cinemaList(sub) {
+  if (cinemaCache[sub]) return cinemaCache[sub];
+  const path = sub === 'now' ? 'movie/now_playing' : 'movie/upcoming';
+  const pages = await Promise.all([1, 2].map(p => tmdb(path, { region: 'PL', page: p }).catch(() => ({ results: [] }))));
+  const seenIds = new Set(), items = pages.flatMap(p => p.results || []).filter(x => !seenIds.has(x.id) && seenIds.add(x.id));
+  // polska data premiery kinowej z pełnych danych filmu
+  const full = await Promise.all(items.map(x => loadMovie(x.id).catch(() => null)));
+  const today = todayStr();
+  let list = items.map((x, i) => ({ x, m: full[i], date: (full[i] && plDates(full[i]).cinema) || x.release_date || null }));
+  list = sub === 'now' ? list.filter(r => !r.date || r.date <= today)  // kolejność TMDB = od najpopularniejszych
+                       : list.filter(r => r.date && r.date > today).sort((a, b) => a.date.localeCompare(b.date));
+  return cinemaCache[sub] = list;
+}
+async function renderCinema(token, sub) {
+  const tabs = cinemaTabs(sub);
+  if (!cinemaCache[sub]) view.innerHTML = tabs + '<div class="loading">Sprawdzam repertuar kin w Polsce…</div>';
+  const list = await cinemaList(sub);
+  if (token !== renderToken) return;
+  if (!list.length) { view.innerHTML = tabs + '<div class="empty"><b>Brak danych o repertuarze</b>Spróbuj ponownie za chwilę.</div>'; return; }
+  const card = ({ x, m, date }) => {
+    const st = state.movies[x.id] && state.movies[x.id].status, g = m ? m.genres.map(z => gname(z.name)) : (x.genre_ids || []).map(z => genres.movie[z]).filter(Boolean);
+    return `<div class="ccard" data-act="mOpen" data-id="${x.id}">
+      ${poster(img(x.poster_path), x.title)}
+      <div class="body">
+        <div class="t">${isPolish(x) ? '<i class="plb" title="Polska produkcja"></i>' : ''}${esc(x.title)}</div>
+        ${x.original_title && x.original_title !== x.title ? `<div class="n">${esc(x.original_title)}</div>` : ''}
+        <div class="n">${[g.slice(0, 2).join(', '), m && m.runtime ? m.runtime + ' min' : ''].filter(Boolean).map(esc).join(' · ')}</div>
+        <div class="when">${date ? (sub === 'now' ? `W kinach od ${fmtDate(date)}` : `Premiera ${dayWord(date)}`) : 'W kinach'}</div>
+        ${x.vote_average && x.vote_count > 20 ? `<div class="n">★ ${x.vote_average.toFixed(1)}</div>` : ''}
+      </div>
+      <button class="chk ${st ? 'on' : ''}" data-act="mList" data-id="${x.id}" title="${st ? 'Na liście' : 'Chcę obejrzeć'}">${st === 'seen' ? '👁' : st ? '✓' : '+'}</button>
+    </div>`;
+  };
+  let body;
+  if (sub === 'soon') {
+    const groups = new Map();
+    list.forEach(r => { const k = parseDate(r.date).toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' }); groups.has(k) ? groups.get(k).push(r) : groups.set(k, [r]); });
+    body = [...groups].map(([k, rs]) => `<h2>${k[0].toUpperCase() + k.slice(1)}</h2><div class="list">${rs.map(card).join('')}</div>`).join('');
+  } else body = `<div class="list" style="margin-top:4px">${list.map(card).join('')}</div>`;
+  view.innerHTML = tabs + `<div class="muted small">${sub === 'now' ? 'Filmy grane teraz w polskich kinach' : 'Zapowiedzi kinowe — polskie daty premier'} · ${plural(list.length, 'film', 'filmy', 'filmów')}</div>` + body;
+}
+
+// ---------- kino: wybór miasta i kina + repertuar (Cinema City, Multikino, Helios) ----------
+const cinemaTabs = on => subTabs([['#/cinema', 'Repertuar', 'prog'], ['#/cinema-now', 'Teraz w kinach', 'now'], ['#/cinema-soon', 'Wkrótce', 'soon']], on);
+let cinemas = null, progDay = null;
+const progCache = {};
+// „Warszawa - Arkadia” / „WARSZAWA Galeria Blue City” → „Arkadia” / „Galeria Blue City”
+const cinemaShort = c => { const n = c.name.replace(new RegExp('^' + c.city.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*-?\\s*', 'i'), '').trim(); return n || c.name; };
+async function renderProgram(token) {
+  const tabs = cinemaTabs('prog');
+  if (!cinemas) {
+    view.innerHTML = tabs + '<div class="loading">Wczytuję listę kin…</div>';
+    cinemas = await api('/api/kina');
+    if (token !== renderToken) return;
+  }
+  if (!cinemas.length) {
+    // np. darmowy PythonAnywhere blokuje połączenia ze stronami kin
+    view.innerHTML = tabs + `<div class="empty"><b>Repertuar kin jest tu niedostępny</b>Ten serwer nie może łączyć się ze stronami kin. Zakładki „Teraz w kinach” i „Wkrótce” działają normalnie, a repertuar konkretnego kina sprawdzisz na stronie sieci:
+      <div class="actions" style="justify-content:center;margin-top:14px">
+        <a class="btn ghost sm" href="https://www.cinema-city.pl/" target="_blank" rel="noopener">Cinema City ↗</a>
+        <a class="btn ghost sm" href="https://www.multikino.pl/" target="_blank" rel="noopener">Multikino ↗</a>
+        <a class="btn ghost sm" href="https://www.helios.pl/" target="_blank" rel="noopener">Helios ↗</a></div></div>`;
+    cinemas = null;  // spróbuj ponownie przy następnym wejściu
+    return;
+  }
+  const prefs = state.prefs || (state.prefs = {});
+  const cities = [...new Set(cinemas.map(c => c.city))].sort((a, b) => a.localeCompare(b, 'pl'));
+  const city = cities.includes(prefs.city) ? prefs.city : '';
+  const inCity = cinemas.filter(c => c.city === city);
+  const cin = inCity.find(c => c.key === prefs.cinema) || null;
+  const days = [...Array(7)].map((_, i) => ymd(Date.now() + i * 864e5));
+  const day = days.includes(progDay) ? progDay : days[0];
+  const dayName = (d, i) => i === 0 ? 'Dziś' : i === 1 ? 'Jutro' : parseDate(d).toLocaleDateString('pl-PL', { weekday: 'short', day: 'numeric', month: 'numeric' });
+  view.innerHTML = tabs + `
+    <div class="panel picker">
+      <label>Miasto<select id="citySel"><option value="">— wybierz miasto —</option>${cities.map(c => `<option ${c === city ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select></label>
+      <label>Kino<select id="cinSel" ${city ? '' : 'disabled'}><option value="">${city ? `— wybierz kino (${inCity.length}) —` : 'najpierw wybierz miasto'}</option>
+        ${inCity.map(c => `<option value="${esc(c.key)}" ${cin && c.key === cin.key ? 'selected' : ''}>${esc(c.chain)} · ${esc(cinemaShort(c))}</option>`).join('')}</select></label>
+    </div>
+    ${cin ? `<div class="pills days">${days.map((d, i) => `<a data-act="progDay" data-d="${d}" class="${d === day ? 'on' : ''}">${dayName(d, i)}</a>`).join('')}</div>
+      <div id="prog"><div class="loading">Pobieram repertuar ${esc(cin.chain)} · ${esc(cinemaShort(cin))}…</div></div>`
+      : `<div class="empty"><b>Wybierz kino</b>Repertuar pobieramy prosto z Cinema City, Multikina i Helios. Wybór zapamiętamy na Twoim koncie.</div>`}`;
+  $('#citySel').onchange = e => { prefs.city = e.target.value; prefs.cinema = ''; save(); rerender(); };
+  $('#cinSel').onchange = e => { prefs.cinema = e.target.value; save(); rerender(); };
+  if (!cin) return;
+  const ck = cin.key + '|' + day;
+  let films;
+  try { films = progCache[ck] ||= await api(`/api/seanse?kino=${encodeURIComponent(cin.key)}&data=${day}`); }
+  catch (e) {
+    delete progCache[ck];
+    if ($('#prog')) $('#prog').innerHTML = `<div class="empty"><b>${e.status === 403 ? 'Repertuar dostępny tylko na stronie kina' : 'Nie udało się pobrać repertuaru'}</b>${esc(e.message)}
+      ${cin.url ? `<br><br><a class="btn" href="${esc(cin.url)}" target="_blank" rel="noopener">Otwórz repertuar ${esc(cin.chain)} ↗</a>` : ''}</div>`;
+    return;
+  }
+  if (token !== renderToken || !$('#prog')) return;
+  const now = new Date(), isToday = day === days[0], hm = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  $('#prog').innerHTML = films.length ? `<div class="muted small">${plural(films.length, 'film', 'filmy', 'filmów')} · kliknij godzinę, aby kupić bilet</div>
+    <div class="list" style="margin-top:8px">${films.map(f => `<div class="ccard prog">
+      ${f.poster ? `<img class="poster" src="${esc(f.poster)}" alt="" loading="lazy">` : poster(null, f.title)}
+      <div class="body">
+        <div class="t">${esc(f.title)}</div>
+        <div class="n">${[f.original, f.year, f.length && f.length + ' min'].filter(Boolean).map(esc).join(' · ')}</div>
+        <div class="times">${f.times.map(s => { const past = isToday && s.t < hm;
+          return `<a class="time ${past ? 'past' : ''}" ${past ? '' : `href="${esc(s.url || '#')}" target="_blank" rel="noopener"`}>${s.t}${s.attrs.length ? `<small>${esc(s.attrs.join(' · '))}</small>` : ''}</a>`; }).join('')}</div>
+        <button class="link" data-act="cinemaFind" data-t="${esc(f.title)}" data-o="${esc(f.original || '')}" data-y="${esc(f.year || '')}">Opis, zwiastun i gdzie obejrzeć ›</button>
+      </div></div>`).join('')}</div>`
+    : '<div class="empty"><b>Brak seansów tego dnia</b>Wybierz inny dzień albo inne kino.</div>';
+}
+
+// ---------- „Dla Ciebie”: propozycje na podstawie obejrzanych, ocenionych, ulubionych i odłożonych tytułów ----------
+let forYou = null;
+async function buildForYou() {
+  const r = rng(Math.floor(Math.random() * 233280));
+  const perShow = {};
+  Object.values(state.watched).forEach(w => perShow[w.s] = (perShow[w.s] || 0) + 1);
+  const seeds = [];
+  Object.values(state.shows).forEach(s => {
+    if (s.dropped) return;  // przerwane = nie podobało się — nie szukamy podobnych
+    seeds.push({ kind: 'tv', id: s.id, title: s.name, w: Math.max(.4, 1 + Math.log2(1 + (perShow[s.id] || 0)) + (s.rating ? s.rating - 2.5 : 0) + (state.favs['tv:' + s.id] ? 3 : 0)) });
+  });
+  Object.values(state.movies).forEach(m => {
+    seeds.push({ kind: 'movie', id: m.id, title: m.title, w: Math.max(.4, (m.status === 'seen' ? 2 : 1) + (m.rating ? m.rating - 2.5 : 0) + (state.favs['movie:' + m.id] ? 3 : 0)) });
+  });
+  // losowanie ważone — przy każdym odświeżeniu inne „ziarna”, więc i inne propozycje
+  const picked = [], pool = [...seeds];
+  while (picked.length < 10 && pool.length) {
+    const total = pool.reduce((a, s) => a + s.w, 0);
+    let x = r() * total, i = 0;
+    while (x > pool[i].w && i < pool.length - 1) x -= pool[i++].w;
+    picked.push(pool.splice(i, 1)[0]);
+  }
+  const cand = {};
+  const add = (kind, x, score, why) => {
+    if (!x.poster_path || inLibrary(kind, x.id)) return;
+    const c = cand[kind + ':' + x.id] ||= { kind, x, score: 0, why: new Set() };
+    c.score += score; if (why) c.why.add(why);
+  };
+  await Promise.all(picked.map(async s => {
+    const page = 1 + Math.floor(r() * 2);
+    const res = await tmdb(`${s.kind}/${s.id}/recommendations`, { page }).catch(() => ({ results: [] }));
+    (res.results || []).forEach((x, i) => add(s.kind, x, s.w * (1 - i / 40), s.title));
+  }));
+  // ulubione gatunki — dodatkowe, mniej oczywiste propozycje
+  const topGenre = kind => {
+    const c = {}, list = kind === 'tv' ? Object.values(state.shows).filter(s => !s.dropped) : Object.values(state.movies);
+    list.forEach(x => (x.genres || []).forEach(g => c[g] = (c[g] || 0) + 1));
+    const name = Object.entries(c).sort((a, b) => b[1] - a[1])[Math.floor(r() * 2)];
+    const id = name && Object.keys(genres[kind]).find(k => genres[kind][k] === name[0]);
+    return id ? { id, name: name[0] } : null;
+  };
+  await Promise.all(['tv', 'movie'].map(async kind => {
+    const g = topGenre(kind);
+    if (!g) return;
+    const res = await tmdb(`discover/${kind}`, { with_genres: g.id, sort_by: 'popularity.desc', 'vote_count.gte': kind === 'movie' ? 300 : 50, page: 1 + Math.floor(r() * 8) }).catch(() => ({ results: [] }));
+    (res.results || []).forEach(x => add(kind, x, .6, `gatunek: ${g.name}`));
+  }));
+  const rank = kind => Object.values(cand).filter(c => c.kind === kind).map(c => ({ ...c, s: c.score + r() * 1.2 })).sort((a, b) => b.s - a.s).slice(0, 30);
+  Object.values(cand).forEach(c => seen[c.kind][c.x.id] = c.x);
+  return { tv: rank('tv'), movie: rank('movie'), seeds: picked.length, sig: Object.keys(state.shows).length + ':' + Object.keys(state.movies).length };
+}
+async function renderForYou(token) {
+  const head = `<h2 style="margin-top:20px">Dla Ciebie</h2>`;
+  const nS = Object.keys(state.shows).length, nM = Object.keys(state.movies).length;
+  if (!nS && !nM) { view.innerHTML = head + emptyBox('Dodaj kilka tytułów', 'Propozycje powstają na podstawie seriali i filmów, które oglądasz, oceniasz i odkładasz na później.', '#/shows-search', 'Szukaj seriali'); return; }
+  // propozycje liczone raz na wizytę — dodanie tytułu nie przeładowuje listy ani nie przewija ekranu
+  if (!forYou || forYou.visit !== visitSeed) {
+    view.innerHTML = head + '<div class="loading">Analizuję Twoje seriale i filmy…</div>';
+    forYou = await buildForYou();
+    forYou.visit = visitSeed;
+    if (token !== renderToken) return;
+  }
+  const why = c => [...c.why].slice(0, 2).join(', ');
+  // dodane tytuły zostają na swoim miejscu (z ✓), żeby siatka nie przesuwała się pod palcem
+  const grid = (kind, list) => `<div class="grid">${list.map(c => tile(kind, c.x).replace(/<\/div>\s*$/, `<div class="why" title="Bo: ${esc([...c.why].join(', '))}">bo: ${esc(why(c))}</div></div>`)).join('')}</div>`;
+  view.innerHTML = head + `<div class="fy-head"><div class="muted small">Na podstawie ${plural(nS, 'serialu', 'seriali', 'seriali')} i ${plural(nM, 'filmu', 'filmów', 'filmów')} z Twojej listy — obejrzanych, ocenionych, ulubionych i odłożonych na później.</div>
+    <button class="btn ghost sm" data-act="forYouRefresh">↻ Inne propozycje</button></div>
+    ${forYou.tv.length ? `<h2>Seriale, które mogą Ci się spodobać</h2>${grid('tv', forYou.tv)}` : ''}
+    ${forYou.movie.length ? `<h2>Filmy, które mogą Ci się spodobać</h2>${grid('movie', forYou.movie)}` : ''}`;
+}
+
+// ---------- automatyczne doładowywanie list (zamiast „Pokaż więcej”) ----------
+let listLoading = false;
+const listObserver = 'IntersectionObserver' in window ? new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) loadMoreList(); }, { rootMargin: '800px' }) : null;
+function watchSentinel() {
+  if (listObserver) { listObserver.disconnect(); const s = $('#sentinel'); if (s) listObserver.observe(s); }
+  setTimeout(checkSentinel, 50);
+}
+// zapasowo: sprawdzanie przy przewijaniu (gdy przeglądarka nie zgłosi widoczności)
+function checkSentinel() { const s = $('#sentinel'); if (s && s.getBoundingClientRect().top < innerHeight + 800) loadMoreList(); }
+let scrollTick = null;
+window.addEventListener('scroll', () => { if (scrollTick) return; scrollTick = setTimeout(() => { scrollTick = null; checkSentinel(); }, 150); }, { passive: true });
+async function loadMoreList() {
+  if (listLoading || !listView || listView.page >= listView.pages) return;
+  listLoading = true;
+  try {
+    const res = await fetchList(listView.kind, listConfig(listView.kind, listView.key), listView.page + 1);
+    const ids = new Set(listView.items.map(x => x.id));
+    listView.items.push(...res.items.filter(x => !ids.has(x.id)));
+    listView.page = res.page;
+  } catch (e) { listView.pages = listView.page; }
+  listLoading = false;
+  rerender();
+}
+
+
+// ---------- obsada i strony osób ----------
+// cała obsada ze zdjęciami (przewijana w poziomie); kliknięcie → strona osoby z jej filmami i serialami
+const castOpen = new Set();  // strony z rozwiniętą pełną obsadą
+function castPanel(cast) {
+  if (!cast.length) return '';
+  const key = location.hash, open = castOpen.has(key), list = open ? cast : cast.slice(0, 12);
+  return `<h2>Obsada <small>(${cast.length})</small></h2><div class="castgrid">${list.map(c => `<a class="person" href="#/person/${c.id}">
+    ${c.photo ? `<img src="${img(c.photo, 'w185')}" alt="" loading="lazy">` : `<span class="ph">${initials(c.name)}</span>`}
+    <b>${esc(c.name)}</b>${c.role ? `<small>${esc(c.role)}</small>` : ''}${c.eps ? `<small class="muted">${plural(c.eps, 'odcinek', 'odcinki', 'odcinków')}</small>` : ''}</a>`).join('')}</div>
+    ${cast.length > 12 ? `<button class="btn ghost wide" data-act="castMore">${open ? 'Zwiń obsadę' : `Pokaż więcej (${cast.length - 12})`}</button>` : ''}`;
+}
+const personCache = {};
+async function renderPerson(id, token) {
+  if (!personCache[id]) view.innerHTML = '<div class="loading">Ładowanie…</div>';
+  const p = personCache[id] ||= await tmdb(`person/${id}`, { append_to_response: 'combined_credits' });
+  if (token !== renderToken) return;
+  if (!p.biography && p._en === undefined) { p._en = null; tmdb(`person/${id}`, { language: 'en-US' }).then(x => { p._en = x.biography || ''; if (location.hash === '#/person/' + id) rerender(); }).catch(() => { p._en = ''; }); }
+  // jedna pozycja na tytuł (aktor bywa w kilku rolach), bez talk-show i występów gościnnych „jako on sam”
+  const roles = {};
+  ((p.combined_credits || {}).cast || []).forEach(c => {
+    const k = c.media_type + ':' + c.id;
+    if (!['tv', 'movie'].includes(c.media_type)) return;
+    const r = roles[k] ||= { ...c, chars: new Set() };
+    if (c.character) r.chars.add(c.character);
+  });
+  const self = r => [...r.chars].every(ch => /^(self|herself|himself|siebie|sam|sama)\b/i.test(ch)) && r.chars.size;
+  const all = Object.values(roles).filter(r => !self(r) && r.poster_path);
+  const date = r => r.media_type === 'tv' ? r.first_air_date : r.release_date;
+  const byDate = list => list.sort((a, b) => (date(b) || '9999').localeCompare(date(a) || '9999'));
+  const known = [...all].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0)).slice(0, 8);
+  const tv = byDate(all.filter(r => r.media_type === 'tv')), movies = byDate(all.filter(r => r.media_type === 'movie'));
+  all.forEach(r => seen[r.media_type][r.id] = r);
+  const roleTile = r => tile(r.media_type, r).replace(/<\/div>\s*$/, `${r.chars.size ? `<div class="why">jako ${esc([...r.chars][0])}</div>` : ''}</div>`);
+  const age = p.birthday ? Math.floor((new Date(p.deathday || Date.now()) - new Date(p.birthday)) / 31557600000) : null;
+  const bio = p.biography || p._en;
+  view.innerHTML = `
+    <div class="phead">
+      <button class="back" data-act="back" title="Wstecz">‹</button>
+      ${p.profile_path ? `<img class="pphoto" src="${img(p.profile_path, 'h632')}" alt="">` : `<div class="pphoto ph">${initials(p.name)}</div>`}
+      <div class="body">
+        <h1>${esc(p.name)}</h1>
+        <div class="muted">${[{ Acting: 'Aktorstwo', Directing: 'Reżyseria', Writing: 'Scenariusz', Production: 'Produkcja' }[p.known_for_department] || p.known_for_department,
+          p.birthday && `ur. ${fmtDate(p.birthday)}${age && !p.deathday ? ` (${age} lat)` : ''}`, p.deathday && `zm. ${fmtDate(p.deathday)}`].filter(Boolean).map(esc).join(' · ')}</div>
+        ${p.place_of_birth ? `<div class="muted small">${esc(p.place_of_birth)}</div>` : ''}
+        <div class="pcount"><span><b>${tv.length}</b> seriali</span><span><b>${movies.length}</b> filmów</span></div>
+      </div>
+    </div>
+    ${bio ? `<div class="panel"><div class="ptitle">Biografia</div><div class="summary bio">${esc(bio)}</div>${!p.biography ? '<div class="src">Brak polskiej biografii — tekst po angielsku</div>' : ''}</div>`
+      : p._en === null ? '<div class="panel muted small">Ładuję biografię…</div>' : ''}
+    ${known.length ? `<h2>Najbardziej znane</h2><div class="hscroll rel">${known.map(roleTile).join('')}</div>` : ''}
+    ${tv.length ? `<h2>Seriale <small>(${tv.length})</small></h2><div class="grid">${tv.map(roleTile).join('')}</div>` : ''}
+    ${movies.length ? `<h2>Filmy <small>(${movies.length})</small></h2><div class="grid">${movies.map(roleTile).join('')}</div>` : ''}`;
+}
+
+// ---------- widok: szukaj ----------
+async function renderSearch(token, kind) {
+  const isM = kind === 'movie';
+  view.innerHTML = (isM ? movieTabs('search') : showTabs('search')) +
+    `<div class="search"><input id="q" type="search" placeholder="${isM ? 'Szukaj filmu po tytule…' : 'Szukaj serialu lub programu…'}" value="${esc(searchQ[kind])}" autocomplete="off"></div>
+    <div id="results"><div class="loading">Ładowanie…</div></div>`;
+  const q = $('#q');
+  q.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      searchQ[kind] = q.value.trim();
+      fillResults(kind).catch(e => { const b = $('#results'); if (b) b.innerHTML = `<div class="empty"><b>Błąd wyszukiwania</b>${esc(e.message)}</div>`; });
+    }, 350);
+  });
+  await fillResults(kind, token);
+}
+async function fillResults(kind, token = renderToken) {
+  const box = $('#results'); if (!box) return;
+  const query = searchQ[kind], base = kind === 'tv' ? 'shows' : 'movies';
+  if (query) {
+    const items = await searchTitles(kind, query);
+    if (token !== renderToken || !$('#results') || query !== searchQ[kind]) return;
+    box.innerHTML = items.length ? `<h2>Wyniki dla „${esc(query)}”</h2><div class="grid">${items.map(x => tile(kind, x)).join('')}</div>`
+      : '<div class="empty"><b>Nic nie znaleziono</b>Spróbuj innego tytułu (po polsku lub w oryginale).</div>';
+    return;
+  }
+  const keys = Object.keys(LISTS[kind]);
+  const lists = await Promise.all(keys.map((k, i) => {
+    const cfg = LISTS[kind][k], page = 1 + Math.floor(rng(Math.floor(visitSeed * 233280) + i)() * (cfg.pages || 1)), ck = kind + k + page;
+    return sectionCache[ck] || fetchList(kind, cfg, page).then(r => sectionCache[ck] = r.items);
+  }));
+  if (token !== renderToken || !$('#results') || searchQ[kind]) return;
+  box.innerHTML = keys.map((k, i) => `<h2>${LISTS[kind][k].title}</h2>
+    <div class="grid">${shuffled(lists[i], i).map(x => tile(kind, x)).join('')}</div>`).join('');
+}
+
+// ---------- widok: gatunki i listy ----------
+function renderGenres(kind) {
+  const base = kind === 'tv' ? 'shows' : 'movies';
+  const list = Object.entries(genres[kind]);
+  view.innerHTML = (kind === 'tv' ? showTabs('genres') : movieTabs('genres')) +
+    `<h2>Na co masz ochotę?</h2><div class="genres">
+      <a class="genre" style="--h:350" href="#/${base}-list/polish"><span><i class="plb big"></i></span>Polskie</a>
+      ${list.map(([id, name], i) => `<a class="genre" style="--h:${GENRE_HUES[i % GENRE_HUES.length]}" href="#/${base}-list/g${id}"><span>${GENRE_ICON[id] || '🎬'}</span>${esc(name)}</a>`).join('')}
+    </div>`;
+}
+async function renderList(kind, key, token) {
+  const cfg = listConfig(kind, key);
+  if (!cfg) throw new Error('Nieznana lista');
+  const base = kind === 'tv' ? 'shows' : 'movies';
+  const tabs = kind === 'tv' ? showTabs(cfg.genre || key === 'polish' ? 'genres' : 'search') : movieTabs(cfg.genre || key === 'polish' ? 'genres' : 'search');
+  const back = cfg.genre || key === 'polish' ? `<a class="muted small" href="#/${base}-genres">‹ Wszystkie gatunki</a>` : `<a class="muted small" href="#/${base}-search">‹ Wróć</a>`;
+  const toggle = cfg.genre ? `<div class="pills" style="margin-top:10px"><a data-act="plOnly" data-v="1" class="${plOnly ? 'on' : ''}">Dostępne w Polsce</a><a data-act="plOnly" data-v="0" class="${plOnly ? '' : 'on'}">Wszystkie</a></div>` : '';
+  if (!listView || listView.kind !== kind || listView.key !== key) {
+    view.innerHTML = tabs + back + `<h2>${cfg.title}</h2>${toggle}<div class="loading">Ładowanie…</div>`;
+    const res = await fetchList(kind, cfg);
+    if (token !== renderToken) return;
+    listView = { kind, key, ...res };
+  }
+  view.innerHTML = tabs + back + `<h2>${cfg.title} <small>(${listView.total.toLocaleString('pl-PL')}, od najpopularniejszych)</small></h2>${toggle}
+    <div class="grid">${listView.items.map(x => tile(kind, x)).join('')}</div>
+    ${listView.page < listView.pages ? '<div id="sentinel" class="loading small">Ładuję kolejne…</div>' : ''}`;
+  watchSentinel();
+}
+
+// ---------- sprawdzanie z polską Wikipedią (sezony, odcinki) ----------
+async function getJSON(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+const WIKI_API = 'https://pl.wikipedia.org/w/api.php?format=json&formatversion=2&origin=*';
+const wikiClean = s => s.replace(/<!--[\s\S]*?-->/g, '').replace(/<ref[^>]*\/>/g, '').replace(/<ref[\s\S]*?<\/ref>/g, '')
+  .replace(/\[\[(?:[^|\]]*\|)?([^\]]*)\]\]/g, '$1').replace(/\{\{[^{}]*\}\}/g, '').replace(/<br\s*\/?>/g, ', ').replace(/'{2,}/g, '').replace(/<[^>]+>/g, '').trim();
+async function wikiArticle(s) {
+  // 1) przez Wikidata (identyfikator TMDB lub IMDb), 2) wyszukiwarka Wikipedii + zgodny rok premiery
+  const ex = s.external_ids || {};
+  let qid = ex.wikidata_id;
+  for (const q of [`haswbstatement:P4983=${s.id}`, ex.imdb_id && `haswbstatement:P345=${ex.imdb_id}`].filter(Boolean)) {
+    if (qid) break;
+    const r = await getJSON(`https://www.wikidata.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&srprop=&format=json&origin=*`).catch(() => null);
+    qid = r && r.query.search[0] && r.query.search[0].title;
+  }
+  if (qid) {
+    const r = await getJSON(`https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${qid}&props=sitelinks&sitefilter=plwiki&format=json&origin=*`).catch(() => null);
+    const sl = r && r.entities[qid] && r.entities[qid].sitelinks.plwiki;
+    if (sl) return sl.title;
+  }
+  const names = [...new Set([s.name, s.original_name].filter(Boolean))];
+  for (const n of names) {
+    const r = await getJSON(`${WIKI_API}&action=query&list=search&srlimit=4&srprop=&srsearch=${encodeURIComponent(`intitle:"${n}"`)}`).catch(() => null);
+    for (const hit of (r && r.query.search) || []) {
+      const box = await wikiInfobox(hit.title);
+      if (box && box.year && s.first_air_date && box.year === +s.first_air_date.slice(0, 4)) return hit.title;
+    }
+  }
+  return null;
+}
+async function wikiInfobox(title) {
+  const r = await getJSON(`${WIKI_API}&action=parse&prop=wikitext&section=0&redirects=1&page=${encodeURIComponent(title)}`).catch(() => null);
+  const t = r && r.parse && r.parse.wikitext;
+  if (!t || !/\{\{\s*(Program telewizyjny|Serial)[^|]*infobox/i.test(t)) return null;
+  const field = name => { const m = new RegExp(`\\|\\s*${name}\\s*=([^\\n]*)`, 'i').exec(t); return m ? m[1] : ''; };
+  const asOf = /Stan na ([^<.]+?)(?: roku)?\.?</i.exec(t);
+  const seasons = wikiClean(field('liczba sezonów') || field('liczba serii') || field('liczba edycji')), episodes = wikiClean(field('liczba odcinków'));
+  const year = (/(\d{4})/.exec(wikiClean(field('data premiery'))) || [])[1];
+  return { title: r.parse.title, seasons, episodes, asOf: asOf ? asOf[1].trim() : '', year: year ? +year : null,
+    nSeasons: parseInt(seasons, 10) || null, nEpisodes: parseInt(episodes.replace(/\s/g, ''), 10) || null };
+}
+function wikiCheck(s, rerenderIf) {
+  if (s._wiki !== undefined) return s._wiki;
+  s._wiki = null;
+  (async () => { const t = await wikiArticle(s); return t ? wikiInfobox(t) : false; })()
+    .then(box => { s._wiki = box || false; if (rerenderIf()) rerender(); }).catch(() => { s._wiki = false; });
+  return null;
+}
+function wikiPanel(box, nSeasons, nAired) {
+  if (!box || !(box.seasons || box.episodes)) return '';
+  const fewer = box.nSeasons && box.nSeasons > nSeasons;
+  return `<div class="panel wiki">
+    <div class="ptitle">Sprawdzone z Wikipedią</div>
+    <div class="row"><span>📺</span><div>Sezony / edycje: <b>${esc(box.seasons || '—')}</b> <span class="muted">· w aplikacji: ${nSeasons}</span></div></div>
+    <div class="row"><span>🎞️</span><div>Odcinki: <b>${esc(box.episodes || '—')}</b>${box.asOf ? ` <span class="muted">(stan na ${esc(box.asOf)})</span>` : ''} <span class="muted">· w aplikacji wyemitowane: ${nAired}</span></div></div>
+    ${fewer ? '<div class="warn">⚠️ W bazie odcinków brakuje części sezonów względem Wikipedii — lista może być niepełna.</div>' : box.nSeasons ? '<div class="ok">✓ Liczba sezonów zgodna z Wikipedią</div>' : ''}
+    <div class="src"><a href="https://pl.wikipedia.org/wiki/${encodeURIComponent(box.title.replace(/ /g, '_'))}" target="_blank" rel="noopener">Artykuł w Wikipedii ↗</a></div>
+  </div>`;
+}
+// dodatki do programów (np. „Hotel Paradise Extra”) łatwo pomylić z głównym programem
+const COMPANION_RE = /\s*[-:–]?\s*\b(extra|reunion|after ?show|aftershow|podsumowanie|kulisy|backstage|special|specjal|baksnakk|eftersnacket)\b.*$/i;
+const isCompanion = name => COMPANION_RE.test(name || '');
+async function findMainShow(s) {
+  if (s._main !== undefined) return s._main;
+  s._main = null;
+  const base = s.name.replace(COMPANION_RE, '').trim();
+  if (!base || base === s.name) return s._main = false;
+  const res = await searchTitles('tv', base).catch(() => []);
+  const hit = res.find(x => x.id !== s.id && x.name.toLowerCase() === base.toLowerCase() && (x.origin_country || []).some(c => (s.origin_country || []).includes(c)));
+  return s._main = hit || false;
+}
+const thumb = (e, s) => e.still ? `<img class="thumb" src="${img(e.still, 'w185')}" alt="" loading="lazy">`
+  : `<div class="thumb fb" style="${s && (s.backdrop_path || s.poster_path) ? `background-image:url('${img(s.backdrop_path || s.poster_path, 'w300')}')` : ''}"><span>${code(e)}</span></div>`;
+
+// ---------- zwiastuny (YouTube — ładowane dopiero po kliknięciu) ----------
+function trailers(data) {
+  const vids = ((data.videos || {}).results || []).filter(v => v.site === 'YouTube' && ['Trailer', 'Teaser'].includes(v.type));
+  const score = v => (v.iso_639_1 === 'pl' ? 0 : 10) + (v.type === 'Trailer' ? 0 : 3) + (v.official ? 0 : 1);
+  return vids.sort((a, b) => score(a) - score(b) || (b.published_at || '').localeCompare(a.published_at || ''));
+}
+function trailerPanel(data, title) {
+  const list = trailers(data), main = list[0];
+  const yt = `https://www.youtube.com/results?search_query=${encodeURIComponent(title + ' zwiastun')}`;
+  if (!main) return `<h2>Zwiastun</h2><a class="addbox" href="${yt}" target="_blank" rel="noopener"><span>▶</span><div><b>Poszukaj zwiastuna na YouTube</b><small>W bazie nie ma jeszcze zwiastuna tego tytułu</small></div></a>`;
+  const lang = v => v.iso_639_1 === 'pl' ? 'po polsku' : v.iso_639_1 === 'en' ? 'po angielsku' : '';
+  return `<h2>Zwiastun</h2>
+    <div class="yt" data-act="play" data-k="${esc(main.key)}" style="background-image:url('https://i.ytimg.com/vi/${esc(main.key)}/hqdefault.jpg')">
+      <span class="play">▶</span><span class="ylabel">${esc(main.type === 'Teaser' ? 'Zapowiedź' : 'Zwiastun')}${lang(main) ? ' · ' + lang(main) : ''}</span></div>
+    ${list.length > 1 ? `<div class="pills" style="margin-top:10px">${list.slice(1, 5).map((v, i) => `<a data-act="playSwap" data-k="${esc(v.key)}" title="${esc(v.name)}">▶ ${v.type === 'Teaser' ? 'Zapowiedź' : 'Zwiastun'} ${i + 2}${v.iso_639_1 === 'pl' ? ' · PL' : ''}</a>`).join('')}</div>` : ''}`;
+}
+// podobne / polecane: rekomendacje TMDB; dla polskich produkcji także polskie tytuły z tego samego gatunku
+function relatedPanel(kind, data, token, here) {
+  const own = data.id, pick = list => (list || []).filter(x => x.id !== own && x.poster_path);
+  const rec = pick((data.recommendations || {}).results), sim = pick((data.similar || {}).results);
+  const rows = [];
+  if (isPolish(data) && data.genres && data.genres.length) {
+    if (data._plRelated === undefined) {
+      data._plRelated = null;
+      tmdb(`discover/${kind}`, { with_origin_country: 'PL', with_genres: data.genres[0].id, sort_by: 'popularity.desc' })
+        .then(r => { data._plRelated = pick(r.results); if (here()) rerender(); }).catch(() => { data._plRelated = []; });
+    }
+    if (data._plRelated && data._plRelated.length) rows.push([`Polskie ${kind === 'tv' ? 'programy i seriale' : 'filmy'} z tego gatunku`, data._plRelated]);
+  }
+  const mix = [...rec, ...sim].filter((x, i, a) => a.findIndex(y => y.id === x.id) === i && !inLibrary(kind, x.id));
+  if (mix.length) rows.push([kind === 'tv' ? 'Podobne i polecane seriale' : 'Podobne i polecane filmy', shuffled(mix, own)]);
+  rows.forEach(([, l]) => l.forEach(x => seen[kind][x.id] = x));
+  return rows.map(([t, l]) => `<h2>${t}</h2><div class="hscroll rel">${l.map(x => tile(kind, x)).join('')}</div>`).join('');
+}
+// przerwane oglądanie — serial zostaje na koncie z postępem, ale znika z bieżących list
+const isDropped = id => !!(state.shows[id] && state.shows[id].dropped);
+const lastSeenEp = d => { for (let i = d.episodes.length - 1; i >= 0; i--) if (state.watched[d.episodes[i].key]) return d.episodes[i]; return null; };
+
+// ---------- recenzje i notatki (prywatne — zapisane tylko na koncie użytkownika) ----------
+let editing = null, draft = null;  // editing: "tv:ID" | "movie:ID" | "note:KLUCZ_ODCINKA"
+const reviewEntry = key => { const [kind, id] = key.split(':'); return (kind === 'tv' ? state.shows : state.movies)[id]; };
+const starRow = (n, act, key) => `<div class="rate">${[1, 2, 3, 4, 5].map(i => `<button class="${(n || 0) >= i ? 'on' : ''}" data-act="${act}" data-k="${key}" data-n="${i}" title="${i}/5">★</button>`).join('')}</div>`;
+const RATE_WORDS = ['', 'Słaby', 'Taki sobie', 'Dobry', 'Bardzo dobry', 'Arcydzieło'];
+function reviewPanel(kind, id) {
+  const key = `${kind}:${id}`, entry = reviewEntry(key);
+  if (!entry) return '';
+  if (editing === key) return `<div class="panel review">
+    <div class="ptitle">✍️ Twoja recenzja</div>
+    ${starRow(draft.rating, 'revRate', key)}<div class="muted small">${draft.rating ? RATE_WORDS[draft.rating] : 'Kliknij gwiazdki, aby ocenić'}</div>
+    <textarea id="revText" maxlength="3000" placeholder="Co ${kind === 'tv' ? 'sądzisz o tym serialu' : 'sądzisz o tym filmie'}? Recenzja jest widoczna tylko dla Ciebie.">${esc(draft.text)}</textarea>
+    <div class="actions" style="margin:10px 0 0"><button class="btn sm" data-act="revSave" data-k="${key}">Zapisz</button><button class="btn ghost sm" data-act="cancelEdit">Anuluj</button>
+    ${entry.rating || entry.review ? `<button class="btn ghost sm danger" data-act="revDel" data-k="${key}">Usuń recenzję</button>` : ''}</div>
+  </div>`;
+  if (entry.rating || entry.review) return `<div class="panel review">
+    <div class="ptitle">✍️ Twoja recenzja <button class="link" data-act="revEdit" data-k="${key}">Edytuj</button></div>
+    ${entry.rating ? `<div class="stars big">${'★'.repeat(entry.rating)}<span class="off">${'★'.repeat(5 - entry.rating)}</span> <span class="rw">${RATE_WORDS[entry.rating]}</span></div>` : ''}
+    ${entry.review ? `<p class="rtext">${esc(entry.review)}</p>` : ''}
+    <div class="src">🔒 Widoczna tylko dla Ciebie${entry.reviewAt ? ' · ' + fmtDate(entry.reviewAt) : ''}</div>
+  </div>`;
+  return `<button class="addbox" data-act="revEdit" data-k="${key}"><span>✍️</span><div><b>Oceń i napisz recenzję</b><small>Tylko Ty ją zobaczysz — możesz ją potem zmienić</small></div></button>`;
+}
+function notePanel(key) {
+  const note = state.notes[key], ek = 'note:' + key;
+  if (editing === ek) return `<div class="notebox">
+    <div class="ptitle">📝 Twoja notatka do odcinka</div>
+    <textarea id="noteText" maxlength="2000" placeholder="Np. ulubiona scena, teorie, z kim oglądasz… Widoczne tylko dla Ciebie.">${esc(note ? note.text : '')}</textarea>
+    <div class="actions" style="margin:10px 0 0"><button class="btn sm" data-act="noteSave" data-k="${key}">Zapisz</button><button class="btn ghost sm" data-act="cancelEdit" data-k="${key}">Anuluj</button>
+    ${note ? `<button class="btn ghost sm danger" data-act="noteDel" data-k="${key}">Usuń</button>` : ''}</div></div>`;
+  if (note) return `<div class="notebox"><div class="ptitle">📝 Twoja notatka <button class="link" data-act="noteEdit" data-k="${key}">Edytuj</button></div>
+    <p class="rtext">${esc(note.text)}</p><div class="src">🔒 Widoczna tylko dla Ciebie · ${fmtDate(note.t)}</div></div>`;
+  return `<button class="notelink" data-act="noteEdit" data-k="${key}">＋ Dodaj prywatną notatkę do odcinka</button>`;
+}
+// okienko z pytaniem (zamiast systemowego confirm)
+function ask(title, text, buttons) {
+  return new Promise(resolve => {
+    const d = $('#dialog');
+    d.innerHTML = `<div class="dlg"><h3>${title}</h3><p>${text}</p><div class="dlg-btns">${buttons.map((b, i) => `<button class="btn sm ${b.ghost ? 'ghost' : ''}" data-i="${i}">${b.label}</button>`).join('')}</div></div>`;
+    d.classList.remove('hidden');
+    d.onclick = ev => {
+      const b = ev.target.closest('[data-i]');
+      if (!b && ev.target !== d) return;
+      ev.stopPropagation();
+      d.classList.add('hidden'); d.onclick = null;
+      resolve(b ? buttons[+b.dataset.i].value : null);
+    };
+  });
+}
+// zaznacza odcinki; jeśli wcześniej są nieobejrzane, pyta, czy zaznaczyć też poprzednie
+async function markWithPrevious(targets, what) {
+  if (!targets.length) return 0;
+  const first = targets[0], d = showCache[first.showId];
+  const earlier = d.episodes.filter(e => counts(e) && !state.watched[e.key] && !targets.includes(e) && (e.season < first.season || (e.season === first.season && e.number < first.number)));
+  let list = targets;
+  if (earlier.length) {
+    const v = await ask('Zaznaczyć też poprzednie?',
+      `Przed ${what} ${[2, 3, 4].includes(earlier.length % 10) && ![12, 13, 14].includes(earlier.length % 100) ? 'są' : 'jest'} jeszcze ${plural(earlier.length, 'nieobejrzany odcinek', 'nieobejrzane odcinki', 'nieobejrzanych odcinków')}. Oznaczyć ${earlier.length === 1 ? 'go' : 'je'} też jako obejrzane?`,
+      [{ label: `Tak, zaznacz poprzednie (${earlier.length})`, value: 'all' }, { label: 'Tylko ' + (targets.length > 1 ? 'ten sezon' : 'ten odcinek'), value: 'one', ghost: true }]);
+    if (!v) return 0;
+    if (v === 'all') list = [...earlier, ...targets];
+  }
+  list.forEach(e => setWatched(e, true));
+  return list.length;
+}
+
+// ---------- panel „Gdzie obejrzeć w Polsce” ----------
+function watchPanel(wp, { title, next, channel, dates }) {
+  const pl = wp && wp.results && wp.results.PL;
+  const uniq = list => (list || []).filter((p, i, a) => a.findIndex(q => q.provider_id === p.provider_id) === i);
+  const chips = list => list.map(p => `<a class="plat" href="${esc(providerUrl(p.provider_name, title, pl.link))}" target="_blank" rel="noopener">${p.logo_path ? `<img src="${img(p.logo_path, 'w92')}" alt="">` : ''}${esc(p.provider_name)}</a>`).join('');
+  const rows = [];
+  if (pl) {
+    const free = uniq([...(pl.free || []), ...(pl.ads || [])]);
+    if (pl.flatrate) rows.push(['📺', `W abonamencie:<br>${chips(uniq(pl.flatrate))}`]);
+    if (free.length) rows.push(['🆓', `Za darmo:<br>${chips(free)}`]);
+    if (pl.rent) rows.push(['💳', `Do wypożyczenia:<br>${chips(uniq(pl.rent))}`]);
+    if (pl.buy) rows.push(['🛒', `Do kupienia:<br>${chips(uniq(pl.buy))}`]);
+  }
+  if (!rows.length) rows.push(['📺', '<span class="muted">Obecnie niedostępny w polskich serwisach streamingowych.</span>']);
+  if (channel) rows.push(['📡', `Emisja w telewizji: <b>${esc(channel)}</b>`]);
+  if (next) rows.push(['📅', `Następny odcinek: <b>${code(next)}</b> — ${dayWord(next.air)}`]);
+  if (dates) {
+    if (dates.cinema) rows.push(['🎟️', `Premiera kinowa w Polsce: <b>${fmtDate(dates.cinema)}</b>${soon(dates.cinema)}`]);
+    if (dates.digital) rows.push(['💻', `Premiera w serwisach (VOD) w Polsce: <b>${fmtDate(dates.digital)}</b>${soon(dates.digital)}`]);
+    if (dates.tv) rows.push(['📡', `Premiera telewizyjna w Polsce: <b>${fmtDate(dates.tv)}</b>${soon(dates.tv)}`]);
+    if (!dates.cinema && !dates.digital && !dates.tv) rows.push(['📅', '<span class="muted">Brak polskiej daty premiery w bazie.</span>']);
+  }
+  rows.push(['🔎', [pl && pl.link && `<a class="plat txt" href="${esc(pl.link)}" target="_blank" rel="noopener">Wszystkie opcje w Polsce ↗</a>`,
+    `<a class="plat txt" href="https://www.filmweb.pl/search?q=${encodeURIComponent(title)}" target="_blank" rel="noopener">Filmweb ↗</a>`].filter(Boolean).join('')]);
+  return `<h2>Gdzie obejrzeć w Polsce</h2><div class="panel">${rows.map(([i, h]) => `<div class="row"><span>${i}</span><div>${h}</div></div>`).join('')}</div>`;
+}
+// angielski opis tylko gdy brak polskiego (doładowywany w tle)
+function enFallback(obj, path, rerenderIf) {
+  if (obj.overview || obj._en !== undefined) return;
+  obj._en = null;
+  tmdb(path, { language: 'en-US' }).then(x => { obj._en = x.overview || ''; if (rerenderIf()) rerender(); }).catch(() => { obj._en = ''; });
+}
+const overviewHtml = obj => obj.overview ? esc(obj.overview)
+  : obj._en ? `${esc(obj._en)}<div class="src">Brak polskiego opisu w bazie — opis po angielsku</div>`
+  : obj._en === null ? '<span class="muted">Ładuję opis…</span>' : '<span class="muted">Brak opisu.</span>';
+
+// ---------- widok: serial ----------
+// stan oglądania serialu: start / w trakcie / na bieżąco (będą nowe odcinki) / zakończony (wszystko obejrzane, koniec serialu)
+function progressState(d) {
+  const aired = d.episodes.filter(counts), done = aired.filter(e => state.watched[e.key]).length;
+  const future = d.episodes.some(e => e.air && !isAired(e)) || !!showNextDate(d);
+  const ended = ['Ended', 'Canceled'].includes(d.show.status) && !future;
+  const left = aired.filter(e => !state.watched[e.key]);
+  const runtime = d.show.episode_run_time && d.show.episode_run_time[0];
+  const leftMin = left.reduce((a, e) => a + (e.runtime || runtime || 0), 0);
+  const st = isDropped(d.show.id) ? 'dropped' : !aired.length ? 'none' : done === aired.length ? (ended ? 'finished' : 'current') : done ? 'progress' : 'start';
+  return { aired: aired.length, done, left: left.length, leftMin, pct: aired.length ? Math.round(done / aired.length * 100) : 0, st, ended };
+}
+const fmtLeft = m => m >= 60 ? `ok. ${Math.round(m / 60)} h` : m ? `ok. ${m} min` : '';
+function progressCard(d) {
+  const p = progressState(d), nd = showNextDate(d);
+  const text = {
+    finished: ['Serial zakończony', 'Obejrzane wszystkie odcinki — nowych już nie będzie.'],
+    current: ['Jesteś na bieżąco', nd ? `${nd.label} — ${dayWord(nd.date)}` : 'Nowe odcinki pojawią się tutaj, gdy tylko zostaną zapowiedziane.'],
+    progress: [`Obejrzane ${p.pct}%`, `Zostało ${plural(p.left, 'odcinek', 'odcinki', 'odcinków')}${p.leftMin ? ' · ' + fmtLeft(p.leftMin) : ''}`],
+    start: ['Jeszcze nie zaczęte', `${plural(p.aired, 'odcinek', 'odcinki', 'odcinków')} do obejrzenia${p.leftMin ? ' · ' + fmtLeft(p.leftMin) : ''}`],
+    dropped: ['Oglądanie przerwane', `Obejrzane ${p.done} z ${p.aired} odcinków`],
+    none: ['Brak wyemitowanych odcinków', nd ? `${nd.label} — ${dayWord(nd.date)}` : 'Premiera nie jest jeszcze znana.'],
+  }[p.st];
+  const icon = { finished: '■', current: '✓', progress: '▶', start: '○', dropped: 'Ⅱ', none: '◷' }[p.st];
+  return `<div class="pcard-show st-${p.st}">
+    <div class="pc-top"><span class="pc-ico">${icon}</span><div class="pc-txt"><b>${text[0]}</b><small>${esc(text[1])}</small></div><span class="pc-num">${p.done}<i>/${p.aired}</i></span></div>
+    <div class="pbar"><b style="width:${p.st === 'finished' || p.st === 'current' ? 100 : p.pct}%"></b></div>
+  </div>`;
+}
+const showTab = {};  // aktywna zakładka na stronie serialu
+async function renderShow(id, token) {
+  if (!showCache[id]) view.innerHTML = '<div class="loading">Ładowanie…</div>';
+  const d = await loadShow(id);
+  if (token !== renderToken) return;
+  const s = d.show, eps = d.episodes, aired = eps.filter(counts);
+  enFallback(s, `tv/${id}`, () => location.hash === '#/show/' + id);
+  const done = aired.filter(e => state.watched[e.key]).length;
+  const following = !!state.shows[id], next = nextToWatch(d), fav = !!state.favs['tv:' + id];
+  const upcomingEp = eps.find(e => e.air && !isAired(e)), nd = showNextDate(d);
+  // liczba sezonów z faktycznie pobranych odcinków (TMDB bywa opóźnione z polem number_of_seasons)
+  const nSeasons = Math.max(s.number_of_seasons || 0, ...eps.map(e => e.season), 0);
+  const airing = upcomingEp && eps.some(e => e.season === upcomingEp.season && isAired(e)) ? upcomingEp.season : null;
+  const here = () => location.hash === '#/show/' + id;
+  const companion = isCompanion(s.name);
+  if (companion && s._main === undefined) findMainShow(s).then(m => { if (m && here()) rerender(); });
+  const wiki = companion ? false : wikiCheck(s, here);
+  const main = s._main;
+  const seasons = {};
+  eps.forEach(e => (seasons[e.season] ||= []).push(e));
+  if (!openSeasons[id]) openSeasons[id] = new Set(next ? [next.season] : []);
+  const seasonName = n => { const x = (s.seasons || []).find(z => z.season_number == n); return x && x.name && !/^Season \d+$/.test(x.name) ? x.name : `Sezon ${n}`; };
+  const cast = ((s.aggregate_credits || s.credits || {}).cast || []).map(c => ({ id: c.id, name: c.name, photo: c.profile_path, role: c.roles ? c.roles.map(r => r.character).filter(Boolean)[0] : c.character, eps: c.total_episode_count }));
+  const tab = showTab[id] || (following ? 'eps' : 'info');
+  const dropped = isDropped(id);
+
+  const episodesTab = Object.entries(seasons).map(([n, list]) => {
+    const av = list.filter(counts), w = av.filter(e => state.watched[e.key]).length;
+    const all = av.length && w === av.length;
+    const nSkip = list.filter(isSkipped).length, canSkip = list.some(e => isAired(e) && !state.watched[e.key] && !isSkipped(e));
+    return `<details class="season" data-show="${id}" data-season="${n}" ${openSeasons[id].has(+n) ? 'open' : ''}>
+      <summary class="${nSkip && !canSkip && !w ? 'skipped' : ''}"><span class="sp">${esc(seasonName(n))}<span class="sbar"><b style="width:${av.length ? w / av.length * 100 : 0}%"></b></span></span>
+        <span class="muted small">${nSkip ? `<span class="skiptag">${nSkip === list.length ? 'pominięty' : `${nSkip} pomin.`}</span> ` : ''}${w}/${list.length - nSkip}</span>
+        ${canSkip || nSkip ? `<button class="skipbtn" data-act="skipSeason" data-show="${id}" data-season="${n}" title="${canSkip ? 'Nie obejrzę tego sezonu' : 'Przywróć sezon'}">${canSkip ? '⊘' : '↺'}</button>` : ''}
+        <button class="chk sm ${all ? 'on' : ''}" data-act="season" data-show="${id}" data-season="${n}" ${av.length ? '' : 'disabled'} title="Oznacz cały sezon">✓</button></summary>
+      <ul>${list.map(e => {
+        const a = isAired(e), on = !!state.watched[e.key], r = state.reactions[e.key];
+        const sk = isSkipped(e);
+        return `<li class="ep ${a ? '' : 'future'} ${on ? 'seen' : ''} ${sk ? 'skipped' : ''}">
+          <span data-act="epInfo" data-id="${e.key}">${thumb(e, s)}</span>
+          <div class="m" data-act="epInfo" data-id="${e.key}"><div><b>E${pad(e.number)}</b>${esc(e.name)} ${r || ''}${state.notes[e.key] ? ' <span title="Masz notatkę">📝</span>' : ''}</div>
+          <small>${sk ? '<span class="skiptag">nie obejrzę</span> · ' : ''}${e.air ? fmtDate(e.air) : 'data nieznana'}${a ? '' : ' · ' + dayWord(e.air || todayStr())}</small></div>
+          ${!on ? `<button class="skipbtn" data-act="skipEp" data-id="${e.key}" title="${sk ? 'Przywróć odcinek' : 'Nie obejrzę tego odcinka'}">${sk ? '↺' : '⊘'}</button>` : ''}
+          <button class="chk sm ${on ? 'on' : ''}" data-act="ep" data-id="${e.key}" ${a ? '' : 'disabled'} title="${on ? 'Odznacz' : 'Obejrzany'}">✓</button>
+        </li>`;
+      }).join('')}</ul></details>`;
+  }).join('') || '<div class="empty">Brak informacji o odcinkach.</div>';
+
+  const infoTab = `
+    ${following && done ? reviewPanel('tv', id) : ''}
+    <div class="panel"><div class="ptitle">O serialu</div><div class="summary">${overviewHtml(s)}</div>
+      ${s.created_by && s.created_by.length ? `<div class="src">Twórcy: ${esc(s.created_by.map(c => c.name).join(', '))}</div>` : ''}</div>
+    ${trailerPanel(s, s.name)}
+    ${watchPanel(s['watch/providers'], { title: s.name, next: upcomingEp, channel: tvChannel(s) })}
+    ${wiki === null ? '<div class="panel wiki muted small">Sprawdzam dane w Wikipedii…</div>' : wikiPanel(wiki, nSeasons, aired.length)}
+    ${castPanel(cast)}`;
+
+  view.innerHTML = `
+  <div class="hero">
+    <div class="bg" style="background-image:url('${esc(img(s.backdrop_path, 'w780') || img(s.poster_path) || '')}')"></div>
+    <button class="back" data-act="back" title="Wstecz">‹</button>
+    <button class="hfav ${fav ? 'on' : ''}" data-act="favShow" data-id="${id}" title="${fav ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${fav ? '♥' : '♡'}</button>
+    <div class="in">
+      ${poster(img(s.poster_path), s.name)}
+      <div>
+        <h1>${esc(s.name)}</h1>
+        ${s.original_name && s.original_name !== s.name ? `<div class="muted small">${esc(s.original_name)}</div>` : ''}
+        <div class="muted" style="margin-top:4px">${[s.first_air_date && s.first_air_date.slice(0, 4), airing ? `trwa emisja sezonu ${airing}` : STATUS_PL[s.status] || s.status, plural(nSeasons, 'sezon', 'sezony', 'sezonów')].filter(Boolean).map(esc).join(' · ')}${isPolish(s) ? ' · <i class="plb" title="Polska produkcja"></i>polska produkcja' : ''}</div>
+        ${s.vote_average ? `<div style="margin-top:4px">★ <b>${s.vote_average.toFixed(1)}</b><span class="muted">/10</span></div>` : ''}
+        <div class="chips">${(s.genres || []).map(g => `<span class="chip">${esc(gname(g.name))}</span>`).join('')}</div>
+      </div>
+    </div>
+  </div>
+  ${following ? `<div class="tbar">
+      <span class="inlib">✓ W moich serialach</span>
+      ${dropped ? `<button class="btn sm" data-act="resume" data-id="${id}">Wznów oglądanie</button>` : ''}
+      <button class="ibtn" data-act="showMenu" data-id="${id}" title="Więcej opcji">⋯</button>
+    </div>` : `<button class="btn wide" data-act="follow" data-id="${id}">+ Dodaj do moich seriali</button>`}
+  ${main ? `<div class="warnbox">
+    <div><b>ℹ️ To jest „${esc(s.name)}” — dodatek do programu</b>Ma tylko część odcinków. Główny program to <b>„${esc(main.name)}”</b>.</div>
+    <div class="actions" style="margin:10px 0 0"><a class="btn sm" href="#/show/${main.id}">Przejdź do „${esc(main.name)}”</a>
+    ${following ? `<button class="btn ghost sm" data-act="swapShow" data-from="${id}" data-to="${main.id}">Zamień w moich serialach</button>` : ''}</div>
+  </div>` : ''}
+  ${following ? progressCard(d) : ''}
+  ${following && next && !dropped ? `<div class="nextcard" data-act="epInfo" data-id="${next.key}">
+      ${thumb(next, s)}
+      <div class="body"><small>Następny do obejrzenia</small><b>${code(next)} · ${esc(next.name)}</b><span class="muted small">${fmtDate(next.air)}${next.runtime ? ' · ' + next.runtime + ' min' : ''}</span></div>
+      <button class="chk" data-act="watchNext" data-id="${next.key}" title="Oznacz jako obejrzany">✓</button>
+    </div>` : ''}
+  <div class="stabs">
+    <a data-act="showTab" data-id="${id}" data-t="eps" class="${tab === 'eps' ? 'on' : ''}">Odcinki</a>
+    <a data-act="showTab" data-id="${id}" data-t="info" class="${tab === 'info' ? 'on' : ''}">O serialu</a>
+    <a data-act="showTab" data-id="${id}" data-t="rel" class="${tab === 'rel' ? 'on' : ''}">Podobne</a>
+  </div>
+  ${tab === 'eps' ? episodesTab : tab === 'info' ? infoTab : (relatedPanel('tv', s, token, here) || '<div class="empty">Brak podobnych tytułów.</div>')}
+  <p class="src" style="margin-top:20px"><a href="https://www.themoviedb.org/tv/${id}" target="_blank" rel="noopener">Strona w TMDB ↗</a></p>`;
+}
+// menu „⋯” na stronie serialu
+function openShowMenu(id) {
+  const d = showCache[id], p = progressState(d), dropped = isDropped(id);
+  $('#sheet').innerHTML = `<div class="menu">
+    <div class="menu-head">${poster(img(d.show.poster_path), d.show.name, 'xs')}<b>${esc(d.show.name)}</b></div>
+    ${p.done < p.aired ? `<button data-act="allSeen" data-id="${id}"><span>✓</span>Obejrzane wszystko<small>zaznacz ${plural(p.left, 'pozostały odcinek', 'pozostałe odcinki', 'pozostałych odcinków')}</small></button>` : ''}
+    ${dropped ? `<button data-act="resume" data-id="${id}"><span>▶</span>Wznów oglądanie</button>`
+      : `<button data-act="drop" data-id="${id}"><span>Ⅱ</span>Przerwij oglądanie<small>zostanie w „Przerwane” z zapisanym postępem</small></button>`}
+    <button data-act="unfollow" data-id="${id}" class="danger"><span>✕</span>Usuń z moich seriali<small>razem z zaznaczonymi odcinkami</small></button>
+    <button data-act="close" class="cancel">Anuluj</button>
+  </div>`;
+  $('#sheetWrap').classList.remove('hidden');
+}
+
+// ---------- karta odcinka ----------
+function openEpisode(key) {
+  const e = epIndex[key];
+  if (!e) return;
+  sheetKey = key;
+  const d = showCache[e.showId], s = d.show, on = !!state.watched[key], a = isAired(e);
+  enFallback(e, `tv/${e.showId}/season/${e.season}/episode/${e.number}`, () => { if (sheetKey === key) openEpisode(key); return false; });
+  const i = d.episodes.indexOf(e), prev = d.episodes[i - 1], next = d.episodes[i + 1];
+  const season = (s.seasons || []).find(z => z.season_number === e.season);
+  // gdy odcinek nie ma opisu w żadnym języku — pokazujemy opis sezonu lub programu
+  const missing = !e.overview && e._en === '';
+  const context = season && season.overview ? { label: `O sezonie ${e.season}`, text: season.overview } : s.overview ? { label: 'O programie', text: s.overview } : null;
+  const pic = e.still ? img(e.still, 'w780') : img(s.backdrop_path, 'w780');
+  $('#sheet').innerHTML = `
+    <div class="ep-hero" style="${pic ? `background-image:url('${pic}')` : ''}"><button class="x" data-act="close" title="Zamknij">✕</button>
+      <div class="cap"><div class="small">${esc(s.name)} · Sezon ${e.season}, odcinek ${e.number}</div><h3>${esc(e.name)}</h3></div></div>
+    <div class="ep-meta">${[e.air && (a ? fmtDate(e.air) : 'premiera ' + dayWord(e.air)), e.runtime && e.runtime + ' min', e.vote && '★ ' + e.vote.toFixed(1), on && '<span class="seen">✓ obejrzany</span>'].filter(Boolean).join('<i>·</i>')}</div>
+    ${missing ? `<p class="ep-desc muted">Opis tego odcinka nie został jeszcze dodany do bazy.</p>
+      ${context ? `<div class="ep-ctx"><div class="small">${context.label}</div>${esc(context.text)}</div>` : ''}`
+      : `<p class="ep-desc">${overviewHtml(e)}</p>`}
+    <div class="actions">
+      <button class="btn ${on ? 'ghost' : 'ok'}" data-act="ep" data-id="${key}" ${a ? '' : 'disabled'}>${on ? 'Odznacz obejrzany' : a ? '✓ Oznacz jako obejrzany' : 'Jeszcze nie wyemitowany'}</button>
+      ${!on ? `<button class="btn ghost" data-act="skipEp" data-id="${key}">${isSkipped(e) ? '↺ Przywróć odcinek' : '⊘ Nie obejrzę'}</button>` : ''}
+    </div>
+    ${on ? `<div class="small muted">Jak ci się podobało?</div>
+    <div class="react">${REACTIONS.map(([em, l]) => `<button class="${state.reactions[key] === em ? 'on' : ''}" data-act="react" data-id="${key}" data-r="${em}">${em}<span>${l}</span></button>`).join('')}</div>` : ''}
+    ${notePanel(key)}
+    <div class="ep-nav">
+      ${prev ? `<button data-act="epInfo" data-id="${prev.key}">‹ ${code(prev)}</button>` : '<span></span>'}
+      ${next ? `<button data-act="epInfo" data-id="${next.key}">${code(next)} ›</button>` : '<span></span>'}
+    </div>`;
+  $('#sheetWrap').classList.remove('hidden');
+}
+
+// ---------- widok: moje filmy ----------
+function renderMovies(sub) {
+  const all = Object.values(state.movies);
+  const nW = all.filter(m => m.status === 'watch').length, nS = all.length - nW;
+  const pills = `<div class="pills"><a href="#/movies" class="${sub === 'watch' ? 'on' : ''}">Chcę obejrzeć (${nW})</a><a href="#/movies-seen" class="${sub === 'seen' ? 'on' : ''}">Obejrzane (${nS})</a></div>`;
+  const list = sub === 'seen' ? all.filter(m => m.status === 'seen').sort((a, b) => (b.seenAt || 0) - (a.seenAt || 0))
+                              : all.filter(m => m.status === 'watch').sort((a, b) => b.addedAt - a.addedAt);
+  if (!list.length) {
+    view.innerHTML = movieTabs('mine') + pills + emptyBox(sub === 'seen' ? 'Brak obejrzanych filmów' : 'Lista „Chcę obejrzeć” jest pusta', 'Znajdź film po tytule, sprawdź co jest w kinach albo wybierz gatunek.', '#/movies-search', 'Szukaj filmów');
+    return;
+  }
+  view.innerHTML = movieTabs('mine') + pills + `<div class="list">${list.map(m => `
+    <div class="card" data-act="mOpen" data-id="${m.id}">
+      ${poster(m.poster, m.title)}
+      <div class="body">
+        <div class="t">${state.favs['movie:' + m.id] ? '❤ ' : ''}${esc(m.title)}</div>
+        <div class="n">${[m.year, m.runtime && m.runtime + ' min'].filter(Boolean).join(' · ')}</div>
+        ${sub === 'seen' ? `<div class="n">Obejrzany ${fmtDate(m.seenAt)} ${m.reaction || ''}</div>${m.rating ? `<div class="stars">${'★'.repeat(m.rating)}<span class="off">${'★'.repeat(5 - m.rating)}</span></div>` : ''}`
+                         : `<div class="n">${m.release && daysFrom(m.release) >= 0 ? `🎬 Premiera w Polsce: ${dayWord(m.release.slice(0, 10))}` : esc((m.genres || []).slice(0, 3).join(', '))}</div>`}
+      </div>
+      ${sub === 'seen' ? '' : `<button class="chk" title="Oznacz jako obejrzany" data-act="mSeen" data-id="${m.id}">✓</button>`}
+    </div>`).join('')}</div>`;
+}
+
+// ---------- widok: film ----------
+async function renderMovie(id, token) {
+  if (!movieCache[id]) view.innerHTML = '<div class="loading">Ładowanie…</div>';
+  const m = await loadMovie(id);
+  if (token !== renderToken) return;
+  enFallback(m, `movie/${id}`, () => location.hash === '#/movie/' + id);
+  if (state.movies[id]) storeMovie(id, {});  // odśwież zapisane dane (plakat, polska premiera)
+  const st = state.movies[id] || {}, fav = !!state.favs['movie:' + id];
+  const directors = ((m.credits || {}).crew || []).filter(c => c.job === 'Director').map(c => c.name);
+  const cast = ((m.credits || {}).cast || []).map(c => ({ id: c.id, name: c.name, photo: c.profile_path, role: c.character }));
+  const dates = plDates(m);
+  view.innerHTML = `
+  <div class="hero">
+    <div class="bg" style="background-image:url('${esc(img(m.backdrop_path, 'w780') || img(m.poster_path) || '')}')"></div>
+    <button class="back" data-act="back" title="Wstecz">‹</button>
+    <button class="hfav ${fav ? 'on' : ''}" data-act="favMovie" data-id="${id}" title="${fav ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${fav ? '♥' : '♡'}</button>
+    <div class="in">
+      ${poster(img(m.poster_path), m.title)}
+      <div>
+        <h1>${esc(m.title)}</h1>
+        ${m.original_title && m.original_title !== m.title ? `<div class="muted small">${esc(m.original_title)}</div>` : ''}
+        <div class="muted" style="margin-top:4px">${[(dates.cinema || m.release_date || '').slice(0, 4), m.runtime ? m.runtime + ' min' : '', ].filter(Boolean).join(' · ')}${isPolish(m) ? ' · <i class="plb" title="Polska produkcja"></i>polska produkcja' : ''}</div>
+        ${directors.length ? `<div class="muted" style="font-size:13px;margin-top:4px">reż. ${esc(directors.join(', '))}</div>` : ''}
+        ${m.vote_average ? `<div style="margin-top:4px">★ <b>${m.vote_average.toFixed(1)}</b><span class="muted">/10</span></div>` : ''}
+        ${[['🎟️', 'Premiera w kinach w Polsce', dates.cinema], ['💻', 'Premiera w serwisach w Polsce', dates.digital], ['📡', 'Premiera w TV w Polsce', dates.tv]]
+          .filter(([, , dt]) => dt && daysFrom(dt) >= 0).map(([i, l, dt]) => `<div class="hbadge">${i} ${l} — ${dayWord(dt)}</div>`).join('')}
+        <div class="chips">${(m.genres || []).map(g => `<span class="chip">${esc(gname(g.name))}</span>`).join('')}</div>
+      </div>
+    </div>
+  </div>
+  ${st.status === 'seen' ? `<div class="tbar"><span class="inlib ok">✓ Obejrzany${st.seenAt ? ' ' + fmtDate(st.seenAt) : ''}</span><button class="btn ghost sm" data-act="mSeen" data-id="${id}">Cofnij</button></div>`
+    : `<div class="mbar">
+      <button class="mopt ${st.status === 'watch' ? 'on' : ''}" data-act="mList" data-id="${id}"><span>${st.status === 'watch' ? '✓' : '＋'}</span>${st.status === 'watch' ? 'Na liście „Chcę obejrzeć”' : 'Chcę obejrzeć później'}</button>
+      <button class="mopt main" data-act="mSeen" data-id="${id}"><span>✓</span>Już obejrzany</button>
+    </div>`}
+  ${st.status === 'seen' ? `<div class="panel">
+    <label class="muted" style="font-size:13px">Data obejrzenia<input type="date" class="date" data-change="mDate" data-id="${id}" value="${ymd(st.seenAt)}" max="${todayStr()}"></label>
+    <div class="muted" style="font-size:13px;margin-top:12px">Jak ci się podobał?</div>
+    <div class="react">${REACTIONS.map(([em, l]) => `<button class="${st.reaction === em ? 'on' : ''}" data-act="mReact" data-id="${id}" data-r="${em}">${em}<span>${l}</span></button>`).join('')}</div>
+  </div>
+  ${reviewPanel('movie', id)}` : ''}
+  ${m.tagline ? `<p class="muted" style="font-style:italic">„${esc(m.tagline)}”</p>` : ''}
+  <div class="summary">${overviewHtml(m)}</div>
+  ${watchPanel(m['watch/providers'], { title: m.title, dates })}
+  ${trailerPanel(m, m.title)}
+  ${castPanel(cast)}
+  ${relatedPanel('movie', m, token, () => location.hash === '#/movie/' + id)}
+  <h2>Więcej</h2>
+  <div class="actions">
+    <a class="btn ghost sm" href="https://www.filmweb.pl/search?q=${encodeURIComponent(m.title)}" target="_blank" rel="noopener">Filmweb</a>
+    ${m.imdb_id ? `<a class="btn ghost sm" href="https://www.imdb.com/title/${esc(m.imdb_id)}/" target="_blank" rel="noopener">IMDb</a>` : ''}
+    <a class="btn ghost sm" href="https://www.themoviedb.org/movie/${id}" target="_blank" rel="noopener">TMDB</a>
+  </div>`;
+}
+
+// ---------- widok: profil ----------
+async function renderProfile(token) {
+  if (Object.keys(state.shows).some(id => !showCache[id])) view.innerHTML = '<div class="loading">Ładowanie profilu…</div>';
+  await loadFollowed();
+  if (token !== renderToken) return;
+  const w = Object.values(state.watched);
+  const movies = Object.values(state.movies), seenM = movies.filter(m => m.status === 'seen'), laterM = movies.filter(m => m.status === 'watch');
+  const tvMins = w.reduce((a, x) => a + (x.m || 0), 0), movieMins = seenM.reduce((a, m) => a + (m.runtime || 0), 0);
+  const mins = tvMins + movieMins;
+  const months = Math.floor(mins / 43200), days = Math.floor(mins % 43200 / 1440), hours = Math.floor(mins % 1440 / 60);
+  // seriale wg postępu: oglądane / na później (nic nie obejrzane) / obejrzane (wszystkie wyemitowane odcinki)
+  const shows = Object.values(state.shows).map(s => {
+    const d = showCache[s.id], aired = d ? d.episodes.filter(counts) : [], done = aired.filter(e => state.watched[e.key]).length;
+    return { s, d, done, aired: aired.length };
+  });
+  const droppedS = shows.filter(x => x.s.dropped), active = shows.filter(x => !x.s.dropped);
+  const watching = active.filter(x => x.done > 0 && x.done < x.aired), laterS = active.filter(x => x.done === 0 && x.aired > 0), doneS = active.filter(x => x.aired > 0 && x.done === x.aired);
+  const favs = Object.values(state.favs).sort((a, b) => b.t - a.t);
+  const reviews = [
+    ...Object.values(state.shows).filter(s => s.rating || s.review).map(s => ({ kind: 'tv', id: s.id, title: s.name, poster: s.poster, ...s })),
+    ...movies.filter(m => m.rating || m.review).map(m => ({ kind: 'movie', ...m })),
+  ].sort((a, b) => (b.reviewAt || 0) - (a.reviewAt || 0));
+  const notes = Object.entries(state.notes || {}).sort((a, b) => b[1].t - a[1].t);
+  const perShow = {};
+  w.forEach(x => perShow[x.s] = (perShow[x.s] || 0) + 1);
+  const count = (list, f) => { const c = {}; list.forEach(x => (x.genres || []).forEach(g => c[g] = (c[g] || 0) + f(x))); return Object.entries(c).sort((a, b) => b[1] - a[1]).slice(0, 5); };
+  const topG = count(Object.values(state.shows), s => (perShow[s.id] || 0) + 1), topMG = count(seenM, () => 1);
+  const showName = id => (state.shows[id] && state.shows[id].name) || (showCache[id] && showCache[id].show.name) || 'Serial';
+  const hist = [
+    ...w.map(x => ({ t: x.t, href: `#/show/${x.s}`, html: `<b>${esc(showName(x.s))}</b> <span class="muted">${esc(x.c || '')} ${esc(x.n || '')}</span>` })),
+    ...seenM.map(m => ({ t: m.seenAt, href: `#/movie/${m.id}`, html: `🎬 <b>${esc(m.title)}</b> <span class="muted">${m.year || ''}</span>` })),
+  ].sort((a, b) => b.t - a.t).slice(0, 12);
+  const hrs = n => `${Math.floor(n / 60)} h ${n % 60} min`;
+  const bars = list => list.map(([g, n]) => `<div class="grow"><span class="lbl">${esc(g)}</span><div class="bar"><b style="width:${n / list[0][1] * 100}%"></b></div></div>`).join('');
+  const miniStars = r => r ? `<div class="ms">${'★'.repeat(r)}</div>` : '';
+  const showMini = x => `<a class="mini" href="#/show/${x.s.id}">${poster(x.s.poster || (x.d && img(x.d.show.poster_path)), x.s.name)}${miniStars(x.s.rating)}
+    <div class="nm">${esc(x.s.name)}</div><div class="sub2">${x.aired ? `${x.done}/${x.aired} odc.` : ''}</div>
+    ${x.aired && x.done < x.aired ? `<div class="bar"><b style="width:${x.done / x.aired * 100}%"></b></div>` : ''}</a>`;
+  const movieMini = m => `<a class="mini" href="#/movie/${m.id}">${poster(m.poster, m.title)}${miniStars(m.rating)}
+    <div class="nm">${esc(m.title)}</div><div class="sub2">${m.status === 'seen' && m.seenAt ? fmtDate(m.seenAt) : m.release && daysFrom(m.release) >= 0 ? '📅 ' + fmtDate(m.release.slice(0, 10)) : m.year || ''}</div></a>`;
+  const favMini = f => `<a class="mini" href="#/${f.type === 'tv' ? 'show' : 'movie'}/${f.id}">${poster(f.poster || ((f.type === 'tv' ? state.shows : state.movies)[f.id] || {}).poster, f.title)}
+    <div class="nm">❤ ${esc(f.title)}</div><div class="sub2">${f.type === 'tv' ? 'serial' : 'film'}</div></a>`;
+  const shelf = (icon, title, items, render, emptyText) => `<section class="shelf"><div class="sec-head"><h2>${title} <small>(${items.length})</small></h2></div>
+    ${items.length ? `<div class="hscroll">${items.map(render).join('')}</div>` : `<div class="shelf-empty">${emptyText}</div>`}</section>`;
+
+  view.innerHTML = `
+    <div class="pcard">
+      <div class="prow">
+        <div class="avatar">${initials(user)}</div>
+        <div class="body"><b>${esc(user)}</b><div class="muted small">${months ? months + ' mies. ' : ''}${days} dni ${hours} godz. przed ekranem</div></div>
+        <button class="btn ghost sm" data-act="logout">Wyloguj</button>
+      </div>
+      <div class="pstats">
+        <div><b>${Object.keys(state.shows).length}</b>seriali</div>
+        <div><b>${w.length}</b>odcinków</div>
+        <div><b>${seenM.length}</b>filmów</div>
+        <div><b>${favs.length}</b>ulubionych</div>
+        <div><b>${reviews.length}</b>recenzji</div>
+        <div><b>${notes.length}</b>notatek</div>
+      </div>
+      <div class="ptime"><span>Seriale <b>${hrs(tvMins)}</b></span><span>Filmy <b>${hrs(movieMins)}</b></span></div>
+    </div>
+    ${shelf('', 'Oglądam', watching, showMini, 'Zacznij oglądać serial — pojawi się tutaj.')}
+    ${shelf('', 'Seriale na później', laterS, showMini, 'Brak seriali odłożonych na później.')}
+    ${shelf('', 'Seriale obejrzane', doneS, showMini, 'Tu trafią seriale, których wszystkie odcinki obejrzano.')}
+    ${droppedS.length ? shelf('', 'Przerwane', droppedS, showMini, '') : ''}
+    ${shelf('', 'Filmy obejrzane', seenM.sort((a, b) => (b.seenAt || 0) - (a.seenAt || 0)), movieMini, 'Brak obejrzanych filmów.')}
+    ${shelf('', 'Filmy na później', laterM.sort((a, b) => b.addedAt - a.addedAt), movieMini, 'Dodaj film przyciskiem „Chcę obejrzeć później”.')}
+    ${shelf('', 'Ulubione', favs, favMini, 'Kliknij ♡ przy serialu lub filmie, aby dodać go do ulubionych.')}
+    <section class="shelf"><h2>Moje recenzje <small>(${reviews.length})</small></h2>
+      ${reviews.length ? reviews.map(r => `<a class="revcard" href="#/${r.kind === 'tv' ? 'show' : 'movie'}/${r.id}">
+        ${poster(r.poster, r.title, 'sm')}
+        <div class="body"><div class="t">${esc(r.title)} <span class="muted small">· ${r.kind === 'tv' ? 'serial' : 'film'}</span></div>
+          ${r.rating ? `<div class="stars">${'★'.repeat(r.rating)}<span class="off">${'★'.repeat(5 - r.rating)}</span> <span class="rw">${RATE_WORDS[r.rating]}</span></div>` : ''}
+          ${r.review ? `<div class="rtext clamp">${esc(r.review)}</div>` : ''}
+          <div class="src">${r.reviewAt ? fmtDate(r.reviewAt) + ' · ' : ''}kliknij, aby edytować</div></div></a>`).join('')
+        : '<div class="shelf-empty">Oceniaj obejrzane seriale i filmy — przycisk „Oceń i napisz recenzję” jest na ich stronach.</div>'}
+    </section>
+    ${notes.length ? `<section class="shelf"><h2>Notatki do odcinków <small>(${notes.length})</small></h2>
+      ${notes.slice(0, 8).map(([k, n]) => { const [sid, se, ep] = k.split(':'); return `<a class="revcard" href="#/show/${sid}">
+        <div class="body"><div class="t">${esc(showName(sid))} <span class="muted small">· S${pad(se)}E${pad(ep)}</span></div><div class="rtext clamp">${esc(n.text)}</div><div class="src">${fmtDate(n.t)}</div></div></a>`; }).join('')}
+    </section>` : ''}
+    ${topG.length || topMG.length ? `<h2>Ulubione gatunki</h2><div class="panel">
+      ${topG.length ? `<div class="muted small" style="margin-bottom:4px">Seriale</div>${bars(topG)}` : ''}
+      ${topMG.length ? `<div class="muted small" style="margin:${topG.length ? 14 : 0}px 0 4px">Filmy</div>${bars(topMG)}` : ''}</div>` : ''}
+    ${hist.length ? `<h2>Ostatnio obejrzane</h2>${hist.map(x => `<a class="hist" href="${x.href}"><span>${x.html}</span><span class="muted">${fmtDate(x.t)}</span></a>`).join('')}` : ''}
+    <h2>Ustawienia</h2>
+    <div class="panel">
+      <div class="muted small" style="margin-bottom:8px">Wygląd</div>
+      <div class="themes">${THEMES.map(([k, n, bg, card, acc]) => `<a class="th ${document.documentElement.dataset.theme === k ? 'on' : ''}" data-act="theme" data-v="${k}">
+        <span class="sw" style="background:${bg}"><u style="background:${card}"></u><i style="background:${acc}"></i></span>${n}</a>`).join('')}</div>
+      <div class="muted small" style="margin:6px 0 8px">Dane</div>
+      <div class="actions" style="margin:0">
+        <button class="btn ghost sm" data-act="export">⬇ Eksportuj</button>
+        <button class="btn ghost sm" data-act="import">⬆ Importuj</button>
+        <button class="btn ghost sm danger" data-act="reset">Wyczyść wszystko</button>
+      </div>
+    </div>
+    <p class="muted" style="font-size:12px;margin-top:24px">Recenzje i notatki są prywatne — widzi je tylko właściciel konta. Dane o filmach i serialach: TMDB (themoviedb.org); aplikacja korzysta z API TMDB, ale nie jest przez TMDB wspierana ani certyfikowana. Dostępność w serwisach: JustWatch.</p>`;
+}
+
+// ---------- start ----------
+// motyw zapamiętany w tej przeglądarce (wygoda — nie trzeba go trzymać na koncie)
+// motywy: [klucz, nazwa, tło, karta, akcent, ciemny?]
+const THEMES = [
+  ['cream', 'Krem', '#f5efe6', '#fffcf7', '#c4643f'], ['sage', 'Szałwia', '#eef2ea', '#fbfdf9', '#5d8a58'],
+  ['ocean', 'Ocean', '#edf3f8', '#fbfdff', '#2f73a8'], ['lavender', 'Lawenda', '#f3f0f8', '#fdfcff', '#7b5db0'],
+  ['blush', 'Pudrowy róż', '#f8eff0', '#fffbfb', '#bf5d78'], ['sand', 'Piasek', '#f6f0e0', '#fffcf2', '#b5842a'],
+  ['mint', 'Mięta', '#eaf5f2', '#fafffd', '#279a8c'], ['evening', 'Wieczór', '#1e1a17', '#28231f', '#e08460', 1],
+  ['navy', 'Noc', '#141a26', '#1c2433', '#6ea6f7', 1], ['graphite', 'Grafit', '#18181a', '#222225', '#eea72f', 1],
+];
+function setTheme(t, persist) {
+  t = { light: 'cream', night: 'evening' }[t] || t;
+  const th = THEMES.find(x => x[0] === t) || THEMES[0];
+  document.documentElement.dataset.theme = th[0];
+  document.documentElement.dataset.dark = th[5] ? '1' : '';
+  try { localStorage.setItem('serialog.theme', th[0]); } catch (e) {}
+  if (persist && user) { (state.prefs ||= {}).theme = th[0]; save(); }  // motyw zapisany też na koncie
+}
+try { setTheme(localStorage.getItem('serialog.theme')); } catch (e) { setTheme('cream'); }
+function updateTodayDot() {
+  const today = todayStr();
+  const n = Object.keys(state.shows).filter(id => showCache[id] && !isDropped(id)).reduce((a, id) => a + showCache[id].episodes.filter(e => e.air === today).length, 0);
+  const dot = $('#todayDot'); dot.hidden = !n; dot.textContent = n;
+}
+async function boot() {
+  try {
+    const cfg = await fetch('/api/config', { cache: 'no-store' }).then(r => r.ok ? r.json() : null);
+    if (cfg) {
+      mode = 'account'; hasTmdb = cfg.tmdb;
+      const r = await fetch('/api/me', { cache: 'no-store' });
+      if (r.status === 200) { user = (await r.json()).username; if (hasTmdb) await afterLogin(); }
+    }
+  } catch (e) { /* brak serwera (plik otwarty z dysku) */ }
+  render();
+}
+boot();
+</script>
+</body>
+</html>

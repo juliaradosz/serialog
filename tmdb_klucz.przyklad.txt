@@ -1,0 +1,2 @@
+# Skopiuj ten plik jako tmdb_klucz.txt i w nowej linii wklej swój klucz API z themoviedb.org
+# (Ustawienia → API). Plik tmdb_klucz.txt nie trafia do repozytorium — jest w .gitignore.
