@@ -469,3 +469,27 @@ Odpowiedź (bez zmian w kodzie):
 - **GitHub sam nie uruchomi tej aplikacji** — GitHub Pages serwuje tylko pliki statyczne, a SeriaLog potrzebuje serwera (konta, baza, ukryty klucz TMDB, pośrednik do bazy filmów).
 - GitHub może za to **ułatwić wgranie i aktualizacje na PythonAnywhere**: kod w prywatnym repozytorium → na PythonAnywhere `git clone` (raz), a każda aktualizacja to `git pull` + Reload, bez ręcznego wgrywania plików. Klucz TMDB i baza kont **nie trafiają** do repozytorium (`.gitignore`) — wgrywa się je raz osobno.
 - Sprawdzono: na komputerze jest `git` i `gh` (GitHub CLI), ale `gh` nie jest zalogowany — logowanie do GitHuba musi wykonać użytkownik.
+
+### 2026-11-04 — Polecenie 23
+> „Tak, przygotuj” → „wolę, żebyś sam wysyłał tam pliki, a potem mówił mi, co muszę pisać w konsoli na PythonAnywhere”
+
+Kroki:
+1. Sprawdzono, że klucz TMDB występuje tylko w `tmdb_klucz.txt`.
+2. Dodano `.gitignore` (wyklucza `tmdb_klucz.txt`, `serialog.db`, `*.zip`, `.claude/`), `tmdb_klucz.przyklad.txt` (wzór pliku z kluczem), `README.md`.
+3. `git init` (gałąź `main`), pierwszy commit `b0b72e5` — 12 plików, bez klucza i bazy.
+4. Uruchomiono logowanie do GitHuba (`gh auth login --web`) w terminalu użytkownika — logowanie wykonuje użytkownik.
+5. Do decyzji: repozytorium publiczne (PythonAnywhere pobiera je jedną komendą) czy prywatne (na darmowym PythonAnywhere potrzebny wtedy token dostępu GitHub — darmowe konto nie łączy się z GitHubem przez SSH).
+
+### 2026-11-04 — Polecenie 24
+> „Prywatne” → zaraz potem: „zrób publiczne i powiedz jeszcze raz, jak zalogować się do GitHub”
+
+- Decyzja: repozytorium **publiczne** (PythonAnywhere pobierze je bez tokena). Klucz TMDB i baza kont i tak nie trafiają do repozytorium.
+- Logowanie do GitHuba czeka na użytkownika w terminalu (`gh auth login --web`).
+
+### 2026-11-04 — Polecenie 25
+> „już” (zalogowano do GitHuba)
+
+1. Zalogowano jako **juliaradosz**.
+2. Utworzono **publiczne** repozytorium **https://github.com/juliaradosz/serialog** i wysłano gałąź `main` (12 plików).
+3. Sprawdzono przez API GitHuba: w repozytorium **nie ma** `tmdb_klucz.txt` ani `serialog.db`.
+4. Przepisano `INSTRUKCJA_PYTHONANYWHERE.md` pod GitHub: `git clone https://github.com/juliaradosz/serialog.git` w konsoli Bash, ręczne wgranie 2 plików (klucz + baza) przez zakładkę Files, konfiguracja WSGI, Force HTTPS, Reload, iPhone; aktualizacje: `cd ~/serialog && git pull` + Reload.
