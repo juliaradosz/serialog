@@ -566,3 +566,25 @@ Zmiany (wycofanie e-maila i resetu hasła z polecenia 30):
 - Rejestracja znowu bez e-maila (nazwa + hasło), bez „Nie pamiętasz hasła?”, bez sekcji e-mail w Profilu.
 - Serwer: usunięte `/api/email`, `/api/reset/request`, `/api/reset/confirm`, wysyłka przez Gmail i konfiguracja `email_konfig.txt`; usunięty plik `email_konfig.przyklad.txt` i rozdział instrukcji o Gmailu. W istniejących bazach kolumna `email` / tabela `resets` mogą zostać — są nieużywane i niczemu nie przeszkadzają.
 - Test (kopia serwera): rejestracja bez e-maila 200, `/api/me` ok, logowanie ok, stary adres resetu 404 ✔.
+
+### 2026-11-04 — Polecenie 33
+> 14 punktów: znajomi po nazwie użytkownika; Szukaj bez przetasowania po powrocie; daty kolejnych sezonów; blokada oznaczania niewydanych filmów/odcinków; „cofnij” i przyklejone podzakładki; nielubiane gatunki; nieskończone „Dla Ciebie”; ponowne kliknięcie zakładki = na górę; ponowne obejrzenia (liczone w statystykach w dniu powtórki); sezony domyślnie zwinięte; zaznaczanie kilku „na później” jako obejrzane; mniejsze przyciski filmu; nowy panel „Obejrzany”; efekt szkła. Dopisane w trakcie: „opcja na profilu, żeby dało się wejść np. w seriale obejrzane i przeglądać w dół, a nie w bok”.
+
+Zmiany:
+1. **Znajomi** (Profil → Znajomi): dodawanie po nazwie użytkownika, zaproszenia (przyjmij / odrzuć / anuluj), wzajemne zaproszenie = od razu znajomi. Profil znajomego `#/friend/NAZWA`: seriale, filmy, ulubione, liczba odcinków i czas (✓ na plakacie = masz to też). Recenzje, oceny, notatki i reakcje zostają prywatne. Serwer: tabela `friends`, `/api/friends`, `/api/friends/profile`, `/api/friends/add|accept|remove`.
+2. **Szukaj**: propozycje zapamiętane osobno dla seriali i filmów — po powrocie te same i w tym samym miejscu. Pamięć przewinięcia także dla list gatunków, „Dla Ciebie” i pełnych list z profilu.
+3. **Sezony**: zapowiedziane sezony bez odcinków („Sezon 11 — premiera 5 lis 2028” / „zapowiedziany — data jeszcze nieznana”), przy sezonie z samymi przyszłymi odcinkami „premiera …”.
+4. **Przed premierą nie da się oznaczyć jako obejrzane**: film (gdy żadna znana data premiery — światowa ani polska — jeszcze nie minęła) pokazuje „📅 Premiera …” zamiast „Obejrzany”, także na listach; odcinek, który jeszcze nie wyszedł — komunikat.
+5. **Cofnij**: po każdej zmianie (oznaczenie, sezon, „nie obejrzę”, dodanie/usunięcie, przerwanie, zaznaczenie kilku…) dymek z przyciskiem „Cofnij” (5 s). **Podzakładki** (Szukaj / Gatunki / Moje…, Teraz w kinach / Wkrótce) i pole wyszukiwania przyklejone pod nagłówkiem. Przy okazji naprawiony nagłówek, który przestał się przyklejać po poprawce „bez poziomego przewijania” (`overflow-x: clip` zamiast `hidden`).
+6. **Nielubiane gatunki**: w Gatunkach przycisk 🚫 przy gatunku → tytuły z nim znikają z Szukaj, „Dla Ciebie”, podobnych tytułów i list (poza listą samego gatunku); ↺ przywraca.
+7. **Dla Ciebie bez końca**: przy przewijaniu doładowują się kolejne propozycje (następne strony rekomendacji dla tytułów z listy + popularne z ulubionego gatunku).
+8. **Ponowne kliknięcie aktywnej zakładki** w dolnym menu płynnie przewija na samą górę.
+9. **Ponowne obejrzenia**: „↻ Obejrzany ponownie” w karcie odcinka, ↻ przy w pełni obejrzanym sezonie, „↻ Jeszcze raz” przy filmie. Każda powtórka liczy się w statystykach w dniu powtórki i w czasie przed ekranem.
+10. **Sezony domyślnie zwinięte.**
+11. **Pełne listy z profilu**: nagłówki półek („Wszystkie ›”) otwierają listę w siatce przewijanej w dół, z wyszukiwaniem na liście. Na „Seriale na później” i „Filmy na później” — „Zaznacz kilka” → stuknięcie plakatów → „✓ Obejrzane (N)”.
+12–13. **Strona filmu**: mniejsze przyciski („Na później” / „Obejrzany”); nowy, zwarty panel „Obejrzany” z datą (stuknięcie zmienia), „Jeszcze raz”, „Cofnij” i reakcjami w jednym rzędzie.
+14. **Efekt szkła**: półprzezroczyste, rozmyte karty, panele, podzakładki, nagłówek, dolne menu i okna na delikatnym kolorowym tle (kolory z wybranego motywu).
+
+Testy (widok telefonu, konta testowe): zaproszenie → przyjęcie → profil znajomego (bez recenzji), nieznana nazwa 404, siebie 400, obcy profil 403 ✔; „Jeszcze raz” + Cofnij ✔; „Avengers: Secret Wars” (2027) — brak „Obejrzany” i blokada ✔; przyszły odcinek „Rekruta” zablokowany, „Sezon 9 · premiera 6 sty 2027”, sezony zwinięte, zapowiedziane sezony ✔; zaznaczenie 2 seriali → 217 odcinków → Cofnij → 0 ✔; Szukaj po powrocie te same pozycje i miejsce ✔; przyklejone podzakładki ✔; ukryty gatunek nie pojawia się w „Dla Ciebie”, które doładowuje 40 → 71 → 95 ✔; ponowne kliknięcie zakładki → góra ✔. Konta testowe usunięte (zostało tylko „julkar8”).
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload** na PythonAnywhere (zmienił się też serwer).

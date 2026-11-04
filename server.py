@@ -69,6 +69,12 @@ def init_db():
                 user_id INTEGER PRIMARY KEY REFERENCES users(id),
                 data TEXT NOT NULL,
                 updated INTEGER NOT NULL);
+            CREATE TABLE IF NOT EXISTS friends (
+                from_id INTEGER NOT NULL REFERENCES users(id),
+                to_id INTEGER NOT NULL REFERENCES users(id),
+                accepted INTEGER NOT NULL DEFAULT 0,
+                created INTEGER NOT NULL,
+                PRIMARY KEY (from_id, to_id));
         ''')
 
 
@@ -181,6 +187,50 @@ def start_session(req, user_id):
     return session_cookie(req, token, SESSION_SECONDS)
 
 
+# ---------- znajomi ----------
+def user_by_name(con, name):
+    return con.execute('SELECT id, username FROM users WHERE username = ?', (str(name).strip(),)).fetchone()
+
+
+def friend_lists(con, uid):
+    rows = con.execute('SELECT f.from_id, f.to_id, f.accepted, a.username AS a_name, b.username AS b_name FROM friends f '
+                       'JOIN users a ON a.id = f.from_id JOIN users b ON b.id = f.to_id WHERE f.from_id = ? OR f.to_id = ?', (uid, uid)).fetchall()
+    out = {'friends': [], 'incoming': [], 'outgoing': []}
+    for r in rows:
+        other = r['b_name'] if r['from_id'] == uid else r['a_name']
+        if r['accepted']:
+            out['friends'].append(other)
+        elif r['to_id'] == uid:
+            out['incoming'].append(other)
+        else:
+            out['outgoing'].append(other)
+    for k in out:
+        out[k].sort(key=str.lower)
+    return out
+
+
+def are_friends(con, a, b):
+    return con.execute('SELECT 1 FROM friends WHERE accepted = 1 AND ((from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?))', (a, b, b, a)).fetchone()
+
+
+def friend_profile(state):
+    """Co widzi znajomy: listy i liczby — bez recenzji, ocen, notatek i reakcji (te są prywatne)."""
+    watched = state.get('watched') or {}
+    per_show, minutes = {}, 0
+    for w in watched.values():
+        per_show[w.get('s')] = per_show.get(w.get('s'), 0) + 1 + len(w.get('rw') or [])
+        minutes += (w.get('m') or 0) * (1 + len(w.get('rw') or []))
+    shows = [{'id': x.get('id'), 'name': x.get('name'), 'poster': x.get('poster'), 'eps': per_show.get(x.get('id'), per_show.get(str(x.get('id')), 0)),
+              'dropped': bool(x.get('dropped'))} for x in (state.get('shows') or {}).values()]
+    movies = [{'id': m.get('id'), 'title': m.get('title'), 'poster': m.get('poster'), 'year': m.get('year'), 'status': m.get('status'), 'seenAt': m.get('seenAt')}
+              for m in (state.get('movies') or {}).values()]
+    for m in movies:
+        if m['status'] == 'seen':
+            minutes += next((x.get('runtime') or 0 for x in (state.get('movies') or {}).values() if x.get('id') == m['id']), 0)
+    favs = [{'type': f.get('type'), 'id': f.get('id'), 'title': f.get('title'), 'poster': f.get('poster')} for f in (state.get('favs') or {}).values()]
+    return {'shows': shows, 'movies': movies, 'favs': favs, 'episodes': sum(per_show.values()), 'minutes': minutes}
+
+
 def static_file(path):
     name = STATIC[path]
     with open(os.path.join(ROOT, name), 'rb') as f:
@@ -216,6 +266,25 @@ def route(req):
                 return json_response(404, {'error': 'Nieobsługiwane zapytanie'})
             status, body = tmdb_fetch(sub, query)
             return status, [('Content-Type', 'application/json; charset=utf-8'), ('Cache-Control', 'private, max-age=600')], body
+        if path == '/api/friends':
+            user = current_user(req)
+            if not user:
+                return json_response(401, {'error': 'Niezalogowany'})
+            with db() as con:
+                return json_response(200, friend_lists(con, user['id']))
+        if path == '/api/friends/profile':
+            user = current_user(req)
+            if not user:
+                return json_response(401, {'error': 'Niezalogowany'})
+            name = dict(urllib.parse.parse_qsl(query)).get('u', '')
+            with db() as con:
+                other = user_by_name(con, name)
+                if not other or not are_friends(con, user['id'], other['id']):
+                    return json_response(403, {'error': 'Ten profil widzą tylko znajomi'})
+                row = con.execute('SELECT data FROM states WHERE user_id = ?', (other['id'],)).fetchone()
+            data = friend_profile(json.loads(row['data']) if row else {})
+            data['username'] = other['username']
+            return json_response(200, data)
         if path == '/api/config':
             return json_response(200, {'tmdb': bool(tmdb_key())})
         if path == '/api/me':
@@ -239,6 +308,30 @@ def route(req):
                 with db() as con:
                     con.execute('DELETE FROM sessions WHERE token = ?', (token,))
             return json_response(200, {'ok': True}, session_cookie(req, '', 0))
+        if path in ('/api/friends/add', '/api/friends/accept', '/api/friends/remove'):
+            user = current_user(req)
+            if not user:
+                return json_response(401, {'error': 'Niezalogowany'})
+            data = read_json(req)
+            if not isinstance(data, dict):
+                return json_response(400, {'error': 'Nieprawidłowe dane'})
+            with db() as con:
+                other = user_by_name(con, data.get('username', ''))
+                if not other:
+                    return json_response(404, {'error': 'Nie ma użytkownika o takiej nazwie'})
+                me, them = user['id'], other['id']
+                if me == them:
+                    return json_response(400, {'error': 'Nie możesz dodać samej/samego siebie'})
+                if path == '/api/friends/remove':  # usunięcie znajomego, odrzucenie lub cofnięcie zaproszenia
+                    con.execute('DELETE FROM friends WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?)', (me, them, them, me))
+                elif path == '/api/friends/accept':
+                    con.execute('UPDATE friends SET accepted = 1 WHERE from_id = ? AND to_id = ?', (them, me))
+                else:
+                    if con.execute('SELECT 1 FROM friends WHERE from_id = ? AND to_id = ?', (them, me)).fetchone():
+                        con.execute('UPDATE friends SET accepted = 1 WHERE from_id = ? AND to_id = ?', (them, me))  # wzajemne zaproszenie = znajomi
+                    elif not con.execute('SELECT 1 FROM friends WHERE from_id = ? AND to_id = ?', (me, them)).fetchone():
+                        con.execute('INSERT INTO friends VALUES (?, ?, 0, ?)', (me, them, int(time.time())))
+                return json_response(200, friend_lists(con, me))
         if path not in ('/api/login', '/api/register'):
             return json_response(404, {'error': 'Nie znaleziono'})
         data = read_json(req)
