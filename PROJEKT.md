@@ -493,3 +493,35 @@ Kroki:
 2. Utworzono **publiczne** repozytorium **https://github.com/juliaradosz/serialog** i wysłano gałąź `main` (12 plików).
 3. Sprawdzono przez API GitHuba: w repozytorium **nie ma** `tmdb_klucz.txt` ani `serialog.db`.
 4. Przepisano `INSTRUKCJA_PYTHONANYWHERE.md` pod GitHub: `git clone https://github.com/juliaradosz/serialog.git` w konsoli Bash, ręczne wgranie 2 plików (klucz + baza) przez zakładkę Files, konfiguracja WSGI, Force HTTPS, Reload, iPhone; aktualizacje: `cd ~/serialog && git pull` + Reload.
+
+### 2026-11-04 — Polecenie 26
+> (zrzut: strona PythonAnywhere „Coming Soon!”)
+
+- Diagnoza: konto i adres istnieją, ale nie utworzono jeszcze aplikacji WWW (zakładka Web → „Add a new web app”) albo otwierany jest adres innego regionu (konto EU ma adres `nazwa.eu.pythonanywhere.com`). Podano kroki 4–6 instrukcji ponownie.
+
+### 2026-11-04 — Polecenie 27
+> (log błędu PythonAnywhere) `ModuleNotFoundError: No module named 'server'` w `/var/www/julkar9_pythonanywhere_com_wsgi.py`
+
+- Diagnoza: nazwa użytkownika na PythonAnywhere to **julkar9**; Python nie znalazł `server.py` pod ścieżką z pliku WSGI — albo w pliku została ścieżka z `TWOJA_NAZWA`, albo folder `/home/julkar9/serialog` nie istnieje (nie wykonano `git clone`). Podano gotowy plik WSGI z `path = '/home/julkar9/serialog'` i komendy sprawdzające.
+
+### 2026-11-04 — Polecenie 28
+> (zrzut pliku WSGI z ostrzeżeniem „'server.application' imported but unused”)
+
+- Plik WSGI poprawny. Ostrzeżenie edytora jest niegroźne — PythonAnywhere sam używa zmiennej `application`. Dalej: Save → Reload → sprawdzić stronę/Error log.
+
+### 2026-11-04 — Polecenie 29
+> 1. na profilu przycisk na dole, który pokazuje edycję koloru tła itp. — można wybrać, który się chce, a jak coś nie będzie pasować, to jeszcze dopasować paskiem natężenie koloru itp.
+> 2. usuń repertuar, skoro i tak nie działa
+> 3. w „Dla Ciebie” zrób podział na filmy i seriale
+> → dopisane w trakcie: dopasuj do telefonu — nie da się nic przybliżać/oddalać, od razu dopasowane do ekranu; zakładki Seriale i Filmy na dole mają najpierw otwierać wyszukiwanie nowych, a „Moje” przełącza się po prawej u góry
+
+Zmiany:
+1. **„Dostosuj wygląd”** — przycisk na dole Profilu (z podglądem kolorów) otwiera panel: (1) wybór jednego z 10 motywów, (2) suwaki: **Kolor akcentu** (tęcza), **Natężenie akcentu**, **Kolor tła** (tęcza), **Natężenie tła**, **Jasność tła**. Podgląd na żywo podczas przesuwania, zapis po puszczeniu suwaka (na koncie i w przeglądarce); „Przywróć kolory motywu”. Wybór innego motywu kasuje własne dopasowania. Kolory liczone osobno dla jasnych i ciemnych motywów, żeby zawsze był czytelny kontrast.
+2. **Repertuar usunięty** — z aplikacji (zakładka, wybór kina, seanse, style) i z serwera (`/api/kina`, `/api/seanse`, kod pobierania z Cinema City/Multikina/Helios). Kino ma teraz: „Teraz w kinach” i „Wkrótce w kinach”.
+3. **„Dla Ciebie”**: zakładki **Seriale / Filmy** (po 40 propozycji); przełączanie bez przeliczania propozycji.
+4. **Telefon**: wyłączone przybliżanie (meta viewport `maximum-scale=1, user-scalable=no`, blokada gestu szczypania w Safari, `touch-action: manipulation` — bez przybliżania podwójnym stuknięciem), pola tekstowe 16 px (iPhone nie przybliża przy wpisywaniu), bez przewijania w bok, uwzględnione wcięcia ekranu iPhone'a (notch, pasek na dole).
+5. **Dolne menu Seriale/Filmy** otwiera **„Szukaj”**; kolejność zakładek: Szukaj · Gatunki · **Moje seriale/filmy** (po prawej). Logo i adres startowy też prowadzą do wyszukiwania.
+
+Testy (serwer testowy, widok telefonu 375 px): brak przewijania w bok na 10 ekranach (Seriale, serial, Filmy, Kino×2, Dla Ciebie, Do obejrzenia, Nadchodzące, Profil, aktor) ✔; „Dla Ciebie” Seriale/Filmy po 40, przełączanie bez ładowania ✔; „Dostosuj wygląd”: 10 motywów, 5 suwaków, zmiana koloru akcentu i tła na żywo + zapis na koncie ✔; Kino bez Repertuaru ✔; dolne menu → Szukaj, „Moje” po prawej ✔. Konta testowe usunięte.
+
+Wysłano na GitHub — na PythonAnywhere: `cd ~/serialog && git pull` + Reload.

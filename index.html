@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>SeriaLog</title>
 <!-- instalacja na ekranie głównym telefonu (iPhone: Udostępnij → Do ekranu początkowego) -->
 <link rel="manifest" href="manifest.json">
@@ -45,6 +45,14 @@
 [data-theme=navy]{--bg:#141a26;--card:#1c2433;--card2:#253044;--line:#303c53;--text:#e8edf6;--muted:#95a3bb;--accent:#6ea6f7;--accent-ink:#9cc2ff;--accent-soft:#22334f;--ok:#6fcf97;--ok-soft:#1d3a2c;--heart:#f08aa0;--gold:#f2c55c;--warn-bg:#3a3218;--warn-ink:#f2d593;--shadow:0 1px 2px rgba(0,0,0,.35),0 3px 12px rgba(0,0,0,.2);--shadow2:0 12px 32px rgba(0,0,0,.5);color-scheme:dark}
 [data-theme=graphite]{--bg:#18181a;--card:#222225;--card2:#2c2c30;--line:#39393e;--text:#efeee9;--muted:#a3a19a;--accent:#eea72f;--accent-ink:#f6c25e;--accent-soft:#3a3020;--ok:#8fca7a;--ok-soft:#26331f;--heart:#ef7f8e;--gold:#f2c14e;--warn-bg:#3a3018;--warn-ink:#f2d593;--shadow:0 1px 2px rgba(0,0,0,.35),0 3px 12px rgba(0,0,0,.2);--shadow2:0 12px 32px rgba(0,0,0,.5);color-scheme:dark}
 *{box-sizing:border-box}
+/* telefon: bez przybliżania podwójnym stuknięciem, bez poziomego przewijania, bez podświetlania stuknięć */
+html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden}
+body{overflow-x:hidden;overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent}
+img{max-width:100%}
+/* iPhone przybliża ekran przy polach z tekstem mniejszym niż 16px — dlatego 16px */
+input,select,textarea{font-size:16px!important}
+.top{padding-top:calc(13px + env(safe-area-inset-top))}
+.tabs .in{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
 html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Nunito,system-ui,-apple-system,"Segoe UI",sans-serif}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
@@ -115,7 +123,7 @@ h2 small{font-family:Nunito,sans-serif;font-size:13px;font-weight:600;color:var(
 .btn.danger,.danger{color:#c0392b}
 .btn:disabled{opacity:.5;cursor:default;transform:none}
 .link{color:var(--accent-ink);font-weight:700;font-size:13px;font-family:Nunito,sans-serif}
-.search{position:sticky;top:58px;z-index:4;padding:0 0 10px;background:var(--bg)}
+.search{position:sticky;top:calc(58px + env(safe-area-inset-top));z-index:4;padding:0 0 10px;background:var(--bg)}
 .search input{width:100%;padding:12px 16px 12px 42px;border-radius:12px;border:1px solid var(--line);background:var(--card) no-repeat 14px 50%/18px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a3937f' stroke-width='2.5'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");color:var(--text);font:inherit;outline:none}
 .search input:focus{border-color:var(--accent)}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
@@ -322,23 +330,11 @@ textarea:focus{border-color:var(--accent)}
 .dropbox b{display:block;color:var(--text);font-size:14.5px}
 .card.dropped{opacity:.85}
 .card.dropped .poster{filter:grayscale(.6)}
-.picker{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
-.picker label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;font-weight:800;color:var(--muted)}
-.picker select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;font-size:14px;font-weight:600}
-.picker select:disabled{opacity:.6}
-.pills.days{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
-.pills.days a{white-space:nowrap}
-.ccard.prog{align-items:flex-start}
-.times{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px}
-.time{display:inline-flex;flex-direction:column;align-items:center;min-width:58px;padding:5px 9px;border-radius:9px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;font-size:14px;line-height:1.2}
-.time small{font-size:10px;font-weight:700;opacity:.85}
-.time:hover{background:var(--accent);color:#fff}
-.time.past{background:var(--card2);color:var(--muted);opacity:.6;cursor:default;text-decoration:line-through}
 .why{font-size:11px;color:var(--accent-ink);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fy-head{display:flex;gap:12px;align-items:center;justify-content:space-between}
 .fy-head .btn{flex:none}
 .tabs a{font-size:10.5px}
-@media (max-width:400px){.tabs a{font-size:9.5px}.tabs a svg{width:20px;height:20px}.picker{grid-template-columns:1fr}}
+@media (max-width:400px){.tabs a{font-size:9.5px}.tabs a svg{width:20px;height:20px}}
 /* ---------- strona serialu ---------- */
 .hfav{position:absolute;top:12px;right:12px;z-index:2;width:38px;height:38px;border-radius:50%;background:rgba(255,250,240,.92);color:#8a7a6c;font-size:19px;display:flex;align-items:center;justify-content:center;transition:transform .15s}
 .hfav:hover{transform:scale(1.08)}
@@ -417,6 +413,26 @@ span.golink{line-height:0}
 .ep.skipped .m div{text-decoration:line-through;text-decoration-color:var(--muted)}
 .skiptag{display:inline-block;padding:0 6px;border-radius:5px;background:var(--card2);color:var(--muted);font-weight:800;font-size:11px}
 .season summary.skipped .sp{opacity:.5}
+.lookbtn{display:flex;align-items:center;gap:14px;width:100%;margin-top:16px;padding:14px 16px;border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);text-align:left}
+.lookbtn .sw{width:54px;height:40px;flex:none;border-radius:10px;position:relative;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1);overflow:hidden}
+.lookbtn .sw u{position:absolute;left:6px;top:6px;right:16px;height:9px;border-radius:4px}
+.lookbtn .sw i{position:absolute;right:6px;bottom:6px;width:14px;height:14px;border-radius:50%}
+.lookbtn div{flex:1;min-width:0}
+.lookbtn b{display:block;font-size:15.5px}
+.lookbtn small{color:var(--muted);font-size:12.5px;font-weight:600}
+.lookbtn .go{font-size:22px;color:var(--muted)}
+.look{padding:16px 0 6px}
+.look-head{display:flex;align-items:center;justify-content:space-between}
+.look-head b{font-family:Fraunces,serif;font-size:20px;font-weight:600}
+.look-head .x{width:34px;height:34px;border-radius:50%;background:var(--card2);font-weight:800}
+.slider{display:block;margin:12px 0}
+.sl-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.sl-top b{font-size:14px}
+.sl-top small{color:var(--muted);font-size:12px;font-weight:600}
+.slider input{width:100%;margin:8px 0 0;height:28px;accent-color:var(--accent);background:transparent}
+.slider.hue input{-webkit-appearance:none;appearance:none;height:14px;border-radius:7px;background:linear-gradient(90deg,hsl(0 70% 55%),hsl(60 70% 55%),hsl(120 70% 50%),hsl(180 70% 50%),hsl(240 70% 60%),hsl(300 70% 55%),hsl(359 70% 55%))}
+.slider.hue input::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--text);box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.slider.hue input::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--text)}
 .castrow{gap:12px}
 .castgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:16px 10px}
 .castgrid .person{width:auto}
@@ -445,12 +461,12 @@ code{background:var(--card2);padding:1px 6px;border-radius:6px}
 </head>
 <body>
 <div class="app">
-  <header class="top"><a href="#/shows" class="logo"><i></i>Seria<span>Log</span></a><span class="muted" id="count"></span></header>
+  <header class="top"><a href="#/shows-search" class="logo"><i></i>Seria<span>Log</span></a><span class="muted" id="count"></span></header>
   <main id="view"></main>
 </div>
 <nav class="tabs"><div class="in">
-  <a href="#/shows" data-tab="shows"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Seriale</a>
-  <a href="#/movies" data-tab="movies"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4M3 12h18"/></svg>Filmy</a>
+  <a href="#/shows-search" data-tab="shows"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Seriale</a>
+  <a href="#/movies-search" data-tab="movies"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4M3 12h18"/></svg>Filmy</a>
   <a href="#/cinema" data-tab="cinema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v3a3 3 0 0 0 0 6v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a3 3 0 0 0 0-6z"/><path d="M14 4v16" stroke-dasharray="2 2.5"/></svg>Kino</a>
   <a href="#/foryou" data-tab="foryou"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.4 5.6L20 9.3l-4.3 3.9 1.2 5.8L12 16.1 7.1 19l1.2-5.8L4 9.3l5.6-.7z"/></svg>Dla Ciebie</a>
   <a href="#/upcoming" data-tab="upcoming"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><circle cx="12" cy="15" r="2"/></svg>Nadchodzące<span class="dot" id="todayDot" hidden></span></a>
@@ -640,6 +656,7 @@ async function afterLogin() {
   await loadGenres();
   await pullState();
   if (state.prefs && state.prefs.theme) setTheme(state.prefs.theme);
+  if (state.prefs) setLook(state.prefs.look || null);
   loadFollowed().then(updateTodayDot);
 }
 
@@ -670,7 +687,7 @@ function renderLogin() {
       document.body.classList.remove('auth');
       if (hasTmdb) await afterLogin();
       toast(reg ? `Witaj, ${user}! Konto utworzone.` : `Witaj ponownie, ${user}!`);
-      location.hash = '#/shows'; render();
+      location.hash = '#/shows-search'; render();
     } catch (e) { $('#authErr').textContent = e.message; btn.disabled = false; }
   });
 }
@@ -857,17 +874,7 @@ const actions = {
     for (const k of Object.keys(state.notes || {})) if (k.startsWith(id + ':')) delete state.notes[k];
     save(); toast('Usunięto z moich seriali'); updateTodayDot(); rerender();
   },
-  progDay(d) { progDay = d.d; rerender(); },
-  async cinemaFind(d) {
-    // film z repertuaru kina → strona filmu (szukamy po tytule, potem po tytule oryginalnym)
-    toast('Szukam filmu…');
-    const tries = [[d.t, d.y], [d.o, d.y], [d.t, '']].filter(([q]) => q);
-    for (const [q, y] of tries) {
-      const res = await tmdb('search/movie', { query: q, ...(y ? { year: y } : {}) }).catch(() => ({ results: [] }));
-      if (res.results && res.results[0]) { location.hash = '#/movie/' + res.results[0].id; return; }
-    }
-    toast('Nie znaleziono tego filmu w bazie');
-  },
+  fyTab(d) { fyKind = d.k; scrollTo(0, 0); render(); },
   forYouRefresh() { forYou = null; rerender(); },
   toggleGroup(d) { openGroups.has(d.k) ? openGroups.delete(d.k) : openGroups.add(d.k); rerender(); },
   epInfo: d => openEpisode(d.id),
@@ -928,7 +935,9 @@ const actions = {
     save(); toast(`Zamieniono na „${main.show.name}” ✓`); location.hash = '#/show/' + to;
   },
   expand(d) { const id = +d.id; expanded.has(id) ? expanded.delete(id) : expanded.add(id); rerender(); },
-  theme(d) { setTheme(d.v, true); rerender(); },
+  theme(d) { setTheme(d.v, true); setLook(null, true); if (!$('#sheetWrap').classList.contains('hidden') && $('.look')) openLook(); rerender(); },
+  openLook() { openLook(); },
+  lookReset() { setLook(null, true); openLook(); },
   async more(d, el) {
     el.disabled = true; el.textContent = 'Ładowanie…';
     const res = await fetchList(listView.kind, listConfig(listView.kind, listView.key), listView.page + 1);
@@ -942,7 +951,7 @@ const actions = {
     if (save.t) { clearTimeout(save.t); await pushState(); }
     await api('/api/logout', { method: 'POST' }).catch(() => {});
     user = null; state = emptyState(); authTab = 'login';
-    location.hash = '#/shows'; render();
+    location.hash = '#/shows-search'; render();
   },
   export() {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
@@ -979,6 +988,8 @@ view.addEventListener('change', ev => {
   save(); toast('Zapisano datę obejrzenia');
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') actions.close(); });
+['gesturestart', 'gesturechange'].forEach(ev => document.addEventListener(ev, e => e.preventDefault(), { passive: false }));
+document.addEventListener('touchmove', e => { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
 $('#importFile').addEventListener('change', async ev => {
   const f = ev.target.files[0]; if (!f) return;
   try {
@@ -998,7 +1009,7 @@ async function render() {
   if (!user) return renderLogin();
   if (!hasTmdb) return renderInfo('Brak klucza TMDB', 'Wklej klucz API z themoviedb.org do pliku <b>tmdb_klucz.txt</b> w folderze aplikacji i uruchom ponownie start.bat.');
   document.body.classList.remove('auth');
-  const [, page = 'shows', arg] = location.hash.split('/');
+  const [, page = 'shows-search', arg] = location.hash.split('/');
   const tab = page.startsWith('show') ? 'shows' : page.startsWith('movie') ? 'movies' : page.startsWith('cinema') ? 'cinema' : page === 'towatch' ? 'upcoming' : page;
   document.querySelectorAll('.tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
   const nS = Object.keys(state.shows).length, nM = Object.keys(state.movies).length;
@@ -1015,8 +1026,7 @@ async function render() {
       case 'movies-search': return await renderSearch(token, 'movie');
       case 'movies-genres': return renderGenres('movie');
       case 'movies-list': return await renderList('movie', arg, token);
-      case 'cinema': return await renderProgram(token);
-      case 'cinema-now': case 'cinema-soon': return await renderCinema(token, page === 'cinema-soon' ? 'soon' : 'now');
+      case 'cinema': case 'cinema-now': case 'cinema-soon': return await renderCinema(token, page === 'cinema-soon' ? 'soon' : 'now');
       case 'foryou': return await renderForYou(token);
       case 'upcoming': return await renderUpcoming(token);
       case 'towatch': return await renderToWatch(token);
@@ -1030,8 +1040,8 @@ async function render() {
 window.addEventListener('hashchange', () => { actions.close(); editing = draft = null; visitSeed = Math.random(); render().then(() => scrollTo(0, 0)); });
 
 const subTabs = (items, on) => `<div class="sub">${items.map(([href, label, key]) => `<a href="${href}" class="${key === on ? 'on' : ''}">${label}</a>`).join('')}</div>`;
-const showTabs = on => subTabs([['#/shows', 'Moje seriale', 'mine'], ['#/shows-search', 'Szukaj', 'search'], ['#/shows-genres', 'Gatunki', 'genres']], on);
-const movieTabs = on => subTabs([['#/movies', 'Moje filmy', 'mine'], ['#/movies-search', 'Szukaj', 'search'], ['#/movies-genres', 'Gatunki', 'genres']], on);
+const showTabs = on => subTabs([['#/shows-search', 'Szukaj', 'search'], ['#/shows-genres', 'Gatunki', 'genres'], ['#/shows', 'Moje seriale', 'mine']], on);
+const movieTabs = on => subTabs([['#/movies-search', 'Szukaj', 'search'], ['#/movies-genres', 'Gatunki', 'genres'], ['#/movies', 'Moje filmy', 'mine']], on);
 const emptyBox = (title, text, href, label) => `<div class="empty"><b>${title}</b>${text}<br><br><a class="btn" href="${href}">${label}</a></div>`;
 
 function tile(kind, x) {
@@ -1247,72 +1257,8 @@ async function renderCinema(token, sub) {
   view.innerHTML = tabs + `<div class="muted small">${sub === 'now' ? 'Filmy grane teraz w polskich kinach' : 'Zapowiedzi kinowe — polskie daty premier'} · ${plural(list.length, 'film', 'filmy', 'filmów')}</div>` + body;
 }
 
-// ---------- kino: wybór miasta i kina + repertuar (Cinema City, Multikino, Helios) ----------
-const cinemaTabs = on => subTabs([['#/cinema', 'Repertuar', 'prog'], ['#/cinema-now', 'Teraz w kinach', 'now'], ['#/cinema-soon', 'Wkrótce', 'soon']], on);
-let cinemas = null, progDay = null;
-const progCache = {};
-// „Warszawa - Arkadia” / „WARSZAWA Galeria Blue City” → „Arkadia” / „Galeria Blue City”
-const cinemaShort = c => { const n = c.name.replace(new RegExp('^' + c.city.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*-?\\s*', 'i'), '').trim(); return n || c.name; };
-async function renderProgram(token) {
-  const tabs = cinemaTabs('prog');
-  if (!cinemas) {
-    view.innerHTML = tabs + '<div class="loading">Wczytuję listę kin…</div>';
-    cinemas = await api('/api/kina');
-    if (token !== renderToken) return;
-  }
-  if (!cinemas.length) {
-    // np. darmowy PythonAnywhere blokuje połączenia ze stronami kin
-    view.innerHTML = tabs + `<div class="empty"><b>Repertuar kin jest tu niedostępny</b>Ten serwer nie może łączyć się ze stronami kin. Zakładki „Teraz w kinach” i „Wkrótce” działają normalnie, a repertuar konkretnego kina sprawdzisz na stronie sieci:
-      <div class="actions" style="justify-content:center;margin-top:14px">
-        <a class="btn ghost sm" href="https://www.cinema-city.pl/" target="_blank" rel="noopener">Cinema City ↗</a>
-        <a class="btn ghost sm" href="https://www.multikino.pl/" target="_blank" rel="noopener">Multikino ↗</a>
-        <a class="btn ghost sm" href="https://www.helios.pl/" target="_blank" rel="noopener">Helios ↗</a></div></div>`;
-    cinemas = null;  // spróbuj ponownie przy następnym wejściu
-    return;
-  }
-  const prefs = state.prefs || (state.prefs = {});
-  const cities = [...new Set(cinemas.map(c => c.city))].sort((a, b) => a.localeCompare(b, 'pl'));
-  const city = cities.includes(prefs.city) ? prefs.city : '';
-  const inCity = cinemas.filter(c => c.city === city);
-  const cin = inCity.find(c => c.key === prefs.cinema) || null;
-  const days = [...Array(7)].map((_, i) => ymd(Date.now() + i * 864e5));
-  const day = days.includes(progDay) ? progDay : days[0];
-  const dayName = (d, i) => i === 0 ? 'Dziś' : i === 1 ? 'Jutro' : parseDate(d).toLocaleDateString('pl-PL', { weekday: 'short', day: 'numeric', month: 'numeric' });
-  view.innerHTML = tabs + `
-    <div class="panel picker">
-      <label>Miasto<select id="citySel"><option value="">— wybierz miasto —</option>${cities.map(c => `<option ${c === city ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select></label>
-      <label>Kino<select id="cinSel" ${city ? '' : 'disabled'}><option value="">${city ? `— wybierz kino (${inCity.length}) —` : 'najpierw wybierz miasto'}</option>
-        ${inCity.map(c => `<option value="${esc(c.key)}" ${cin && c.key === cin.key ? 'selected' : ''}>${esc(c.chain)} · ${esc(cinemaShort(c))}</option>`).join('')}</select></label>
-    </div>
-    ${cin ? `<div class="pills days">${days.map((d, i) => `<a data-act="progDay" data-d="${d}" class="${d === day ? 'on' : ''}">${dayName(d, i)}</a>`).join('')}</div>
-      <div id="prog"><div class="loading">Pobieram repertuar ${esc(cin.chain)} · ${esc(cinemaShort(cin))}…</div></div>`
-      : `<div class="empty"><b>Wybierz kino</b>Repertuar pobieramy prosto z Cinema City, Multikina i Helios. Wybór zapamiętamy na Twoim koncie.</div>`}`;
-  $('#citySel').onchange = e => { prefs.city = e.target.value; prefs.cinema = ''; save(); rerender(); };
-  $('#cinSel').onchange = e => { prefs.cinema = e.target.value; save(); rerender(); };
-  if (!cin) return;
-  const ck = cin.key + '|' + day;
-  let films;
-  try { films = progCache[ck] ||= await api(`/api/seanse?kino=${encodeURIComponent(cin.key)}&data=${day}`); }
-  catch (e) {
-    delete progCache[ck];
-    if ($('#prog')) $('#prog').innerHTML = `<div class="empty"><b>${e.status === 403 ? 'Repertuar dostępny tylko na stronie kina' : 'Nie udało się pobrać repertuaru'}</b>${esc(e.message)}
-      ${cin.url ? `<br><br><a class="btn" href="${esc(cin.url)}" target="_blank" rel="noopener">Otwórz repertuar ${esc(cin.chain)} ↗</a>` : ''}</div>`;
-    return;
-  }
-  if (token !== renderToken || !$('#prog')) return;
-  const now = new Date(), isToday = day === days[0], hm = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
-  $('#prog').innerHTML = films.length ? `<div class="muted small">${plural(films.length, 'film', 'filmy', 'filmów')} · kliknij godzinę, aby kupić bilet</div>
-    <div class="list" style="margin-top:8px">${films.map(f => `<div class="ccard prog">
-      ${f.poster ? `<img class="poster" src="${esc(f.poster)}" alt="" loading="lazy">` : poster(null, f.title)}
-      <div class="body">
-        <div class="t">${esc(f.title)}</div>
-        <div class="n">${[f.original, f.year, f.length && f.length + ' min'].filter(Boolean).map(esc).join(' · ')}</div>
-        <div class="times">${f.times.map(s => { const past = isToday && s.t < hm;
-          return `<a class="time ${past ? 'past' : ''}" ${past ? '' : `href="${esc(s.url || '#')}" target="_blank" rel="noopener"`}>${s.t}${s.attrs.length ? `<small>${esc(s.attrs.join(' · '))}</small>` : ''}</a>`; }).join('')}</div>
-        <button class="link" data-act="cinemaFind" data-t="${esc(f.title)}" data-o="${esc(f.original || '')}" data-y="${esc(f.year || '')}">Opis, zwiastun i gdzie obejrzeć ›</button>
-      </div></div>`).join('')}</div>`
-    : '<div class="empty"><b>Brak seansów tego dnia</b>Wybierz inny dzień albo inne kino.</div>';
-}
+// ---------- kino ----------
+const cinemaTabs = on => subTabs([['#/cinema', 'Teraz w kinach', 'now'], ['#/cinema-soon', 'Wkrótce w kinach', 'soon']], on);
 
 // ---------- „Dla Ciebie”: propozycje na podstawie obejrzanych, ocenionych, ulubionych i odłożonych tytułów ----------
 let forYou = null;
@@ -1361,12 +1307,13 @@ async function buildForYou() {
     const res = await tmdb(`discover/${kind}`, { with_genres: g.id, sort_by: 'popularity.desc', 'vote_count.gte': kind === 'movie' ? 300 : 50, page: 1 + Math.floor(r() * 8) }).catch(() => ({ results: [] }));
     (res.results || []).forEach(x => add(kind, x, .6, `gatunek: ${g.name}`));
   }));
-  const rank = kind => Object.values(cand).filter(c => c.kind === kind).map(c => ({ ...c, s: c.score + r() * 1.2 })).sort((a, b) => b.s - a.s).slice(0, 30);
+  const rank = kind => Object.values(cand).filter(c => c.kind === kind).map(c => ({ ...c, s: c.score + r() * 1.2 })).sort((a, b) => b.s - a.s).slice(0, 40);
   Object.values(cand).forEach(c => seen[c.kind][c.x.id] = c.x);
   return { tv: rank('tv'), movie: rank('movie'), seeds: picked.length, sig: Object.keys(state.shows).length + ':' + Object.keys(state.movies).length };
 }
+let fyKind = 'tv';  // zakładka w „Dla Ciebie” (przełączana bez przeładowania propozycji)
 async function renderForYou(token) {
-  const head = `<h2 style="margin-top:20px">Dla Ciebie</h2>`;
+  const head = `<div class="sub"><a data-act="fyTab" data-k="tv" class="${fyKind === 'tv' ? 'on' : ''}">Seriale</a><a data-act="fyTab" data-k="movie" class="${fyKind === 'movie' ? 'on' : ''}">Filmy</a></div>`;
   const nS = Object.keys(state.shows).length, nM = Object.keys(state.movies).length;
   if (!nS && !nM) { view.innerHTML = head + emptyBox('Dodaj kilka tytułów', 'Propozycje powstają na podstawie seriali i filmów, które oglądasz, oceniasz i odkładasz na później.', '#/shows-search', 'Szukaj seriali'); return; }
   // propozycje liczone raz na wizytę — dodanie tytułu nie przeładowuje listy ani nie przewija ekranu
@@ -1379,10 +1326,11 @@ async function renderForYou(token) {
   const why = c => [...c.why].slice(0, 2).join(', ');
   // dodane tytuły zostają na swoim miejscu (z ✓), żeby siatka nie przesuwała się pod palcem
   const grid = (kind, list) => `<div class="grid">${list.map(c => tile(kind, c.x).replace(/<\/div>\s*$/, `<div class="why" title="Bo: ${esc([...c.why].join(', '))}">bo: ${esc(why(c))}</div></div>`)).join('')}</div>`;
-  view.innerHTML = head + `<div class="fy-head"><div class="muted small">Na podstawie ${plural(nS, 'serialu', 'seriali', 'seriali')} i ${plural(nM, 'filmu', 'filmów', 'filmów')} z Twojej listy — obejrzanych, ocenionych, ulubionych i odłożonych na później.</div>
+  const list = forYou[fyKind], isTv = fyKind === 'tv';
+  view.innerHTML = head + `<div class="fy-head"><div class="muted small">${isTv ? 'Seriale' : 'Filmy'} dobrane na podstawie Twojej listy — obejrzanych, ocenionych, ulubionych i odłożonych na później.</div>
     <button class="btn ghost sm" data-act="forYouRefresh">↻ Inne propozycje</button></div>
-    ${forYou.tv.length ? `<h2>Seriale, które mogą Ci się spodobać</h2>${grid('tv', forYou.tv)}` : ''}
-    ${forYou.movie.length ? `<h2>Filmy, które mogą Ci się spodobać</h2>${grid('movie', forYou.movie)}` : ''}`;
+    ${list.length ? `<h2>${isTv ? 'Seriale' : 'Filmy'}, które mogą Ci się spodobać</h2>${grid(fyKind, list)}`
+      : `<div class="empty"><b>Za mało danych</b>Dodaj kilka ${isTv ? 'seriali' : 'filmów'} (obejrzanych albo na później), a pojawią się tu propozycje.</div>`}`;
 }
 
 // ---------- automatyczne doładowywanie list (zamiast „Pokaż więcej”) ----------
@@ -2087,16 +2035,15 @@ async function renderProfile(token) {
     ${hist.length ? `<h2>Ostatnio obejrzane</h2>${hist.map(x => `<a class="hist" href="${x.href}"><span>${x.html}</span><span class="muted">${fmtDate(x.t)}</span></a>`).join('')}` : ''}
     <h2>Ustawienia</h2>
     <div class="panel">
-      <div class="muted small" style="margin-bottom:8px">Wygląd</div>
-      <div class="themes">${THEMES.map(([k, n, bg, card, acc]) => `<a class="th ${document.documentElement.dataset.theme === k ? 'on' : ''}" data-act="theme" data-v="${k}">
-        <span class="sw" style="background:${bg}"><u style="background:${card}"></u><i style="background:${acc}"></i></span>${n}</a>`).join('')}</div>
-      <div class="muted small" style="margin:6px 0 8px">Dane</div>
+      <div class="muted small" style="margin:0 0 8px">Dane</div>
       <div class="actions" style="margin:0">
         <button class="btn ghost sm" data-act="export">⬇ Eksportuj</button>
         <button class="btn ghost sm" data-act="import">⬆ Importuj</button>
         <button class="btn ghost sm danger" data-act="reset">Wyczyść wszystko</button>
       </div>
     </div>
+    <button class="lookbtn" data-act="openLook"><span class="sw" style="background:var(--bg)"><u style="background:var(--card)"></u><i style="background:var(--accent)"></i></span>
+      <div><b>Dostosuj wygląd</b><small>Motyw, kolory tła i akcentu, natężenie</small></div><span class="go">›</span></button>
     <p class="muted" style="font-size:12px;margin-top:24px">Recenzje i notatki są prywatne — widzi je tylko właściciel konta. Dane o filmach i serialach: TMDB (themoviedb.org); aplikacja korzysta z API TMDB, ale nie jest przez TMDB wspierana ani certyfikowana. Dostępność w serwisach: JustWatch.</p>`;
 }
 
@@ -2118,7 +2065,69 @@ function setTheme(t, persist) {
   try { localStorage.setItem('serialog.theme', th[0]); } catch (e) {}
   if (persist && user) { (state.prefs ||= {}).theme = th[0]; save(); }  // motyw zapisany też na koncie
 }
+// ---------- własne dopasowanie kolorów (suwaki w „Dostosuj wygląd”) ----------
+const hexHsl = hex => {
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255);
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+  if (!d) return [0, 0, Math.round(l * 100)];
+  const s = d / (1 - Math.abs(2 * l - 1));
+  const h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [Math.round((h * 60 + 360) % 360), Math.round(s * 100), Math.round(l * 100)];
+};
+const themeOf = () => THEMES.find(x => x[0] === document.documentElement.dataset.theme) || THEMES[0];
+// wartości startowe suwaków = kolory aktualnego motywu
+function lookDefaults() {
+  const th = themeOf(), [ah, as] = hexHsl(th[4]), [bh, bs] = hexHsl(th[2]);
+  return { ah, as, bh, bs: Math.min(bs, 60), bl: 0 };
+}
+const LOOK_VARS = ['--accent', '--accent-ink', '--accent-soft', '--bg', '--card', '--card2', '--line'];
+function applyLook(c) {
+  const st = document.documentElement.style;
+  if (!c) { LOOK_VARS.forEach(v => st.removeProperty(v)); return; }
+  const dark = !!themeOf()[5], cl = (x, a, b) => Math.max(a, Math.min(b, x));
+  const hsl = (h, s, l) => `hsl(${h} ${cl(s, 0, 100)}% ${cl(l, 0, 100)}%)`;
+  st.setProperty('--accent', hsl(c.ah, c.as, dark ? 64 : 47));
+  st.setProperty('--accent-ink', hsl(c.ah, c.as, dark ? 74 : 36));
+  st.setProperty('--accent-soft', hsl(c.ah, c.as * (dark ? .35 : .6), dark ? 22 : 91));
+  st.setProperty('--bg', hsl(c.bh, c.bs * (dark ? .5 : 1), (dark ? 10 : 95) + c.bl));
+  st.setProperty('--card', hsl(c.bh, c.bs * (dark ? .5 : .7), (dark ? 14 : 99) + c.bl / (dark ? 1 : 4)));
+  st.setProperty('--card2', hsl(c.bh, c.bs * (dark ? .5 : 1), (dark ? 18 : 90) + c.bl));
+  st.setProperty('--line', hsl(c.bh, c.bs * (dark ? .45 : .8), (dark ? 24 : 85) + c.bl));
+}
+function setLook(c, persist) {
+  applyLook(c);
+  try { c ? localStorage.setItem('serialog.look', JSON.stringify(c)) : localStorage.removeItem('serialog.look'); } catch (e) {}
+  if (persist && user) { (state.prefs ||= {}).look = c || null; save(); }
+}
+const LOOK_SLIDERS = [
+  ['ah', 'Kolor akcentu', 0, 359, 'przyciski, paski, wyróżnienia'], ['as', 'Natężenie akcentu', 10, 100, 'od stonowanego do żywego'],
+  ['bh', 'Kolor tła', 0, 359, 'odcień tła i kart'], ['bs', 'Natężenie tła', 0, 60, 'od neutralnego do kolorowego'],
+  ['bl', 'Jasność tła', -6, 6, 'ciemniej ← → jaśniej'],
+];
+function openLook() {
+  const cur = (state.prefs && state.prefs.look) || null, c = cur || lookDefaults(), th = themeOf()[0];
+  $('#sheet').innerHTML = `<div class="look">
+    <div class="look-head"><b>Dostosuj wygląd</b><button class="x" data-act="close" title="Zamknij">✕</button></div>
+    <div class="muted small" style="margin:4px 0 8px">1. Wybierz motyw</div>
+    <div class="themes">${THEMES.map(([k, n, bg, card, acc]) => `<a class="th ${th === k ? 'on' : ''}" data-act="theme" data-v="${k}">
+      <span class="sw" style="background:${bg}"><u style="background:${card}"></u><i style="background:${acc}"></i></span>${n}</a>`).join('')}</div>
+    <div class="muted small" style="margin:16px 0 4px">2. Dopasuj kolory ${cur ? '<span class="tag">własne</span>' : ''}</div>
+    ${LOOK_SLIDERS.map(([k, label, min, max, hint]) => `<label class="slider ${k === 'ah' || k === 'bh' ? 'hue' : ''}">
+      <span class="sl-top"><b>${label}</b><small>${hint}</small></span>
+      <input type="range" min="${min}" max="${max}" step="1" value="${c[k]}" data-k="${k}"></label>`).join('')}
+    <div class="actions" style="margin:16px 0 0">
+      <button class="btn" data-act="close">Gotowe</button>
+      ${cur ? '<button class="btn ghost" data-act="lookReset">Przywróć kolory motywu</button>' : ''}
+    </div></div>`;
+  $('#sheetWrap').classList.remove('hidden');
+  const read = () => { const o = { ...c }; document.querySelectorAll('.look input[type=range]').forEach(i => o[i.dataset.k] = +i.value); return o; };
+  document.querySelectorAll('.look input[type=range]').forEach(i => {
+    i.oninput = () => applyLook(read());               // podgląd na żywo
+    i.onchange = () => { setLook(read(), true); };      // zapis po puszczeniu suwaka
+  });
+}
 try { setTheme(localStorage.getItem('serialog.theme')); } catch (e) { setTheme('cream'); }
+try { applyLook(JSON.parse(localStorage.getItem('serialog.look') || 'null')); } catch (e) {}
 function updateTodayDot() {
   const today = todayStr();
   const n = Object.keys(state.shows).filter(id => showCache[id] && !isDropped(id)).reduce((a, id) => a + showCache[id].episodes.filter(e => e.air === today).length, 0);
