@@ -8,3 +8,6 @@ serialog.db-*
 .claude/
 __pycache__/
 *.pyc
+
+# kopia repozytorium pobrana przez pomyłkę na komputerze
+serialog/
