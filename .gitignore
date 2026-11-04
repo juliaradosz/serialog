@@ -11,3 +11,9 @@ __pycache__/
 
 # kopia repozytorium pobrana przez pomyłkę na komputerze
 serialog/
+
+# konfiguracja wysyłki e-maili (hasło do aplikacji Gmail)
+email_konfig.txt
+
+# zdjęcia źródłowe (ikona jest w icon-*.png)
+*.jpg

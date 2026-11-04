@@ -526,3 +526,25 @@ Testy (serwer testowy, widok telefonu 375 px): brak przewijania w bok na 10 ekra
 
 Wysłano na GitHub — na PythonAnywhere: `cd ~/serialog && git pull` + Reload.
 - Przy wysyłaniu wykryto w folderze aplikacji podfolder `serialog/` — lokalną kopię repozytorium (prawdopodobnie `git clone` wpisane na komputerze zamiast na PythonAnywhere). Do GitHuba trafił tylko odnośnik (bez zawartości, bez klucza) — usunięto go kolejnym commitem i dodano `serialog/` do `.gitignore`. Samego folderu na komputerze nie usuwano (można go skasować ręcznie).
+
+### 2026-11-04 — Polecenie 30
+> 1. statystyki jako osobna strona: wykres z rokiem i miesiącami (ile filmów i odcinków w danym miesiącu), ile dni łącznie na serialach, filmach i razem — ładnie, żeby nie zaśmiecać profilu
+> 2. (zrzut menu „⋯”) zamiast kropek pokaż te opcje normalnie na ekranie
+> 3. przy rejestracji wymagany e-mail, żeby w razie czego zresetować hasło; daj też taką możliwość dla mojego konta
+> → dopisane w trakcie: (obrazek różowej pieczęci) „daj to na ikonę aplikacji”; „w Szukaj daj nieskończoność propozycji do przewijania zamiast kategorii”; „w Szukaj niech nie pojawiają się już dodane filmy i seriale”
+
+Zmiany:
+1. **Strona „Statystyki”** (`#/stats`, z Profilu: „Statystyki i wykresy ›”): karty czasu — Seriale, Filmy, **Razem** (dni + godziny, „to 1,7 doby bez przerwy”, liczba ukończonych seriali); wybór roku; podsumowanie roku; **dwa wykresy słupkowe miesięcy** (odcinki / filmy — każdy z własną skalą, kolory sprawdzone walidatorem pod kątem daltonizmu w jasnym i ciemnym motywie); stuknięcie miesiąca pokazuje szczegóły (liczba + czas); „Najczęściej oglądane w roku”; tabela „Miesiąc po miesiącu”. Profil ma teraz tylko małą kartę + link.
+2. **Strona serialu**: menu „⋯” zastąpione trzema przyciskami widocznymi od razu: „Obejrzane wszystko”, „Przerwij/Wznów oglądanie”, „Usuń z moich”.
+3. **E-mail i reset hasła**:
+   - rejestracja wymaga e-maila (jeden adres = jedno konto);
+   - Profil → „Brak e-maila — Dodaj” / „Zmień” (potwierdzenie obecnym hasłem) — także dla istniejącego konta „julkar8”;
+   - logowanie → **„Nie pamiętasz hasła?”** → e-mail → 6-cyfrowy kod (ważny 30 min, max 5 prób, limit próśb z jednego IP) → nowe hasło; po zmianie hasła wylogowanie ze wszystkich urządzeń; serwer nie zdradza, czy adres istnieje;
+   - wysyłka przez **Gmail** (jedyna poczta dostępna na darmowym PythonAnywhere — sprawdzone na forum/pomocy PythonAnywhere) z „hasłem do aplikacji”; konfiguracja w `email_konfig.txt` (wzór: `email_konfig.przyklad.txt`, plik w `.gitignore`);
+   - baza: nowa kolumna `users.email` (dodawana automatycznie do starej bazy) i tabela `resets`.
+4. **Ikona aplikacji**: różowa pieczęć z klapsem filmowym od użytkownika → `icon-180/192/512.png`; ikona też na ekranie logowania.
+5. **Szukaj**: zamiast kategorii **jedna nieskończona lista propozycji** (przy każdym doładowaniu po stronie z dwóch losowych źródeł: popularne, polskie, w polskich serwisach, najwyżej oceniane, klasyka…), doładowywana przy przewijaniu bez skakania ekranu; pomijane tytuły bez polskiego/łacińskiego zapisu oraz **tytuły już dodane** (wyszukiwanie po konkretnym tytule nadal je pokazuje z ✓/👁, żeby nie wyglądało, że ich nie ma).
+
+Testy: reset hasła i e-maile na kopii serwera (bez wysyłki — podstawiona funkcja): rejestracja bez e-maila odrzucona, duplikat e-maila odrzucony, brak konfiguracji → czytelny komunikat, nieznany e-mail → ta sama odpowiedź, zły kod odrzucony, dobry kod zmienia hasło i wylogowuje stare sesje, kod jednorazowy, zmiana e-maila wymaga hasła, stara baza z kontem „julkar8” działa ✔. W przeglądarce (widok telefonu): rejestracja z e-mailem, statystyki (2026/2025, marzec: 4 odcinki · 1 film), przyciski serialu, nieskończona lista (77 → 80, bez nagłówków kategorii), ukrywanie dodanych ✔. Konta testowe usunięte.
+
+Do zrobienia przez użytkownika: `git pull` + Reload na PythonAnywhere; skonfigurować Gmail (instrukcja); dodać e-mail w Profilu; usunąć i dodać ponownie ikonę na iPhonie.

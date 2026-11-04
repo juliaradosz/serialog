@@ -433,6 +433,59 @@ span.golink{line-height:0}
 .slider.hue input{-webkit-appearance:none;appearance:none;height:14px;border-radius:7px;background:linear-gradient(90deg,hsl(0 70% 55%),hsl(60 70% 55%),hsl(120 70% 50%),hsl(180 70% 50%),hsl(240 70% 60%),hsl(300 70% 55%),hsl(359 70% 55%))}
 .slider.hue input::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--text);box-shadow:0 2px 6px rgba(0,0,0,.3)}
 .slider.hue input::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--text)}
+.sactions{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;margin:0 0 14px}
+.sactions button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-weight:800;font-size:12.5px;color:var(--text);line-height:1.2;text-align:center}
+.sactions button span{width:28px;height:28px;border-radius:9px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:13px}
+.sactions button:hover{border-color:var(--accent)}
+.sactions button.on{background:var(--accent-soft);border-color:transparent;color:var(--accent-ink)}
+.sactions button.danger{color:#b13a32}
+.login-ico{width:84px;height:84px;border-radius:22px;display:block;margin:0 auto 10px;box-shadow:var(--shadow)}
+.login .link{display:block;margin-top:12px;cursor:pointer}
+.acct-mail{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:13.5px}
+.acct-mail .body{flex:1;min-width:0}
+.acct-mail.warn{color:var(--warn-ink)}
+.pcard-link{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;padding:9px;border-radius:10px;background:var(--card2);font-weight:800;font-size:13.5px;color:var(--accent-ink)}
+.mailform{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.mailform input{padding:13px 15px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;outline:none}
+.mailform .err{color:#c0392b;font-weight:700;font-size:14px;min-height:18px}
+:root{--c-tv:#c4643f;--c-mv:#2b78c2}
+[data-dark="1"]{--c-tv:#d2734f;--c-mv:#3d8fd9}
+.sthead{display:flex;align-items:baseline;gap:12px;margin-top:16px}
+.sthead h2{margin:0}
+.back2{font-weight:800;color:var(--accent-ink);font-size:14px}
+.tcards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.tcard{background:var(--card);border-radius:var(--r);padding:14px;box-shadow:var(--shadow);border-top:4px solid var(--line)}
+.tcard.tv{border-top-color:var(--c-tv)}.tcard.mv{border-top-color:var(--c-mv)}
+.tcard.all{grid-column:1/-1;border-top-color:var(--accent);text-align:center}
+.tcard small{display:block;color:var(--muted);font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+.tcard b{display:block;font-family:Fraunces,serif;font-size:19px;font-weight:600;margin:4px 0 2px;line-height:1.2}
+.tcard.all b{font-size:25px}
+.tcard span{color:var(--muted);font-size:12.5px;font-weight:600}
+.pills.years{margin-top:16px;flex-wrap:nowrap;overflow-x:auto}
+.ysum{display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.ysum b{display:block;font-size:17px;line-height:1.25}.ysum small{color:var(--muted);font-weight:700;font-size:12px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:0}
+.dot.tv{background:var(--c-tv)}.dot.mv{background:var(--c-mv)}
+.chart{position:relative;margin-top:6px}
+.ch-max{position:absolute;right:0;top:-2px;font-size:11px;color:var(--muted);font-weight:700}
+.ch-bars{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:4px;height:130px;align-items:end;padding-top:16px;border-bottom:1px solid var(--line)}
+.ch-col{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;position:relative;border-radius:6px}
+.ch-col:hover,.ch-col.sel{background:var(--card2)}
+.ch-bar{width:70%;max-width:18px;border-radius:4px 4px 0 0;display:block}
+.chart.tv .ch-bar{background:var(--c-tv)}.chart.mv .ch-bar{background:var(--c-mv)}
+.ch-col.future .ch-bar{opacity:.3}
+.ch-lbl{position:absolute;bottom:-20px;font-size:10.5px;color:var(--muted);font-weight:700}
+.chart{margin-bottom:22px}
+.ch-info{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;padding-top:6px;font-size:13.5px}
+.ch-info b{width:100%}
+.toprow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.toprow:last-child{border-bottom:0}
+.toprow .rk{width:24px;height:24px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;font-size:12.5px;display:flex;align-items:center;justify-content:center;flex:none}
+.toprow .nm{flex:1;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mtable{width:100%;border-collapse:collapse;font-size:13.5px}
+.mtable th{text-align:left;color:var(--muted);font-size:12px;font-weight:800;padding:4px 0 8px}
+.mtable td{padding:7px 0;border-top:1px solid var(--line)}
+.mtable td:not(:first-child),.mtable th:not(:first-child){text-align:right}
 .castrow{gap:12px}
 .castgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:16px 10px}
 .castgrid .person{width:auto}
@@ -527,6 +580,7 @@ let visitSeed = Math.random();
 const rng = seed => () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
 const shuffled = (arr, salt = 0) => { const r = rng(Math.floor(visitSeed * 233280) + salt * 7919); const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const inLibrary = (kind, id) => kind === 'tv' ? !!state.shows[id] : !!state.movies[id];
+let userEmail = null, mailEnabled = false;  // e-mail konta i czy serwer umie wysyłać kody resetu
 let mode = 'local', user = null, authTab = 'login', hasTmdb = false;
 let state = emptyState();
 const showCache = {};   // id serialu -> {show, episodes}
@@ -653,6 +707,7 @@ async function loadGenres() {
   m.genres.forEach(g => genres.movie[g.id] = gname(g.name));
 }
 async function afterLogin() {
+  try { const me = await api('/api/me'); userEmail = me.email || null; mailEnabled = !!me.mail; } catch (e) {}
   await loadGenres();
   await pullState();
   if (state.prefs && state.prefs.theme) setTheme(state.prefs.theme);
@@ -660,35 +715,58 @@ async function afterLogin() {
   loadFollowed().then(updateTodayDot);
 }
 
+let resetEmail = '', resetSent = false;  // stan „Nie pamiętam hasła”
 function renderLogin() {
   document.body.classList.add('auth');
-  const reg = authTab === 'register';
-  view.innerHTML = `<div class="login">
-    <span class="logo"><i></i>Seria<span>Log</span></span>
-    <div class="muted">Twoje seriale i filmy w jednym miejscu</div>
-    <div class="sub" style="margin-top:24px"><a class="${reg ? '' : 'on'}" data-act="authTab" data-t="login">Logowanie</a><a class="${reg ? 'on' : ''}" data-act="authTab" data-t="register">Załóż konto</a></div>
-    <form id="authForm">
-      <input name="username" placeholder="Nazwa użytkownika" autocomplete="username" required minlength="3" maxlength="30">
+  const reg = authTab === 'register', rst = authTab === 'reset';
+  const form = rst ? (!resetSent
+      ? `<p class="muted small" style="margin:0 0 4px">Podaj e-mail przypisany do konta — wyślemy na niego 6-cyfrowy kod.</p>
+        <input name="email" type="email" placeholder="Adres e-mail" autocomplete="email" required value="${esc(resetEmail)}">
+        <button class="btn" type="submit">Wyślij kod</button>`
+      : `<p class="muted small" style="margin:0 0 4px">Wpisz kod z e-maila wysłanego na <b>${esc(resetEmail)}</b> i ustaw nowe hasło.</p>
+        <input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="Kod z e-maila (6 cyfr)" autocomplete="one-time-code" required>
+        <input name="password" type="password" placeholder="Nowe hasło (min. 6 znaków)" autocomplete="new-password" required minlength="6">
+        <input name="password2" type="password" placeholder="Powtórz nowe hasło" autocomplete="new-password" required>
+        <button class="btn" type="submit">Ustaw nowe hasło</button>
+        <a class="link" data-act="resetAgain">Nie dostałam/em kodu — wyślij ponownie</a>`)
+    : `<input name="username" placeholder="Nazwa użytkownika" autocomplete="username" required minlength="3" maxlength="30">
+      ${reg ? '<input name="email" type="email" placeholder="Adres e-mail (do resetu hasła)" autocomplete="email" required>' : ''}
       <input name="password" type="password" placeholder="${reg ? 'Hasło (min. 6 znaków)' : 'Hasło'}" autocomplete="${reg ? 'new-password' : 'current-password'}" required minlength="${reg ? 6 : 1}">
       ${reg ? '<input name="password2" type="password" placeholder="Powtórz hasło" autocomplete="new-password" required>' : ''}
       <button class="btn" type="submit">${reg ? 'Załóż konto' : 'Zaloguj się'}</button>
-      <div class="err" id="authErr"></div>
-    </form>
-    <div class="feat"><div><b>📺</b>Odcinki i sezony</div><div><b>🎬</b>Filmy i kina w Polsce</div><div><b>📅</b>Kalendarz premier</div></div>
+      ${reg ? '' : '<a class="link" data-act="authTab" data-t="reset">Nie pamiętasz hasła?</a>'}`;
+  view.innerHTML = `<div class="login">
+    <img class="login-ico" src="icon-192.png" alt="">
+    <span class="logo">Seria<span>Log</span></span>
+    <div class="muted">Twoje seriale i filmy w jednym miejscu</div>
+    ${rst ? '<h3 style="margin:22px 0 8px">Reset hasła</h3>'
+      : `<div class="sub" style="margin-top:24px"><a class="${reg ? '' : 'on'}" data-act="authTab" data-t="login">Logowanie</a><a class="${reg ? 'on' : ''}" data-act="authTab" data-t="register">Załóż konto</a></div>`}
+    <form id="authForm">${form}<div class="err" id="authErr"></div></form>
+    ${rst ? '<a class="link" data-act="authTab" data-t="login">‹ Wróć do logowania</a>'
+      : '<div class="feat"><div><b>📺</b>Odcinki i sezony</div><div><b>🎬</b>Filmy i kina w Polsce</div><div><b>📅</b>Kalendarz premier</div></div>'}
   </div>`;
   $('#authForm').addEventListener('submit', async ev => {
     ev.preventDefault();
-    const f = new FormData(ev.target), btn = ev.target.querySelector('button');
-    if (reg && f.get('password') !== f.get('password2')) { $('#authErr').textContent = 'Hasła nie są takie same'; return; }
+    const f = new FormData(ev.target), btn = ev.target.querySelector('button'), err = $('#authErr');
+    if ((reg || (rst && resetSent)) && f.get('password') !== f.get('password2')) { err.textContent = 'Hasła nie są takie same'; return; }
     btn.disabled = true;
     try {
-      const r = await api(reg ? '/api/register' : '/api/login', { method: 'POST', body: JSON.stringify({ username: f.get('username'), password: f.get('password') }) });
-      user = r.username;
+      if (rst && !resetSent) {
+        resetEmail = String(f.get('email')).trim();
+        const r = await api('/api/reset/request', { method: 'POST', body: JSON.stringify({ email: resetEmail }) });
+        resetSent = true; renderLogin(); toast(r.message || 'Sprawdź skrzynkę e-mail');
+        return;
+      }
+      const r = rst
+        ? await api('/api/reset/confirm', { method: 'POST', body: JSON.stringify({ email: resetEmail, code: f.get('code'), password: f.get('password') }) })
+        : await api(reg ? '/api/register' : '/api/login', { method: 'POST', body: JSON.stringify({ username: f.get('username'), email: f.get('email') || '', password: f.get('password') }) });
+      user = r.username; userEmail = reg ? String(f.get('email')).trim() : rst ? resetEmail : null;
+      resetSent = false; authTab = 'login';
       document.body.classList.remove('auth');
       if (hasTmdb) await afterLogin();
-      toast(reg ? `Witaj, ${user}! Konto utworzone.` : `Witaj ponownie, ${user}!`);
+      toast(rst ? 'Hasło zmienione — jesteś zalogowana/y ✓' : reg ? `Witaj, ${user}! Konto utworzone.` : `Witaj ponownie, ${user}!`);
       location.hash = '#/shows-search'; render();
-    } catch (e) { $('#authErr').textContent = e.message; btn.disabled = false; }
+    } catch (e) { err.textContent = e.message; btn.disabled = false; }
   });
 }
 function renderInfo(title, text) {
@@ -861,6 +939,25 @@ const actions = {
     list.forEach(e => sk[e.key] = Date.now());
     save(); toast(`Sezon ${d.season} pominięty`); rerender();
   },
+  emailEdit() {
+    $('#sheet').innerHTML = `<div class="look"><div class="look-head"><b>${userEmail ? 'Zmień e-mail' : 'Dodaj e-mail'}</b><button class="x" data-act="close">✕</button></div>
+      <p class="muted small">Na ten adres wyślemy kod, gdy zapomnisz hasła. Dla bezpieczeństwa potwierdź zmianę obecnym hasłem.</p>
+      <form id="mailForm" class="mailform">
+        <input name="email" type="email" placeholder="Adres e-mail" autocomplete="email" required value="${esc(userEmail || '')}">
+        <input name="password" type="password" placeholder="Obecne hasło" autocomplete="current-password" required>
+        <button class="btn" type="submit">Zapisz e-mail</button><div class="err" id="mailErr"></div></form></div>`;
+    $('#sheetWrap').classList.remove('hidden');
+    $('#mailForm').onsubmit = async ev => {
+      ev.preventDefault();
+      const f = new FormData(ev.target);
+      try {
+        const r = await api('/api/email', { method: 'POST', body: JSON.stringify({ email: f.get('email'), password: f.get('password') }) });
+        userEmail = r.email; actions.close(); toast('E-mail zapisany ✓'); rerender();
+      } catch (e) { $('#mailErr').textContent = e.message; }
+    };
+  },
+  statYear(d) { statsYear = +d.y; statsMonth = null; rerender(); },
+  statMonth(d) { statsMonth = statsMonth === +d.m ? null : +d.m; rerender(); },
   showTab(d) { showTab[d.id] = d.t; rerender(); },
   castMore() { const k = location.hash; castOpen.has(k) ? castOpen.delete(k) : castOpen.add(k); rerender(); },
   showMenu(d) { openShowMenu(+d.id); },
@@ -946,7 +1043,8 @@ const actions = {
     listView.page = res.page;
     rerender();
   },
-  authTab(d) { authTab = d.t; renderLogin(); },
+  authTab(d) { authTab = d.t; resetSent = false; renderLogin(); },
+  resetAgain() { resetSent = false; renderLogin(); },
   async logout() {
     if (save.t) { clearTimeout(save.t); await pushState(); }
     await api('/api/logout', { method: 'POST' }).catch(() => {});
@@ -1010,7 +1108,7 @@ async function render() {
   if (!hasTmdb) return renderInfo('Brak klucza TMDB', 'Wklej klucz API z themoviedb.org do pliku <b>tmdb_klucz.txt</b> w folderze aplikacji i uruchom ponownie start.bat.');
   document.body.classList.remove('auth');
   const [, page = 'shows-search', arg] = location.hash.split('/');
-  const tab = page.startsWith('show') ? 'shows' : page.startsWith('movie') ? 'movies' : page.startsWith('cinema') ? 'cinema' : page === 'towatch' ? 'upcoming' : page;
+  const tab = page.startsWith('show') ? 'shows' : page.startsWith('movie') ? 'movies' : page.startsWith('cinema') ? 'cinema' : page === 'towatch' ? 'upcoming' : page === 'stats' ? 'profile' : page;
   document.querySelectorAll('.tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
   const nS = Object.keys(state.shows).length, nM = Object.keys(state.movies).length;
   $('#count').textContent = [nS && plural(nS, 'serial', 'seriale', 'seriali'), nM && plural(nM, 'film', 'filmy', 'filmów')].filter(Boolean).join(' · ');
@@ -1031,6 +1129,7 @@ async function render() {
       case 'upcoming': return await renderUpcoming(token);
       case 'towatch': return await renderToWatch(token);
       case 'profile': return await renderProfile(token);
+      case 'stats': await loadFollowed(); return renderStats();
       default: return await renderWatch(token);
     }
   } catch (e) {
@@ -1341,7 +1440,10 @@ function watchSentinel() {
   setTimeout(checkSentinel, 50);
 }
 // zapasowo: sprawdzanie przy przewijaniu (gdy przeglądarka nie zgłosi widoczności)
-function checkSentinel() { const s = $('#sentinel'); if (s && s.getBoundingClientRect().top < innerHeight + 800) loadMoreList(); }
+function checkSentinel() {
+  const s = $('#sentinel'); if (s && s.getBoundingClientRect().top < innerHeight + 800) loadMoreList();
+  const f = $('#feedSentinel'); if (f && f.getBoundingClientRect().top < innerHeight + 800) loadMoreFeed();
+}
 let scrollTick = null;
 window.addEventListener('scroll', () => { if (scrollTick) return; scrollTick = setTimeout(() => { scrollTick = null; checkSentinel(); }, 150); }, { passive: true });
 async function loadMoreList() {
@@ -1438,14 +1540,43 @@ async function fillResults(kind, token = renderToken) {
       : '<div class="empty"><b>Nic nie znaleziono</b>Spróbuj innego tytułu (po polsku lub w oryginale).</div>';
     return;
   }
-  const keys = Object.keys(LISTS[kind]);
-  const lists = await Promise.all(keys.map((k, i) => {
-    const cfg = LISTS[kind][k], page = 1 + Math.floor(rng(Math.floor(visitSeed * 233280) + i)() * (cfg.pages || 1)), ck = kind + k + page;
-    return sectionCache[ck] || fetchList(kind, cfg, page).then(r => sectionCache[ck] = r.items);
-  }));
+  // bez wpisanego tytułu: jedna nieskończona lista propozycji (mieszanka popularnych, polskich, najlepszych…)
+  if (!feed || feed.kind !== kind || feed.visit !== visitSeed) {
+    feed = { kind, visit: visitSeed, items: [], pages: {}, loading: false };
+    box.innerHTML = '<div class="loading">Ładuję propozycje…</div>';
+    await feedMore(); await feedMore();
+  }
   if (token !== renderToken || !$('#results') || searchQ[kind]) return;
-  box.innerHTML = keys.map((k, i) => `<h2>${LISTS[kind][k].title}</h2>
-    <div class="grid">${shuffled(lists[i], i).map(x => tile(kind, x)).join('')}</div>`).join('');
+  box.innerHTML = `<h2>${kind === 'tv' ? 'Seriale' : 'Filmy'} do odkrycia</h2><div class="grid" id="feedGrid">${feed.items.filter(x => !inLibrary(kind, x.id)).map(x => tile(kind, x)).join('')}</div>
+    <div id="feedSentinel" class="loading small">Ładuję kolejne…</div>`;
+  setTimeout(checkSentinel, 50);
+}
+let feed = null;
+async function feedMore() {
+  if (!feed || feed.loading) return [];
+  feed.loading = true;
+  const f = feed, keys = Object.keys(LISTS[f.kind]);
+  // przy każdym doładowaniu po jednej stronie z dwóch losowych źródeł — dzięki temu lista jest różnorodna
+  const pick = shuffled(keys, f.items.length + 1).slice(0, 2);
+  const res = await Promise.all(pick.map(k => {
+    const cfg = LISTS[f.kind][k], page = f.pages[k] || 1 + Math.floor(Math.random() * Math.min(cfg.pages || 1, 5));
+    f.pages[k] = page + 1;
+    return fetchList(f.kind, cfg, page).then(r => r.items).catch(() => []);
+  }));
+  const ids = new Set(f.items.map(x => x.id));
+  // pomijamy tytuły bez polskiego/łacińskiego zapisu (np. tylko japońskie znaki — brak tłumaczenia)
+  const readable = x => /[A-Za-zÀ-ž]/.test(x.name || x.title || '');
+  // bez tytułów, które już są na Twoich listach
+  const fresh = shuffled(res.flat().filter(x => x.poster_path && readable(x) && !inLibrary(f.kind, x.id) && !ids.has(x.id) && ids.add(x.id)), f.items.length + 7);
+  f.items.push(...fresh);
+  f.loading = false;
+  return fresh;
+}
+async function loadMoreFeed() {
+  if (!feed || feed.loading || searchQ[feed.kind]) return;
+  const kind = feed.kind, fresh = await feedMore(), grid = $('#feedGrid');
+  if (grid && feed && feed.kind === kind) grid.insertAdjacentHTML('beforeend', fresh.filter(x => !inLibrary(kind, x.id)).map(x => tile(kind, x)).join(''));  // dopisanie bez przewijania
+  setTimeout(checkSentinel, 50);
 }
 
 // ---------- widok: gatunki i listy ----------
@@ -1796,10 +1927,11 @@ async function renderShow(id, token) {
       </div>
     </div>
   </div>
-  ${following ? `<div class="tbar">
-      <span class="inlib">✓ W moich serialach</span>
-      ${dropped ? `<button class="btn sm" data-act="resume" data-id="${id}">Wznów oglądanie</button>` : ''}
-      <button class="ibtn" data-act="showMenu" data-id="${id}" title="Więcej opcji">⋯</button>
+  ${following ? `<div class="tbar"><span class="inlib">✓ W moich serialach</span></div>
+    <div class="sactions">
+      ${aired.length && done < aired.length && !dropped ? `<button data-act="allSeen" data-id="${id}"><span>✓</span>Obejrzane wszystko</button>` : ''}
+      ${dropped ? `<button class="on" data-act="resume" data-id="${id}"><span>▶</span>Wznów oglądanie</button>` : `<button data-act="drop" data-id="${id}"><span>Ⅱ</span>Przerwij oglądanie</button>`}
+      <button class="danger" data-act="unfollow" data-id="${id}"><span>✕</span>Usuń z moich</button>
     </div>` : `<button class="btn wide" data-act="follow" data-id="${id}">+ Dodaj do moich seriali</button>`}
   ${main ? `<div class="warnbox">
     <div><b>ℹ️ To jest „${esc(s.name)}” — dodatek do programu</b>Ma tylko część odcinków. Główny program to <b>„${esc(main.name)}”</b>.</div>
@@ -1947,6 +2079,78 @@ async function renderMovie(id, token) {
   </div>`;
 }
 
+// ---------- statystyki (osobna strona z Profilu) ----------
+let statsYear = null, statsMonth = null;
+const MONTHS = ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru'];
+const MONTHS_FULL = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+// czas w czytelnej formie: „3 dni 4 godz.” / „5 godz. 20 min”
+function fmtDur(min) {
+  min = Math.round(min || 0);
+  const d = Math.floor(min / 1440), h = Math.floor(min % 1440 / 60), m = min % 60;
+  if (d) return `${plural(d, 'dzień', 'dni', 'dni')} ${h} godz.`;
+  if (h) return `${h} godz. ${m} min`;
+  return `${m} min`;
+}
+function renderStats() {
+  const eps = Object.values(state.watched).filter(w => w.t);
+  const films = Object.values(state.movies).filter(m => m.status === 'seen' && m.seenAt);
+  const tvMin = eps.reduce((a, w) => a + (w.m || 0), 0), mvMin = films.reduce((a, m) => a + (m.runtime || 0), 0);
+  const years = [...new Set([...eps.map(w => new Date(w.t).getFullYear()), ...films.map(m => new Date(m.seenAt).getFullYear())])].sort((a, b) => b - a);
+  const nowY = new Date().getFullYear();
+  if (!years.includes(statsYear)) statsYear = years.includes(nowY) ? nowY : years[0] || nowY;
+  const inYear = t => new Date(t).getFullYear() === statsYear;
+  const yEps = eps.filter(w => inYear(w.t)), yFilms = films.filter(m => inYear(m.seenAt));
+  const per = list => { const a = Array(12).fill(0); list.forEach(t => a[new Date(t).getMonth()]++); return a; };
+  const perMin = (list, get) => { const a = Array(12).fill(0); list.forEach(x => a[new Date(x.t).getMonth()] += get(x)); return a; };
+  const epM = per(yEps.map(w => w.t)), mvM = per(yFilms.map(m => m.seenAt));
+  const epMin = perMin(yEps, w => w.m || 0), mvMinM = perMin(yFilms.map(m => ({ t: m.seenAt, r: m.runtime })), x => x.r || 0);
+  const curM = statsYear === nowY ? new Date().getMonth() : 11;
+  const byShow = {};
+  yEps.forEach(w => byShow[w.s] = (byShow[w.s] || 0) + 1);
+  const top = Object.entries(byShow).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const showName = id => (state.shows[id] && state.shows[id].name) || (showCache[id] && showCache[id].show.name) || 'Serial';
+  const finished = Object.keys(state.shows).filter(id => showCache[id] && progressState(showCache[id]).st === 'finished').length;
+
+  // wykres słupkowy jednej serii (każdy wykres ma własną skalę — bez dwóch osi)
+  const chart = (vals, cls, unit) => {
+    const max = Math.max(...vals, 1);
+    return `<div class="chart ${cls}">
+      <div class="ch-max">${unit(Math.max(...vals))}</div>
+      <div class="ch-bars">${vals.map((v, i) => `<button class="ch-col ${statsMonth === i ? 'sel' : ''} ${statsYear === nowY && i > curM ? 'future' : ''}" data-act="statMonth" data-m="${i}"
+          title="${MONTHS_FULL[i]} ${statsYear}: ${unit(v)}" aria-label="${MONTHS_FULL[i]}: ${unit(v)}">
+          <span class="ch-bar" style="height:${v ? Math.max(4, v / max * 100) : 0}%"></span><span class="ch-lbl">${MONTHS[i]}</span></button>`).join('')}</div>
+    </div>`;
+  };
+  const sel = statsMonth != null ? `<div class="ch-info"><b>${MONTHS_FULL[statsMonth]} ${statsYear}</b>
+      <span><i class="dot tv"></i>${plural(epM[statsMonth], 'odcinek', 'odcinki', 'odcinków')} · ${fmtDur(epMin[statsMonth])}</span>
+      <span><i class="dot mv"></i>${plural(mvM[statsMonth], 'film', 'filmy', 'filmów')} · ${fmtDur(mvMinM[statsMonth])}</span></div>`
+    : '<div class="ch-info muted small">Stuknij miesiąc na wykresie, żeby zobaczyć szczegóły.</div>';
+
+  view.innerHTML = `
+    <div class="sthead"><a class="back2" href="#/profile">‹ Profil</a><h2>Statystyki</h2></div>
+    <div class="tcards">
+      <div class="tcard tv"><small>Seriale</small><b>${fmtDur(tvMin)}</b><span>${plural(eps.length, 'odcinek', 'odcinki', 'odcinków')}</span></div>
+      <div class="tcard mv"><small>Filmy</small><b>${fmtDur(mvMin)}</b><span>${plural(films.length, 'film', 'filmy', 'filmów')}</span></div>
+      <div class="tcard all"><small>Razem przed ekranem</small><b>${fmtDur(tvMin + mvMin)}</b><span>${(tvMin + mvMin) / 1440 >= 1 ? `to ${((tvMin + mvMin) / 1440).toFixed(1).replace('.', ',')} doby bez przerwy` : 'od początku korzystania z aplikacji'} · ${plural(finished, 'serial ukończony', 'seriale ukończone', 'seriali ukończonych')}</span></div>
+    </div>
+    ${years.length ? `<div class="pills years">${years.map(y => `<a data-act="statYear" data-y="${y}" class="${y === statsYear ? 'on' : ''}">${y}</a>`).join('')}</div>` : ''}
+    <div class="panel ysum">
+      <div><b>${yEps.length}</b><small>odcinków</small></div><div><b>${yFilms.length}</b><small>filmów</small></div>
+      <div><b>${fmtDur(epMin.reduce((a, b) => a + b, 0) + mvMinM.reduce((a, b) => a + b, 0))}</b><small>w ${statsYear}</small></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle"><span><i class="dot tv"></i>Odcinki w miesiącach</span></div>${chart(epM, 'tv', n => plural(n, 'odcinek', 'odcinki', 'odcinków'))}
+      <div class="ptitle" style="margin-top:16px"><span><i class="dot mv"></i>Filmy w miesiącach</span></div>${chart(mvM, 'mv', n => plural(n, 'film', 'filmy', 'filmów'))}
+      ${sel}
+    </div>
+    ${top.length ? `<h2>Najczęściej oglądane w ${statsYear}</h2><div class="panel">${top.map(([id, n], i) => `<a class="toprow" href="#/show/${id}"><span class="rk">${i + 1}</span><span class="nm">${esc(showName(id))}</span><span class="muted small">${plural(n, 'odcinek', 'odcinki', 'odcinków')}</span></a>`).join('')}</div>` : ''}
+    <h2>Miesiąc po miesiącu</h2>
+    <div class="panel"><table class="mtable"><thead><tr><th>Miesiąc</th><th>Odcinki</th><th>Filmy</th><th>Czas</th></tr></thead><tbody>
+      ${MONTHS_FULL.map((n, i) => (epM[i] || mvM[i]) ? `<tr><td>${n}</td><td>${epM[i]}</td><td>${mvM[i]}</td><td>${fmtDur(epMin[i] + mvMinM[i])}</td></tr>` : '').join('') || '<tr><td colspan="4" class="muted">Brak obejrzanych w tym roku</td></tr>'}
+    </tbody></table></div>
+    <p class="src">Czas liczony z długości odcinków i filmów. Odcinki oznaczone hurtem („obejrzane wszystko”) liczą się do miesiąca, w którym je zaznaczono.</p>`;
+}
+
 // ---------- widok: profil ----------
 async function renderProfile(token) {
   if (Object.keys(state.shows).some(id => !showCache[id])) view.innerHTML = '<div class="loading">Ładowanie profilu…</div>';
@@ -2007,7 +2211,11 @@ async function renderProfile(token) {
         <div><b>${reviews.length}</b>recenzji</div>
         <div><b>${notes.length}</b>notatek</div>
       </div>
-      <div class="ptime"><span>Seriale <b>${hrs(tvMins)}</b></span><span>Filmy <b>${hrs(movieMins)}</b></span></div>
+      <a class="pcard-link" href="#/stats">Statystyki i wykresy ›</a>
+      <div class="acct-mail ${userEmail ? '' : 'warn'}">
+        <span>✉</span><div class="body">${userEmail ? `E-mail: <b>${esc(userEmail)}</b>` : '<b>Brak e-maila</b> — dodaj go, żeby w razie czego móc zresetować hasło'}</div>
+        <button class="btn ${userEmail ? 'ghost' : ''} sm" data-act="emailEdit">${userEmail ? 'Zmień' : 'Dodaj'}</button>
+      </div>
     </div>
     ${shelf('', 'Oglądam', watching, showMini, 'Zacznij oglądać serial — pojawi się tutaj.')}
     ${shelf('', 'Seriale na później', laterS, showMini, 'Brak seriali odłożonych na później.')}
@@ -2139,7 +2347,7 @@ async function boot() {
     if (cfg) {
       mode = 'account'; hasTmdb = cfg.tmdb;
       const r = await fetch('/api/me', { cache: 'no-store' });
-      if (r.status === 200) { user = (await r.json()).username; if (hasTmdb) await afterLogin(); }
+      if (r.status === 200) { const me = await r.json(); user = me.username; userEmail = me.email || null; mailEnabled = !!me.mail; if (hasTmdb) await afterLogin(); }
     }
   } catch (e) { /* brak serwera (plik otwarty z dysku) */ }
   render();

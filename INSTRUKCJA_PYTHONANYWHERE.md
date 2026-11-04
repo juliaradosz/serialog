@@ -86,6 +86,27 @@ Ja wysyłam zmiany na GitHuba, a Ty na PythonAnywhere robisz tylko:
 
 Twoje konto, klucz i dane zostają nietknięte — `git pull` ich nie rusza.
 
+## Reset hasła przez e-mail (jednorazowa konfiguracja)
+
+Żeby „Nie pamiętasz hasła?” wysyłało kody, serwer potrzebuje skrzynki Gmail, z której będzie je wysyłał
+(darmowy PythonAnywhere pozwala tylko na Gmail):
+
+1. Na koncie Google włącz **weryfikację dwuetapową**: https://myaccount.google.com/security
+2. Utwórz **hasło do aplikacji** (nazwa np. „SeriaLog”): https://myaccount.google.com/apppasswords — Google pokaże 16 liter.
+3. Na komputerze skopiuj plik `email_konfig.przyklad.txt` jako **`email_konfig.txt`** i wpisz w nim:
+   ```
+   adres=twojadres@gmail.com
+   haslo=abcd efgh ijkl mnop
+   ```
+4. Na PythonAnywhere: **Files** → folder **serialog** → **Upload a file** → wybierz `email_konfig.txt`.
+5. **Web** → **Reload**.
+6. W aplikacji: **Profil** → przy „Brak e-maila” kliknij **Dodaj** i wpisz swój adres (potwierdzasz hasłem).
+
+## Nowa ikona na iPhonie
+
+iPhone zapamiętuje ikonę w chwili dodania do ekranu. Po zmianie ikony: przytrzymaj starą ikonę SeriaLog →
+**Usuń zakładkę**, potem w Safari ponownie **Udostępnij → Do ekranu początkowego**.
+
 ## Ważne na przyszłość
 
 - **Co 3 miesiące** zaloguj się do PythonAnywhere → **Web** → **Run until 3 months from today** (przypomną e-mailem).

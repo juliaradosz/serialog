@@ -16,6 +16,8 @@ import json
 import os
 import re
 import secrets
+import smtplib
+from email.message import EmailMessage
 import sqlite3
 import time
 import urllib.error
@@ -43,6 +45,10 @@ STATIC_TYPES = {'.html': 'text/html; charset=utf-8', '.json': 'application/manif
 SESSION_SECONDS = 30 * 24 * 3600
 MAX_BODY = 5 * 1024 * 1024
 USERNAME_RE = re.compile(r'^[\w.\-]{3,30}$')
+EMAIL_RE = re.compile(r'^[^@\s]{1,64}@[^@\s]{1,190}\.[^@\s]{2,24}$')
+EMAIL_CONFIG_FILE = os.path.join(ROOT, 'email_konfig.txt')
+RESET_SECONDS = 30 * 60
+reset_requests = {}  # ip -> [czasy próśb o kod]
 failed_logins = {}  # ip -> [czasy nieudanych prób]
 
 
@@ -69,7 +75,48 @@ def init_db():
                 user_id INTEGER PRIMARY KEY REFERENCES users(id),
                 data TEXT NOT NULL,
                 updated INTEGER NOT NULL);
+            CREATE TABLE IF NOT EXISTS resets (
+                user_id INTEGER PRIMARY KEY REFERENCES users(id),
+                code_hash TEXT NOT NULL,
+                expires INTEGER NOT NULL,
+                attempts INTEGER NOT NULL DEFAULT 0);
         ''')
+        # e-mail do resetu hasła (dodany później — starsze bazy dostają kolumnę automatycznie)
+        if 'email' not in [r[1] for r in con.execute('PRAGMA table_info(users)')]:
+            con.execute('ALTER TABLE users ADD COLUMN email TEXT')
+        con.execute('CREATE UNIQUE INDEX IF NOT EXISTS users_email ON users(email COLLATE NOCASE) WHERE email IS NOT NULL')
+
+
+# ---------- e-mail (Gmail + hasło do aplikacji; konfiguracja w pliku email_konfig.txt) ----------
+def email_config():
+    cfg = {}
+    try:
+        with open(EMAIL_CONFIG_FILE, encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    k, v = line.split('=', 1)
+                    cfg[k.strip()] = v.strip()
+    except OSError:
+        return None
+    return cfg if cfg.get('adres') and cfg.get('haslo') else None
+
+
+def send_email(to, subject, text):
+    cfg = email_config()
+    msg = EmailMessage()
+    msg['From'] = f"SeriaLog <{cfg['adres']}>"
+    msg['To'] = to
+    msg['Subject'] = subject
+    msg.set_content(text)
+    with smtplib.SMTP(cfg.get('serwer', 'smtp.gmail.com'), int(cfg.get('port', '587')), timeout=20) as s:
+        s.starttls()
+        s.login(cfg['adres'], cfg['haslo'].replace(' ', ''))
+        s.send_message(msg)
+
+
+def code_hash(user_id, code):
+    return hashlib.sha256(f'{user_id}:{code}'.encode()).hexdigest()
 
 
 def hash_password(password, salt):
@@ -219,7 +266,11 @@ def route(req):
             return json_response(200, {'tmdb': bool(tmdb_key())})
         if path == '/api/me':
             user = current_user(req)
-            return json_response(200, {'username': user['username']}) if user else json_response(401, {'error': 'Niezalogowany'})
+            if not user:
+                return json_response(401, {'error': 'Niezalogowany'})
+            with db() as con:
+                email = con.execute('SELECT email FROM users WHERE id = ?', (user['id'],)).fetchone()['email']
+            return json_response(200, {'username': user['username'], 'email': email, 'mail': bool(email_config())})
         if path == '/api/state':
             user = current_user(req)
             if not user:
@@ -238,27 +289,87 @@ def route(req):
                 with db() as con:
                     con.execute('DELETE FROM sessions WHERE token = ?', (token,))
             return json_response(200, {'ok': True}, session_cookie(req, '', 0))
-        if path not in ('/api/login', '/api/register'):
+        if path not in ('/api/login', '/api/register', '/api/email', '/api/reset/request', '/api/reset/confirm'):
             return json_response(404, {'error': 'Nie znaleziono'})
         data = read_json(req)
         if not isinstance(data, dict):
             return json_response(400, {'error': 'Nieprawidłowe dane'})
         username = str(data.get('username', '')).strip()
         password = str(data.get('password', ''))
+        email = str(data.get('email', '')).strip()
         if path == '/api/register':
             if not USERNAME_RE.match(username):
                 return json_response(400, {'error': 'Nazwa: 3–30 znaków (litery, cyfry, _ . -)'})
+            if not EMAIL_RE.match(email):
+                return json_response(400, {'error': 'Podaj prawidłowy adres e-mail — przyda się do resetu hasła'})
             if len(password) < 6:
                 return json_response(400, {'error': 'Hasło musi mieć co najmniej 6 znaków'})
             salt = secrets.token_bytes(16)
             try:
                 with db() as con:
-                    cur = con.execute('INSERT INTO users (username, salt, pw_hash, created) VALUES (?, ?, ?, ?)',
-                                      (username, salt, hash_password(password, salt), int(time.time())))
+                    if con.execute('SELECT 1 FROM users WHERE email = ? COLLATE NOCASE', (email,)).fetchone():
+                        return json_response(409, {'error': 'Ten adres e-mail jest już przypisany do innego konta'})
+                    cur = con.execute('INSERT INTO users (username, salt, pw_hash, created, email) VALUES (?, ?, ?, ?, ?)',
+                                      (username, salt, hash_password(password, salt), int(time.time()), email))
                     user_id = cur.lastrowid
             except sqlite3.IntegrityError:
                 return json_response(409, {'error': 'Ta nazwa użytkownika jest już zajęta'})
             return json_response(200, {'username': username}, start_session(req, user_id))
+        if path == '/api/email':  # dodanie / zmiana e-maila (wymaga hasła)
+            user = current_user(req)
+            if not user:
+                return json_response(401, {'error': 'Niezalogowany'})
+            if not EMAIL_RE.match(email):
+                return json_response(400, {'error': 'Podaj prawidłowy adres e-mail'})
+            with db() as con:
+                row = con.execute('SELECT salt, pw_hash FROM users WHERE id = ?', (user['id'],)).fetchone()
+                if not hmac.compare_digest(hash_password(password, row['salt']), row['pw_hash']):
+                    return json_response(401, {'error': 'Nieprawidłowe hasło'})
+                if con.execute('SELECT 1 FROM users WHERE email = ? COLLATE NOCASE AND id != ?', (email, user['id'])).fetchone():
+                    return json_response(409, {'error': 'Ten adres e-mail jest już przypisany do innego konta'})
+                con.execute('UPDATE users SET email = ? WHERE id = ?', (email, user['id']))
+            return json_response(200, {'ok': True, 'email': email})
+        if path == '/api/reset/request':  # wysłanie kodu na e-mail
+            if not email_config():
+                return json_response(503, {'error': 'Reset hasła przez e-mail nie jest jeszcze skonfigurowany na serwerze (brak pliku email_konfig.txt).'})
+            now = time.time()
+            recent = [x for x in reset_requests.get(req.ip, []) if now - x < 900]
+            if len(recent) >= 5:
+                return json_response(429, {'error': 'Zbyt wiele próśb o kod. Spróbuj za kilkanaście minut.'})
+            reset_requests[req.ip] = recent + [now]
+            generic = {'ok': True, 'message': 'Jeśli konto z tym adresem istnieje, wysłaliśmy na nie 6-cyfrowy kod.'}
+            with db() as con:
+                user = con.execute('SELECT id, username FROM users WHERE email = ? COLLATE NOCASE', (email,)).fetchone()
+                if not user:
+                    return json_response(200, generic)  # nie zdradzamy, czy adres jest w bazie
+                code = f'{secrets.randbelow(1000000):06d}'
+                con.execute('INSERT INTO resets VALUES (?, ?, ?, 0) ON CONFLICT(user_id) DO UPDATE SET code_hash = excluded.code_hash, expires = excluded.expires, attempts = 0',
+                            (user['id'], code_hash(user['id'], code), int(now) + RESET_SECONDS))
+            try:
+                send_email(email, 'SeriaLog — kod do zmiany hasła',
+                           f"Cześć {user['username']}!\n\nTwój kod do ustawienia nowego hasła w SeriaLog: {code}\n\n"
+                           f"Kod jest ważny 30 minut. Jeśli to nie Ty prosisz o zmianę hasła, zignoruj tę wiadomość.")
+            except Exception as e:
+                print('Błąd wysyłki e-maila:', repr(e))
+                return json_response(502, {'error': 'Nie udało się wysłać e-maila. Sprawdź ustawienia w email_konfig.txt.'})
+            return json_response(200, generic)
+        if path == '/api/reset/confirm':  # kod + nowe hasło
+            code = str(data.get('code', '')).strip()
+            if len(password) < 6:
+                return json_response(400, {'error': 'Hasło musi mieć co najmniej 6 znaków'})
+            with db() as con:
+                user = con.execute('SELECT id, username FROM users WHERE email = ? COLLATE NOCASE', (email,)).fetchone()
+                r = user and con.execute('SELECT code_hash, expires, attempts FROM resets WHERE user_id = ?', (user['id'],)).fetchone()
+                if not r or r['expires'] < time.time() or r['attempts'] >= 5:
+                    return json_response(400, {'error': 'Kod wygasł albo jest nieprawidłowy — poproś o nowy.'})
+                if not hmac.compare_digest(code_hash(user['id'], code), r['code_hash']):
+                    con.execute('UPDATE resets SET attempts = attempts + 1 WHERE user_id = ?', (user['id'],))
+                    return json_response(400, {'error': 'Nieprawidłowy kod'})
+                salt = secrets.token_bytes(16)
+                con.execute('UPDATE users SET salt = ?, pw_hash = ? WHERE id = ?', (salt, hash_password(password, salt), user['id']))
+                con.execute('DELETE FROM resets WHERE user_id = ?', (user['id'],))
+                con.execute('DELETE FROM sessions WHERE user_id = ?', (user['id'],))  # wyloguj wszędzie
+            return json_response(200, {'username': user['username']}, start_session(req, user['id']))
         # logowanie
         if too_many_failures(req.ip):
             return json_response(429, {'error': 'Zbyt wiele nieudanych prób. Spróbuj za kilka minut.'})
