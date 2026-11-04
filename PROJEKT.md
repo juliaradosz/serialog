@@ -525,3 +525,4 @@ Zmiany:
 Testy (serwer testowy, widok telefonu 375 px): brak przewijania w bok na 10 ekranach (Seriale, serial, Filmy, Kino×2, Dla Ciebie, Do obejrzenia, Nadchodzące, Profil, aktor) ✔; „Dla Ciebie” Seriale/Filmy po 40, przełączanie bez ładowania ✔; „Dostosuj wygląd”: 10 motywów, 5 suwaków, zmiana koloru akcentu i tła na żywo + zapis na koncie ✔; Kino bez Repertuaru ✔; dolne menu → Szukaj, „Moje” po prawej ✔. Konta testowe usunięte.
 
 Wysłano na GitHub — na PythonAnywhere: `cd ~/serialog && git pull` + Reload.
+- Przy wysyłaniu wykryto w folderze aplikacji podfolder `serialog/` — lokalną kopię repozytorium (prawdopodobnie `git clone` wpisane na komputerze zamiast na PythonAnywhere). Do GitHuba trafił tylko odnośnik (bez zawartości, bez klucza) — usunięto go kolejnym commitem i dodano `serialog/` do `.gitignore`. Samego folderu na komputerze nie usuwano (można go skasować ręcznie).
