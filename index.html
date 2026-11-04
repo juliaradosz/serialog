@@ -971,8 +971,8 @@ const actions = {
     for (const k of Object.keys(state.notes || {})) if (k.startsWith(id + ':')) delete state.notes[k];
     save(); toast('Usunięto z moich seriali'); updateTodayDot(); rerender();
   },
-  fyTab(d) { fyKind = d.k; scrollTo(0, 0); render(); },
-  forYouRefresh() { forYou = null; rerender(); },
+  fyTab(d) { fyKind = d.k; fyScroll[d.k] = 0; scrollTo(0, 0); render(); },
+  forYouRefresh() { forYou = null; fyScroll.tv = fyScroll.movie = 0; scrollTo(0, 0); render(); },
   toggleGroup(d) { openGroups.has(d.k) ? openGroups.delete(d.k) : openGroups.add(d.k); rerender(); },
   epInfo: d => openEpisode(d.id),
   react(d) {
@@ -1136,7 +1136,13 @@ async function render() {
     if (token === renderToken) view.innerHTML = `<div class="empty"><b>Coś poszło nie tak</b>${esc(e.message)}<br><br><button class="btn ghost" onclick="render()">Spróbuj ponownie</button></div>`;
   }
 }
-window.addEventListener('hashchange', () => { actions.close(); editing = draft = null; visitSeed = Math.random(); render().then(() => scrollTo(0, 0)); });
+const fyScroll = { tv: 0, movie: 0 };  // miejsce na liście „Dla Ciebie” (osobno dla seriali i filmów)
+window.addEventListener('hashchange', ev => {
+  if ((ev.oldURL || '').includes('#/foryou')) fyScroll[fyKind] = scrollY;  // wychodzimy z „Dla Ciebie” — zapamiętaj miejsce
+  actions.close(); editing = draft = null; visitSeed = Math.random();
+  const back = location.hash.startsWith('#/foryou');
+  render().then(() => scrollTo(0, back ? fyScroll[fyKind] : 0));
+});
 
 const subTabs = (items, on) => `<div class="sub">${items.map(([href, label, key]) => `<a href="${href}" class="${key === on ? 'on' : ''}">${label}</a>`).join('')}</div>`;
 const showTabs = on => subTabs([['#/shows-search', 'Szukaj', 'search'], ['#/shows-genres', 'Gatunki', 'genres'], ['#/shows', 'Moje seriale', 'mine']], on);
@@ -1360,7 +1366,7 @@ async function renderCinema(token, sub) {
 const cinemaTabs = on => subTabs([['#/cinema', 'Teraz w kinach', 'now'], ['#/cinema-soon', 'Wkrótce w kinach', 'soon']], on);
 
 // ---------- „Dla Ciebie”: propozycje na podstawie obejrzanych, ocenionych, ulubionych i odłożonych tytułów ----------
-let forYou = null;
+let forYou = null, forYouP = null;
 async function buildForYou() {
   const r = rng(Math.floor(Math.random() * 233280));
   const perShow = {};
@@ -1416,10 +1422,9 @@ async function renderForYou(token) {
   const nS = Object.keys(state.shows).length, nM = Object.keys(state.movies).length;
   if (!nS && !nM) { view.innerHTML = head + emptyBox('Dodaj kilka tytułów', 'Propozycje powstają na podstawie seriali i filmów, które oglądasz, oceniasz i odkładasz na później.', '#/shows-search', 'Szukaj seriali'); return; }
   // propozycje liczone raz na wizytę — dodanie tytułu nie przeładowuje listy ani nie przewija ekranu
-  if (!forYou || forYou.visit !== visitSeed) {
+  if (!forYou) {
     view.innerHTML = head + '<div class="loading">Analizuję Twoje seriale i filmy…</div>';
-    forYou = await buildForYou();
-    forYou.visit = visitSeed;
+    forYou = await (forYouP ||= buildForYou().finally(() => { forYouP = null; }));  // jedno liczenie naraz
     if (token !== renderToken) return;
   }
   const why = c => [...c.why].slice(0, 2).join(', ');

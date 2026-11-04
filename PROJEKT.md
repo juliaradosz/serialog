@@ -548,3 +548,13 @@ Zmiany:
 Testy: reset hasła i e-maile na kopii serwera (bez wysyłki — podstawiona funkcja): rejestracja bez e-maila odrzucona, duplikat e-maila odrzucony, brak konfiguracji → czytelny komunikat, nieznany e-mail → ta sama odpowiedź, zły kod odrzucony, dobry kod zmienia hasło i wylogowuje stare sesje, kod jednorazowy, zmiana e-maila wymaga hasła, stara baza z kontem „julkar8” działa ✔. W przeglądarce (widok telefonu): rejestracja z e-mailem, statystyki (2026/2025, marzec: 4 odcinki · 1 film), przyciski serialu, nieskończona lista (77 → 80, bez nagłówków kategorii), ukrywanie dodanych ✔. Konta testowe usunięte.
 
 Do zrobienia przez użytkownika: `git pull` + Reload na PythonAnywhere; skonfigurować Gmail (instrukcja); dodać e-mail w Profilu; usunąć i dodać ponownie ikonę na iPhonie.
+
+### 2026-11-04 — Polecenie 31
+> „jak się wchodzi w jakiś film lub serial w zakładce Dla Ciebie i wychodzi, to niech aplikacja nie zmienia propozycji, tylko dalej pokazuje te, co były wcześniej — dopiero po naciśnięciu przycisku »Inne propozycje« się zmieniają”
+
+Zmiany:
+- Propozycje „Dla Ciebie” liczone są raz i zostają (także po przejściu do serialu/filmu, innej zakładki i z powrotem) — zmieniają się wyłącznie po „↻ Inne propozycje”.
+- Po powrocie lista wraca w to samo miejsce przewinięcia (osobno dla zakładek Seriale i Filmy).
+- Naprawiono wyścig: gdy ekran rysował się dwa razy naraz, propozycje liczyły się podwójnie i druga wersja zastępowała pierwszą — teraz liczenie odbywa się tylko raz.
+
+Test (widok telefonu): przewinięcie do 18. kafelka → wejście w serial → „wstecz” → te same propozycje i ta sama pozycja (3030 px) ✔; Profil → Dla Ciebie — bez zmian ✔; przełączanie Seriale/Filmy — bez zmian ✔; „Inne propozycje” — nowe ✔. Konto testowe usunięte.
