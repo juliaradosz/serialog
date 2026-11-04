@@ -558,3 +558,11 @@ Zmiany:
 - Naprawiono wyścig: gdy ekran rysował się dwa razy naraz, propozycje liczyły się podwójnie i druga wersja zastępowała pierwszą — teraz liczenie odbywa się tylko raz.
 
 Test (widok telefonu): przewinięcie do 18. kafelka → wejście w serial → „wstecz” → te same propozycje i ta sama pozycja (3030 px) ✔; Profil → Dla Ciebie — bez zmian ✔; przełączanie Seriale/Filmy — bez zmian ✔; „Inne propozycje” — nowe ✔. Konto testowe usunięte.
+
+### 2026-11-04 — Polecenie 32
+> „usuń jednak tego maila, skoro to takie czasochłonne”
+
+Zmiany (wycofanie e-maila i resetu hasła z polecenia 30):
+- Rejestracja znowu bez e-maila (nazwa + hasło), bez „Nie pamiętasz hasła?”, bez sekcji e-mail w Profilu.
+- Serwer: usunięte `/api/email`, `/api/reset/request`, `/api/reset/confirm`, wysyłka przez Gmail i konfiguracja `email_konfig.txt`; usunięty plik `email_konfig.przyklad.txt` i rozdział instrukcji o Gmailu. W istniejących bazach kolumna `email` / tabela `resets` mogą zostać — są nieużywane i niczemu nie przeszkadzają.
+- Test (kopia serwera): rejestracja bez e-maila 200, `/api/me` ok, logowanie ok, stary adres resetu 404 ✔.
