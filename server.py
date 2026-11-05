@@ -199,6 +199,10 @@ def is_admin(user_id, username):
     return user_id == 1 or name in ADMINS or name in admins_from_file()
 
 
+def me_info(user_id, username):
+    return {'username': username, 'admin': True} if is_admin(user_id, username) else {'username': username}
+
+
 def current_user(req):
     token = session_token(req)
     if not token:
@@ -376,7 +380,7 @@ def route(req):
         if path == '/api/admin/users':  # lista kont — tylko dla administratora
             user = current_user(req)
             if not user or not is_admin(user['id'], user['username']):
-                return json_response(403, {'error': 'Tylko dla administratora'})
+                return json_response(404, {'error': 'Nie znaleziono'})
             with db() as con:
                 rows = con.execute('SELECT users.id, users.username, users.created, states.updated, states.data FROM users '
                                    'LEFT JOIN states ON states.user_id = users.id ORDER BY users.created DESC').fetchall()
@@ -408,7 +412,7 @@ def route(req):
             return json_response(200, {'tmdb': bool(tmdb_key())})
         if path == '/api/me':
             user = current_user(req)
-            return json_response(200, {'username': user['username'], 'admin': is_admin(user['id'], user['username'])}) if user else json_response(401, {'error': 'Niezalogowany'})
+            return json_response(200, me_info(user['id'], user['username'])) if user else json_response(401, {'error': 'Niezalogowany'})
         if path == '/api/state':
             user = current_user(req)
             if not user:
@@ -500,7 +504,7 @@ def route(req):
                     user_id = cur.lastrowid
             except sqlite3.IntegrityError:
                 return json_response(409, {'error': 'Ta nazwa użytkownika jest już zajęta'})
-            return json_response(200, {'username': username, 'admin': is_admin(user_id, username)}, start_session(req, user_id))
+            return json_response(200, me_info(user_id, username), start_session(req, user_id))
         # logowanie
         if too_many_failures(req.ip):
             return json_response(429, {'error': 'Zbyt wiele nieudanych prób. Spróbuj za kilka minut.'})
@@ -509,7 +513,7 @@ def route(req):
         if not user or not hmac.compare_digest(hash_password(password, user['salt']), user['pw_hash']):
             failed_logins.setdefault(req.ip, []).append(time.time())
             return json_response(401, {'error': 'Nieprawidłowa nazwa użytkownika lub hasło'})
-        return json_response(200, {'username': user['username'], 'admin': is_admin(user['id'], user['username'])}, start_session(req, user['id']))
+        return json_response(200, me_info(user['id'], user['username']), start_session(req, user['id']))
 
     if req.method == 'PUT' and path == '/api/state':
         user = current_user(req)

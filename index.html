@@ -2030,7 +2030,7 @@ async function renderPerson(id, token) {
         <div class="pcount"><span><b>${tv.length}</b> seriali</span><span><b>${movies.length}</b> filmów</span></div>
       </div>
     </div>
-    ${bio ? `<div class="panel"><div class="ptitle">Biografia</div><div class="summary bio">${esc(bio)}</div>${!p.biography ? '<div class="src">Brak polskiej biografii — tekst po angielsku</div>' : ''}</div>`
+    ${bio ? `<div class="panel"><div class="ptitle">Biografia</div><div class="summary bio">${esc(bio)}</div>${!p.biography && isAdmin ? '<div class="src">Brak polskiej biografii — tekst po angielsku</div>' : ''}</div>`
       : p._en === null ? '<div class="panel muted small">Ładuję biografię…</div>' : ''}
     ${known.length ? `<h2>Najbardziej znane</h2><div class="hscroll rel">${known.map(roleTile).join('')}</div>` : ''}
     ${tv.length ? `<h2>Seriale <small>(${tv.length})</small></h2><div class="grid">${tv.map(roleTile).join('')}</div>` : ''}
@@ -2369,7 +2369,7 @@ function enFallback(obj, path, rerenderIf) {
   tmdb(path, { language: 'en-US' }).then(x => { obj._en = x.overview || ''; if (rerenderIf()) rerender(); }).catch(() => { obj._en = ''; });
 }
 const overviewHtml = obj => obj.overview ? esc(obj.overview)
-  : obj._en ? `${esc(obj._en)}<div class="src">Brak polskiego opisu w bazie — opis po angielsku</div>`
+  : obj._en ? `${esc(obj._en)}${isAdmin ? '<div class="src">Brak polskiego opisu w bazie — opis po angielsku</div>' : ''}`
   : obj._en === null ? '<span class="muted">Ładuję opis…</span>' : '<span class="muted">Brak opisu.</span>';
 
 // ---------- widok: serial ----------
@@ -2708,7 +2708,7 @@ function renderStats() {
     <div class="panel"><table class="mtable"><thead><tr><th>Miesiąc</th><th>Odcinki</th><th>Filmy</th><th>Czas</th></tr></thead><tbody>
       ${MONTHS_FULL.map((n, i) => (epM[i] || mvM[i]) ? `<tr><td>${n}</td><td>${epM[i]}</td><td>${mvM[i]}</td><td>${fmtDur(epMin[i] + mvMinM[i])}</td></tr>` : '').join('') || '<tr><td colspan="4" class="muted">Brak obejrzanych w tym roku</td></tr>'}
     </tbody></table></div>
-    <p class="src">Czas liczony z długości odcinków i filmów. Odcinki oznaczone hurtem („obejrzane wszystko”) liczą się do miesiąca, w którym je zaznaczono.</p>`;
+    ${isAdmin ? '<p class="src">Czas liczony z długości odcinków i filmów. Odcinki oznaczone hurtem („obejrzane wszystko”) liczą się do miesiąca, w którym je zaznaczono.</p>' : ''}`;
 }
 
 // ---------- pełne listy z profilu (przewijane w dół) + zaznaczanie kilku naraz ----------
@@ -2835,7 +2835,7 @@ async function renderFriend(name, token) {
 }
 // ---------- panel administratora: konta użytkowników ----------
 async function renderAdmin(token) {
-  if (!isAdmin) { view.innerHTML = '<div class="empty"><b>Tylko dla administratora</b></div>'; return; }
+  if (!isAdmin) { location.replace('#/profile'); return; }
   view.innerHTML = '<div class="libhead"><h1>Konta użytkowników</h1></div><div class="loading">Ładowanie…</div>';
   const d = await api('/api/admin/users');
   if (token !== renderToken) return;

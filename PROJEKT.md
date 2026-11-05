@@ -763,3 +763,18 @@ Zmiany:
 Test: zwykłe konto → `admin: false`, `/api/admin/users` → 403; konto z `admini.txt` → `admin: true`, lista 3 kont z datami; znajomi: Breaking Bad z 2 z 62 odcinków → w „Może Ci się spodobać” („99% · zaczęte (2 odc.)”), film na później → „masz na później”; „Dla Was obojga” → Incepcja („też ma na później · masz na później”). Konta testowe usunięte.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull`, dopisanie swojej nazwy konta do `admini.txt` (polecenie w odpowiedzi), **Reload**.
+
+### 2026-11-05 — Polecenie 47
+> niech dla zwykłego użytkownika w ogóle nie będzie to widoczne
+
+Kroki: łatka `patch48.py` (scratchpad) na `index.html` i `server.py` → test na zwykłym koncie testowym → sprzątanie.
+
+Zmiany — zwykły użytkownik nie widzi żadnego śladu administratora ani rzeczy technicznych:
+- Serwer nie wysyła mu nawet pola `admin` (dostaje tylko nazwę konta; `admin: true` wysyłane jest wyłącznie adminowi).
+- Zapytanie o listę kont (`/api/admin/users`) dla niego „nie istnieje” (404 zamiast 403 „Tylko dla administratora”).
+- Wpisanie adresu `#/admin` po cichu wraca do Profilu (wcześniej pokazywało „Tylko dla administratora”).
+- Techniczne dopiski tylko dla admina: „Brak polskiego opisu w bazie — opis po angielsku”, „Brak polskiej biografii — tekst po angielsku”, notka o liczeniu czasu w Statystykach (wcześniej ukryte już: eksport/import/wyczyść, panel Wikipedii, link TMDB, notka o datach w Nadchodzących, pełna notka o źródłach).
+
+Test (zwykłe konto): `/api/me` → tylko `{"username": …}`; `/api/admin/users` → 404; `#/admin` → przekierowanie do Profilu; menu ⋯: Statystyki, Moje platformy, Dostosuj wygląd, Wyloguj się; na stronie nigdzie słowa „admin”/„Administrator”. Konto testowe usunięte.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
