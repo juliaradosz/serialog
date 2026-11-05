@@ -206,7 +206,20 @@ def friend_lists(con, uid):
             out['outgoing'].append(other)
     for k in out:
         out[k].sort(key=str.lower)
+    names = out['friends'] + out['incoming'] + out['outgoing']
+    out['avatars'] = {}
+    if names:
+        rows = con.execute('SELECT u.username, s.data FROM users u JOIN states s ON s.user_id = u.id WHERE u.username IN (%s)' % ','.join('?' * len(names)), names).fetchall()
+        for r in rows:
+            a = avatar_of(json.loads(r['data']))
+            if a:
+                out['avatars'][r['username']] = a
     return out
+
+
+def avatar_of(state):
+    a = (state.get('prefs') or {}).get('avatar')
+    return a if isinstance(a, str) and a.startswith('data:image/') and len(a) < 400000 else None
 
 
 def are_friends(con, a, b):
@@ -228,7 +241,7 @@ def friend_profile(state):
         if m['status'] == 'seen':
             minutes += next((x.get('runtime') or 0 for x in (state.get('movies') or {}).values() if x.get('id') == m['id']), 0)
     favs = [{'type': f.get('type'), 'id': f.get('id'), 'title': f.get('title'), 'poster': f.get('poster')} for f in (state.get('favs') or {}).values()]
-    return {'shows': shows, 'movies': movies, 'favs': favs, 'episodes': sum(per_show.values()), 'minutes': minutes}
+    return {'shows': shows, 'movies': movies, 'favs': favs, 'episodes': sum(per_show.values()), 'minutes': minutes, 'avatar': avatar_of(state)}
 
 
 def static_file(path):

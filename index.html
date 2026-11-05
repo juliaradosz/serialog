@@ -505,15 +505,17 @@ span.golink{line-height:0}
 code{background:var(--card2);padding:1px 6px;border-radius:6px}
 @media (max-width:400px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pstats{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:8px}.sub a{font-size:13px}.tabs a{font-size:10.5px}}
 /* ---------- efekt szkła: półprzezroczyste karty na kolorowym, rozmytym tle ---------- */
-:root{--glass-bg:color-mix(in srgb,var(--card) 66%,transparent);--glass-bg2:color-mix(in srgb,var(--card) 80%,transparent);
-  --glass-border:color-mix(in srgb,#fff 55%,transparent);--glass-hi:inset 0 1px 0 color-mix(in srgb,#fff 70%,transparent);--glass-blur:blur(16px) saturate(1.5)}
-[data-dark="1"],[data-theme=evening],[data-theme=navy],[data-theme=graphite]{--glass-bg:color-mix(in srgb,var(--card) 70%,transparent);--glass-bg2:color-mix(in srgb,var(--card) 84%,transparent);
-  --glass-border:color-mix(in srgb,#fff 10%,transparent);--glass-hi:inset 0 1px 0 color-mix(in srgb,#fff 9%,transparent)}
-body::before{content:"";position:fixed;inset:-10%;z-index:-1;pointer-events:none;
-  background:radial-gradient(40% 32% at 12% 8%,color-mix(in srgb,var(--accent) 30%,transparent),transparent 70%),
-    radial-gradient(38% 30% at 92% 30%,color-mix(in srgb,var(--ok) 24%,transparent),transparent 70%),
-    radial-gradient(45% 34% at 25% 78%,color-mix(in srgb,var(--gold) 20%,transparent),transparent 70%),
-    radial-gradient(40% 30% at 85% 92%,color-mix(in srgb,var(--heart) 18%,transparent),transparent 70%)}
+:root{--glass-bg:color-mix(in srgb,var(--card) 46%,transparent);--glass-bg2:color-mix(in srgb,var(--card) 68%,transparent);
+  --glass-border:color-mix(in srgb,#fff 55%,transparent);--glass-hi:inset 0 1px 0 color-mix(in srgb,#fff 85%,transparent),inset 0 0 0 1px color-mix(in srgb,#fff 18%,transparent);--glass-blur:blur(26px) saturate(1.9)}
+[data-dark="1"],[data-theme=evening],[data-theme=navy],[data-theme=graphite]{--glass-bg:color-mix(in srgb,var(--card) 52%,transparent);--glass-bg2:color-mix(in srgb,var(--card) 74%,transparent);
+  --glass-border:color-mix(in srgb,#fff 14%,transparent);--glass-hi:inset 0 1px 0 color-mix(in srgb,#fff 16%,transparent),inset 0 0 0 1px color-mix(in srgb,#fff 5%,transparent)}
+html{background:var(--bg)}body{background:transparent}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(46% 30% at 8% 6%,color-mix(in srgb,var(--accent) 48%,transparent),transparent 72%),
+    radial-gradient(42% 28% at 96% 24%,color-mix(in srgb,var(--ok) 40%,transparent),transparent 72%),
+    radial-gradient(50% 32% at 18% 62%,color-mix(in srgb,var(--gold) 34%,transparent),transparent 72%),
+    radial-gradient(44% 30% at 92% 78%,color-mix(in srgb,var(--heart) 34%,transparent),transparent 72%),
+    radial-gradient(40% 24% at 50% 100%,color-mix(in srgb,var(--accent) 30%,transparent),transparent 72%)}
 .card,.panel,.pcard,.pcard-show,.season,.group,.empty,.shelf-empty,.revcard,.stat,.ccard,.nextcard,.tcard,.addbox,.lookbtn,.mopt,.seenbox,.login,.ibtn,.btn.ghost,.btn.heart,.pills a,.chk,.skipbtn,.search input{
   background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:var(--shadow),var(--glass-hi);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}
 .chk.on{background:var(--ok);border-color:transparent}
@@ -572,7 +574,7 @@ a.sec-head .more{font-size:13px;font-weight:700;color:var(--accent-ink);white-sp
 .libhead{display:flex;align-items:center;gap:10px;margin:14px 0 10px}
 .libhead h1{flex:1;margin:0;font-size:22px}
 .libhead h1 small{font-size:14px;color:var(--muted);font-family:Nunito,sans-serif}
-.back2{width:36px;height:36px;flex:none;border-radius:50%;background:var(--glass-bg);border:1px solid var(--glass-border);font-size:22px;display:flex;align-items:center;justify-content:center;padding-bottom:3px}
+.back3{width:36px;height:36px;flex:none;border-radius:50%;background:var(--glass-bg);border:1px solid var(--glass-border);font-size:22px;display:flex;align-items:center;justify-content:center;padding-bottom:3px}
 .libgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 12px}
 .libgrid .mini{width:auto}
 .libgrid .mini .poster{width:100%}
@@ -595,6 +597,16 @@ a.sec-head .more{font-size:13px;font-weight:700;color:var(--accent-ink);white-sp
 .fname small{font-size:11px;white-space:nowrap}
 .avatar.sm{width:32px;height:32px;font-size:13px;flex:none}
 .mini .both{position:absolute;top:5px;right:5px;width:20px;height:20px;border-radius:50%;background:var(--ok);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.hno{position:absolute;top:12px;right:58px;z-index:2;width:38px;height:38px;border-radius:50%;background:rgba(255,250,240,.92);font-size:16px;display:flex;align-items:center;justify-content:center;filter:grayscale(1);opacity:.75;transition:transform .15s}
+.hno.on{filter:none;opacity:1;background:#ffe1dc;transform:scale(1.05)}
+.tile .tno{position:absolute;top:6px;left:6px;width:30px;height:30px;border-radius:50%;background:rgba(255,250,240,.85);font-size:14px;display:flex;align-items:center;justify-content:center;filter:grayscale(1);opacity:.8}
+.pcard-link.dis{display:block;margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--glass-bg);border:1px solid var(--glass-border);font-size:13px;font-weight:700;color:var(--muted)}
+.avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.avatar.ph{position:relative;cursor:pointer;flex:none;width:56px;height:56px}
+.avatar.ph input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.avatar.ph .cam{position:absolute;right:-4px;bottom:-4px;width:22px;height:22px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);font-size:11px;display:flex;align-items:center;justify-content:center}
+.linkbtn{font-size:12px;color:var(--muted);text-decoration:underline;padding:0 4px}
+.rwb{display:inline-block;padding:0 6px;margin-left:4px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:11px;font-weight:800;line-height:18px;white-space:nowrap;vertical-align:1px}
 </style>
 </head>
 <body>
@@ -668,6 +680,21 @@ const inLibrary = (kind, id) => kind === 'tv' ? !!state.shows[id] : !!state.movi
 // gatunki oznaczone „nie lubię” — tytuły z nimi nie pojawiają się w propozycjach
 const noG = kind => (((state.prefs || {}).noGenres || {})[kind] || []);
 const hiddenG = (kind, x) => { const no = noG(kind); if (!no.length) return false; const ids = x.genre_ids || (x.genres || []).map(g => g.id); return ids.some(g => no.includes(+g)); };
+// „nie podoba mi się”: sam tytuł i tytuły do niego podobne (rekomendacje TMDB) nie pojawiają się w propozycjach
+const disliked = () => state.disliked || {};
+let noRelSet = new Set(), noRelSig = null;
+function noRel() {
+  const d = disliked(), sig = Object.keys(d).join(',');
+  if (sig !== noRelSig) {
+    noRelSig = sig; noRelSet = new Set();
+    Object.entries(d).forEach(([k, v]) => { noRelSet.add(k); (v.rel || []).forEach(id => noRelSet.add(v.type + ':' + id)); });
+  }
+  return noRelSet;
+}
+const blocked = (kind, x) => hiddenG(kind, x) || noRel().has(kind + ':' + x.id);
+// tytuły dodane przed wejściem na ekran — na listach gatunków już się nie pokazują (dodane teraz zostają, żeby siatka nie skakała)
+let visitStart = Date.now();
+const addedBefore = (kind, id) => { const o = kind === 'tv' ? state.shows[id] : state.movies[id]; return !!o && (o.addedAt || 0) < visitStart; };
 let mode = 'local', user = null, authTab = 'login', hasTmdb = false;
 let state = emptyState();
 const showCache = {};   // id serialu -> {show, episodes}
@@ -695,7 +722,11 @@ const daysFrom = d => Math.round((parseDate(String(d).slice(0, 10)) - parseDate(
 const dayWord = d => { const n = daysFrom(d); return n === 0 ? 'dziś' : n === 1 ? 'jutro' : n === -1 ? 'wczoraj' : n > 1 && n < 7 ? `za ${n} dni (${fmtDate(d)})` : fmtDate(d); };
 const soon = d => daysFrom(d) >= 0 ? ' — już wkrótce!' : '';
 const initials = name => esc((name || '?').split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase());
+const avatarHtml = (url, name) => url && /^data:image\//.test(url) ? `<img src="${url}" alt="">` : initials(name);
 const poster = (url, name, cls = '') => url ? `<img class="poster ${cls}" src="${esc(url)}" alt="" loading="lazy">` : `<div class="poster ${cls}">${initials(name)}</div>`;
+// ↻ przy tytułach i odcinkach oglądanych więcej niż raz
+const rwCount = o => o && o.rw ? o.rw.length : 0;
+const rwBadge = o => rwCount(o) ? `<span class="rwb" title="Obejrzany ${rwCount(o) + 1} razy">↻ ${rwCount(o) + 1}×</span>` : '';
 const plural = (n, one, few, many) => `${n} ${n === 1 ? one : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? few : many}`;
 const gname = n => GENRE_PL[n] || n;
 const providerUrl = (name, title, fallback) => { const hit = PROVIDER_LINKS.find(([re]) => re.test(name)); return hit ? hit[1](encodeURIComponent(title)) : fallback; };
@@ -710,7 +741,7 @@ function toast(msg, undo) {
 }
 // zmiany, które można cofnąć przyciskiem w dymku (zapis stanu sprzed kliknięcia)
 let undoSnap = null;
-const UNDOABLE = new Set(['ep', 'season', 'allSeen', 'watchNext', 'mSeen', 'mList', 'follow', 'unfollow', 'drop', 'resume', 'skipEp', 'skipSeason',
+const UNDOABLE = new Set(['dislike', 'ep', 'season', 'allSeen', 'watchNext', 'mSeen', 'mList', 'follow', 'unfollow', 'drop', 'resume', 'skipEp', 'skipSeason',
   'bulkSeen', 'rewatch', 'rewatchSeason', 'mRewatch', 'swapShow']);
 
 // ---------- serwer: konta i TMDB ----------
@@ -903,8 +934,36 @@ function storeMovie(id, patch) {
   state.movies[id] = Object.assign({ id, addedAt: Date.now() }, state.movies[id], info, patch);
 }
 // listy (popularne, kina w Polsce, gatunki)
+// dodatkowe kategorie (TMDB ma mało gatunków — np. seriale nie mają „romansu”), szukane po tagach tytułów
+const KW_TEEN = '193400|6270|296608|10683';
+const EXTRA_CATS = {
+  tv: [['romance', 'Romanse', '💞', { with_keywords: '9840|128', without_genres: '16,10762' }], ['teen', 'Dla nastolatków', '🎒', { with_keywords: KW_TEEN, without_genres: '10762' }],
+    ['kdrama', 'K-dramy', '🌸', { with_original_language: 'ko', with_genres: '18' }], ['anime', 'Anime', '🍥', { with_genres: '16', with_original_language: 'ja' }],
+    ['truecrime', 'True crime', '🔎', { with_keywords: '33722|10714' }], ['medical', 'Medyczne', '🩺', { with_keywords: '11612' }],
+    ['legal', 'Prawnicze', '⚖️', { with_keywords: '10909' }], ['superhero', 'Superbohaterowie', '🦸', { with_keywords: '9715|155030' }],
+    ['book', 'Na podstawie książek', '📚', { with_keywords: '818' }], ['truestory', 'Oparte na faktach', '📰', { with_keywords: '9672' }],
+    ['timetravel', 'Podróże w czasie', '⏳', { with_keywords: '4379' }], ['apo', 'Postapokalipsa i dystopie', '☢️', { with_keywords: '4458|4565' }],
+    ['monsters', 'Zombie i wampiry', '🧛', { with_keywords: '12377|3133' }], ['survival', 'Walka o przetrwanie', '🏕️', { with_keywords: '10349' }],
+    ['friends', 'O przyjaźni', '🤝', { with_keywords: '6054' }], ['smalltown', 'Małe miasteczka', '🏡', { with_keywords: '1415' }],
+    ['sport', 'Sportowe', '⚽', { with_keywords: '6075' }], ['christmas', 'Świąteczne', '🎄', { with_keywords: '207317' }]],
+  movie: [['romcom', 'Komedie romantyczne', '💘', { with_genres: '10749,35' }], ['teen', 'Dla nastolatków', '🎒', { with_keywords: KW_TEEN }],
+    ['truestory', 'Oparte na faktach', '📰', { with_keywords: '9672' }], ['book', 'Na podstawie książek', '📚', { with_keywords: '818' }],
+    ['superhero', 'Superbohaterowie', '🦸', { with_keywords: '9715|155030' }], ['timetravel', 'Podróże w czasie', '⏳', { with_keywords: '4379' }],
+    ['apo', 'Postapokalipsa i dystopie', '☢️', { with_keywords: '4458|4565' }], ['monsters', 'Zombie i wampiry', '🧛', { with_keywords: '12377|3133' }],
+    ['survival', 'Walka o przetrwanie', '🏕️', { with_keywords: '10349' }], ['heist', 'Napady i skoki', '💰', { with_keywords: '10051|191845' }],
+    ['serialkiller', 'Seryjni mordercy', '🔪', { with_keywords: '10714' }], ['musical', 'Musicale', '🎤', { with_keywords: '4344' }],
+    ['sport', 'Sportowe', '⚽', { with_keywords: '6075' }], ['friends', 'O przyjaźni', '🤝', { with_keywords: '6054' }],
+    ['christmas', 'Świąteczne', '🎄', { with_keywords: '207317' }], ['anime', 'Anime', '🍥', { with_genres: '16', with_original_language: 'ja' }],
+    ['korean', 'Kino koreańskie', '🌸', { with_original_language: 'ko' }]],
+};
 function listConfig(kind, key) {
   if (LISTS[kind][key]) return LISTS[kind][key];
+  const xc = /^x(\w+)$/.exec(key || '') && EXTRA_CATS[kind].find(c => 'x' + c[0] === key);
+  if (xc) {
+    const params = { ...xc[3], sort_by: 'popularity.desc', 'vote_count.gte': kind === 'movie' ? 40 : 8 };
+    if (plOnly) Object.assign(params, { watch_region: 'PL', with_watch_monetization_types: 'flatrate|free|ads|rent|buy' });
+    return { title: `${xc[2]} ${xc[1]}`, path: `discover/${kind}`, params, genre: true };
+  }
   const m = /^g(\d+)$/.exec(key || '');
   if (!m) return null;
   const params = { with_genres: m[1], sort_by: 'popularity.desc', 'vote_count.gte': kind === 'movie' ? 50 : 5 };
@@ -1230,7 +1289,7 @@ const memKey = h => h.startsWith('#/foryou') ? 'fy:' + fyKind : /^#\/(shows|movi
 window.addEventListener('hashchange', ev => {
   const oldKey = memKey('#' + ((ev.oldURL || '').split('#')[1] || ''));
   if (oldKey) scrollMem[oldKey] = scrollY;
-  actions.close(); editing = draft = null; visitSeed = Math.random(); selMode = null; selected.clear();
+  actions.close(); editing = draft = null; visitSeed = Math.random(); visitStart = Date.now(); selMode = null; selected.clear();
   const k = memKey(location.hash);
   render().then(() => scrollTo(0, k ? scrollMem[k] || 0 : 0));
 });
@@ -1463,21 +1522,39 @@ const cinemaTabs = on => subTabs([['#/cinema', 'Teraz w kinach', 'now'], ['#/cin
 
 // ---------- „Dla Ciebie”: propozycje na podstawie obejrzanych, ocenionych, ulubionych i odłożonych tytułów ----------
 let forYou = null, forYouP = null;
+// profil gustu: które gatunki lubisz (oglądane, wysoko ocenione, ulubione, oglądane ponownie), a których nie (przerwane, „nie podoba mi się”, nisko ocenione)
+function tasteProfile() {
+  const perShow = {};
+  Object.values(state.watched).forEach(w => perShow[w.s] = (perShow[w.s] || 0) + 1 + (w.rw || []).length);
+  const g = { tv: {}, movie: {} }, add = (kind, names, v) => (names || []).forEach(n => g[kind][n] = (g[kind][n] || 0) + v);
+  Object.values(state.shows).forEach(s => add('tv', s.genres, s.dropped ? -1.5 : .4 + Math.log2(1 + (perShow[s.id] || 0)) * .5 + (s.rating ? (s.rating - 3) * .7 : 0) + (state.favs['tv:' + s.id] ? 1.5 : 0)));
+  Object.values(state.movies).forEach(m => add('movie', m.genres, (m.status === 'seen' ? 1 : .5) + (m.rating ? (m.rating - 3) * .7 : 0) + (state.favs['movie:' + m.id] ? 1.5 : 0) + (m.rw || []).length * .5));
+  Object.values(disliked()).forEach(d => add(d.type, d.genres, -2));
+  ['tv', 'movie'].forEach(k => { const max = Math.max(1, ...Object.values(g[k]).map(Math.abs)); Object.keys(g[k]).forEach(n => g[k][n] /= max); });
+  return g;
+}
+// jak bardzo tytuł pasuje do Twoich gatunków: od -1 (same nielubiane) do 1 (same ulubione)
+const genreFit = (taste, kind, x) => { const ids = x.genre_ids || (x.genres || []).map(g => g.id); if (!ids.length) return 0; return ids.reduce((a, id) => a + (taste[kind][genres[kind][id]] || 0), 0) / ids.length; };
+// ocena widzów: dobre filmy w górę, mało znane i słabe w dół
+const quality = x => (x.vote_count || 0) < 30 ? -.6 : Math.max(-.7, Math.min(.6, ((x.vote_average || 0) - 6.8) * .35));
 async function buildForYou() {
   const r = rng(Math.floor(Math.random() * 233280));
+  const taste = tasteProfile();
   const perShow = {};
-  Object.values(state.watched).forEach(w => perShow[w.s] = (perShow[w.s] || 0) + 1);
+  Object.values(state.watched).forEach(w => perShow[w.s] = (perShow[w.s] || 0) + 1 + (w.rw || []).length);
+  // „ziarna” — Twoje tytuły; im bardziej Ci się podobały, tym większa waga (przerwane i nisko ocenione pomijamy)
   const seeds = [];
   Object.values(state.shows).forEach(s => {
-    if (s.dropped) return;  // przerwane = nie podobało się — nie szukamy podobnych
-    seeds.push({ kind: 'tv', id: s.id, title: s.name, w: Math.max(.4, 1 + Math.log2(1 + (perShow[s.id] || 0)) + (s.rating ? s.rating - 2.5 : 0) + (state.favs['tv:' + s.id] ? 3 : 0)) });
+    if (s.dropped || (s.rating && s.rating <= 2)) return;
+    seeds.push({ kind: 'tv', id: s.id, title: s.name, w: Math.max(.3, .6 + Math.log2(1 + (perShow[s.id] || 0)) * .6 + (s.rating ? (s.rating - 3) * .8 : 0) + (state.favs['tv:' + s.id] ? 2 : 0)) });
   });
   Object.values(state.movies).forEach(m => {
-    seeds.push({ kind: 'movie', id: m.id, title: m.title, w: Math.max(.4, (m.status === 'seen' ? 2 : 1) + (m.rating ? m.rating - 2.5 : 0) + (state.favs['movie:' + m.id] ? 3 : 0)) });
+    if (m.rating && m.rating <= 2) return;
+    seeds.push({ kind: 'movie', id: m.id, title: m.title, w: Math.max(.3, (m.status === 'seen' ? 1.6 : .8) + (m.rating ? (m.rating - 3) * .8 : 0) + (state.favs['movie:' + m.id] ? 2 : 0) + (m.rw || []).length * .5) });
   });
-  // losowanie ważone — przy każdym odświeżeniu inne „ziarna”, więc i inne propozycje
+  // losowanie ważone — przy „Inne propozycje” inne ziarna, ale ulubione wypadają najczęściej
   const picked = [], pool = [...seeds];
-  while (picked.length < 10 && pool.length) {
+  while (picked.length < 14 && pool.length) {
     const total = pool.reduce((a, s) => a + s.w, 0);
     let x = r() * total, i = 0;
     while (x > pool[i].w && i < pool.length - 1) x -= pool[i++].w;
@@ -1485,7 +1562,7 @@ async function buildForYou() {
   }
   const cand = {};
   const add = (kind, x, score, why) => {
-    if (!x.poster_path || inLibrary(kind, x.id) || hiddenG(kind, x)) return;
+    if (!x.poster_path || inLibrary(kind, x.id) || blocked(kind, x)) return;
     const c = cand[kind + ':' + x.id] ||= { kind, x, score: 0, why: new Set() };
     c.score += score; if (why) c.why.add(why);
   };
@@ -1494,11 +1571,10 @@ async function buildForYou() {
     const res = await tmdb(`${s.kind}/${s.id}/recommendations`, { page }).catch(() => ({ results: [] }));
     (res.results || []).forEach((x, i) => add(s.kind, x, s.w * (1 - i / 40), s.title));
   }));
-  // ulubione gatunki — dodatkowe, mniej oczywiste propozycje
+  // najbardziej lubiany gatunek (wg profilu gustu) — dodatkowe, mniej oczywiste propozycje
   const topGenre = kind => {
-    const c = {}, list = kind === 'tv' ? Object.values(state.shows).filter(s => !s.dropped) : Object.values(state.movies);
-    list.forEach(x => (x.genres || []).forEach(g => c[g] = (c[g] || 0) + 1));
-    const name = Object.entries(c).sort((a, b) => b[1] - a[1])[Math.floor(r() * 2)];
+    const best = Object.entries(taste[kind]).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 2);
+    const name = best[Math.floor(r() * best.length)];
     const id = name && Object.keys(genres[kind]).find(k => genres[kind][k] === name[0]);
     return id ? { id, name: name[0] } : null;
   };
@@ -1509,9 +1585,15 @@ async function buildForYou() {
     const res = await tmdb(`discover/${kind}`, { with_genres: g.id, sort_by: 'popularity.desc', 'vote_count.gte': kind === 'movie' ? 300 : 50, page: 1 + Math.floor(r() * 8) }).catch(() => ({ results: [] }));
     (res.results || []).forEach(x => add(kind, x, .6, `gatunek: ${g.name}`));
   }));
-  const rank = kind => Object.values(cand).filter(c => c.kind === kind).map(c => ({ ...c, s: c.score + r() * 1.2 })).sort((a, b) => b.s - a.s).slice(0, 40);
+  // wynik = podobieństwo do Twoich tytułów (więcej, gdy pasuje do kilku naraz) + dopasowanie do gatunków + ocena widzów + odrobina losowości
+  const rank = kind => Object.values(cand).filter(c => c.kind === kind)
+    .map(c => ({ ...c, fit: genreFit(taste, kind, c.x), s: c.score + 1.4 * genreFit(taste, kind, c.x) + quality(c.x) + r() * .35 }))
+    .filter(c => c.fit > -.5).sort((a, b) => b.s - a.s)
+    // różnorodność: kolejne propozycje „bo: ten sam tytuł” tracą trochę punktów, żeby jeden tytuł nie zdominował listy
+    .reduce((acc, c) => { const k = [...c.why][0] || '', n = acc.n[k] = (acc.n[k] || 0) + 1; acc.l.push({ ...c, s: c.s - (n - 1) * .22 }); return acc; }, { n: {}, l: [] }).l
+    .sort((a, b) => b.s - a.s).slice(0, 40);
   Object.values(cand).forEach(c => seen[c.kind][c.x.id] = c.x);
-  return { tv: rank('tv'), movie: rank('movie'), allSeeds: shuffled(seeds, 3), topG, cursor: {}, pages: {}, loading: false };
+  return { tv: rank('tv'), movie: rank('movie'), allSeeds: shuffled(seeds.sort((a, b) => b.w - a.w).slice(0, 30), 3), topG, taste, cursor: {}, pages: {}, loading: false };
 }
 let fyKind = 'tv';  // zakładka w „Dla Ciebie” (przełączana bez przeładowania propozycji)
 async function renderForYou(token) {
@@ -1525,22 +1607,22 @@ async function renderForYou(token) {
     if (token !== renderToken) return;
   }
   const list = forYou[fyKind], isTv = fyKind === 'tv', hidden = noG(fyKind).length;
-  view.innerHTML = head + `<div class="fy-head"><div class="muted small">${isTv ? 'Seriale' : 'Filmy'} dobrane na podstawie Twojej listy — obejrzanych, ocenionych, ulubionych i odłożonych na później.${hidden ? ` <a class="link" href="#/${isTv ? 'shows' : 'movies'}-genres">Ukryte gatunki: ${hidden}</a>` : ''}</div>
+  view.innerHTML = head + `<div class="fy-head"><div class="muted small">${isTv ? 'Seriale' : 'Filmy'} podobne do tytułów z Twojej listy (najbardziej liczą się ulubione, wysoko ocenione i oglądane ponownie), dopasowane do Twoich ulubionych gatunków i dobrze oceniane przez widzów. Przerwane i 👎 sprawiają, że podobne się nie pojawiają.${hidden ? ` <a class="link" href="#/${isTv ? 'shows' : 'movies'}-genres">Ukryte gatunki: ${hidden}</a>` : ''}</div>
     <button class="btn ghost sm" data-act="forYouRefresh">↻ Inne propozycje</button></div>
     <h2>${isTv ? 'Seriale' : 'Filmy'}, które mogą Ci się spodobać</h2>
-    <div class="grid" id="fyGrid">${list.filter(c => !hiddenG(fyKind, c.x)).map(c => fyTile(fyKind, c)).join('')}</div>
+    <div class="grid" id="fyGrid">${list.filter(c => !blocked(fyKind, c.x)).map(c => fyTile(fyKind, c)).join('')}</div>
     <div id="fySentinel" class="loading small">Szukam kolejnych propozycji…</div>`;
   setTimeout(checkSentinel, 50);
 }
 // dodane tytuły zostają na swoim miejscu (z ✓), żeby siatka nie przesuwała się pod palcem
-const fyTile = (kind, c) => tile(kind, c.x).replace(/<\/div>\s*$/, `<div class="why" title="Bo: ${esc([...c.why].join(', '))}">bo: ${esc([...c.why].slice(0, 2).join(', ') || 'popularne')}</div></div>`);
+const fyTile = (kind, c) => tile(kind, c.x).replace(/<\/div>\s*$/, `<button class="tno" data-act="dislike" data-kind="${kind}" data-id="${c.x.id}" title="Nie podoba mi się">👎</button><div class="why" title="Bo: ${esc([...c.why].join(', '))}">bo: ${esc([...c.why].slice(0, 2).join(', ') || 'popularne')}</div></div>`);
 // kolejne propozycje bez końca: następne strony rekomendacji dla kolejnych tytułów z listy + popularne z ulubionego gatunku
 async function forYouMore(kind) {
   const f = forYou;
   if (!f || f.loading) return [];
   f.loading = true;
   const shown = new Set(f[kind].map(c => c.x.id)), fresh = [];
-  const take = (x, why) => { if (!x.poster_path || inLibrary(kind, x.id) || hiddenG(kind, x) || shown.has(x.id)) return; shown.add(x.id); seen[kind][x.id] = x; fresh.push({ kind, x, score: 0, why: new Set(why ? [why] : []) }); };
+  const take = (x, why) => { if (!x.poster_path || inLibrary(kind, x.id) || blocked(kind, x) || shown.has(x.id)) return; shown.add(x.id); seen[kind][x.id] = x; fresh.push({ kind, x, score: 0, why: new Set(why ? [why] : []) }); };
   const seeds = f.allSeeds.filter(s => s.kind === kind);
   await Promise.all([0, 1, 2].map(async () => {
     if (!seeds.length) return;
@@ -1553,7 +1635,7 @@ async function forYouMore(kind) {
   const g = f.topG[kind], gp = (f.pages['g' + kind] = (f.pages['g' + kind] || 0) + 1);
   const res = await tmdb(`discover/${kind}`, { ...(g ? { with_genres: g.id } : {}), sort_by: 'popularity.desc', 'vote_count.gte': kind === 'movie' ? 200 : 30, page: Math.min(gp, 500) }).catch(() => ({ results: [] }));
   (res.results || []).forEach(x => take(x, g ? `gatunek: ${g.name}` : 'popularne'));
-  const out = shuffled(fresh, f[kind].length + 1);
+  const out = fresh.map(c => ({ ...c, s: 1.4 * genreFit(f.taste, kind, c.x) + quality(c.x) + Math.random() * .35 })).filter(c => genreFit(f.taste, kind, c.x) > -.5).sort((a, b) => b.s - a.s);
   f[kind].push(...out);
   f.loading = false;
   return out;
@@ -1682,7 +1764,7 @@ async function fillResults(kind, token = renderToken) {
     await feedMore(); await feedMore();
   }
   if (token !== renderToken || !$('#results') || searchQ[kind]) return;
-  box.innerHTML = `<h2>${kind === 'tv' ? 'Seriale' : 'Filmy'} do odkrycia</h2><div class="grid" id="feedGrid">${feed.items.filter(x => !inLibrary(kind, x.id) && !hiddenG(kind, x)).map(x => tile(kind, x)).join('')}</div>
+  box.innerHTML = `<h2>${kind === 'tv' ? 'Seriale' : 'Filmy'} do odkrycia</h2><div class="grid" id="feedGrid">${feed.items.filter(x => !inLibrary(kind, x.id) && !blocked(kind, x)).map(x => tile(kind, x)).join('')}</div>
     <div id="feedSentinel" class="loading small">Ładuję kolejne…</div>`;
   setTimeout(checkSentinel, 50);
 }
@@ -1703,7 +1785,7 @@ async function feedMore() {
   // pomijamy tytuły bez polskiego/łacińskiego zapisu (np. tylko japońskie znaki — brak tłumaczenia)
   const readable = x => /[A-Za-zÀ-ž]/.test(x.name || x.title || '');
   // bez tytułów, które już są na Twoich listach
-  const fresh = shuffled(res.flat().filter(x => x.poster_path && readable(x) && !inLibrary(f.kind, x.id) && !hiddenG(f.kind, x) && !ids.has(x.id) && ids.add(x.id)), f.items.length + 7);
+  const fresh = shuffled(res.flat().filter(x => x.poster_path && readable(x) && !inLibrary(f.kind, x.id) && !blocked(f.kind, x) && !ids.has(x.id) && ids.add(x.id)), f.items.length + 7);
   f.items.push(...fresh);
   f.loading = false;
   return fresh;
@@ -1727,7 +1809,9 @@ function renderGenres(kind) {
       ${list.map(([id, name], i) => { const off = noG(kind).includes(+id);
         return `<a class="genre ${off ? 'off' : ''}" style="--h:${GENRE_HUES[i % GENRE_HUES.length]}" href="#/${base}-list/g${id}"><span>${GENRE_ICON[id] || '🎬'}</span><em>${esc(name)}${off ? '<small>ukryty w propozycjach</small>' : ''}</em>
         <button class="gno ${off ? 'on' : ''}" data-act="noGenre" data-kind="${kind}" data-g="${id}" title="${off ? 'Pokaż znowu w propozycjach' : 'Nie lubię — ukryj w propozycjach'}">${off ? '↺' : '🚫'}</button></a>`; }).join('')}
-    </div>`;
+    </div>
+    <h2>Więcej kategorii</h2>
+    <div class="genres">${EXTRA_CATS[kind].map(([k, name, icon], i) => `<a class="genre" style="--h:${GENRE_HUES[(i + 5) % GENRE_HUES.length]}" href="#/${base}-list/x${k}"><span>${icon}</span><em>${esc(name)}</em></a>`).join('')}</div>`;
 }
 async function renderList(kind, key, token) {
   const cfg = listConfig(kind, key);
@@ -1743,7 +1827,7 @@ async function renderList(kind, key, token) {
     listView = { kind, key, ...res };
   }
   view.innerHTML = tabs + back + `<h2>${cfg.title} <small>(${listView.total.toLocaleString('pl-PL')}, od najpopularniejszych)</small></h2>${toggle}
-    <div class="grid">${listView.items.filter(x => cfg.genre || !hiddenG(kind, x)).map(x => tile(kind, x)).join('')}</div>
+    <div class="grid">${listView.items.filter(x => !addedBefore(kind, x.id) && (cfg.genre ? !noRel().has(kind + ':' + x.id) : !blocked(kind, x))).map(x => tile(kind, x)).join('')}</div>
     ${listView.page < listView.pages ? '<div id="sentinel" class="loading small">Ładuję kolejne…</div>' : ''}`;
   watchSentinel();
 }
@@ -1854,7 +1938,7 @@ function relatedPanel(kind, data, token, here) {
     }
     if (data._plRelated && data._plRelated.length) rows.push([`Polskie ${kind === 'tv' ? 'programy i seriale' : 'filmy'} z tego gatunku`, data._plRelated]);
   }
-  const mix = [...rec, ...sim].filter((x, i, a) => a.findIndex(y => y.id === x.id) === i && !inLibrary(kind, x.id) && !hiddenG(kind, x));
+  const mix = [...rec, ...sim].filter((x, i, a) => a.findIndex(y => y.id === x.id) === i && !inLibrary(kind, x.id) && !blocked(kind, x));
   if (mix.length) rows.push([kind === 'tv' ? 'Podobne i polecane seriale' : 'Podobne i polecane filmy', shuffled(mix, own)]);
   rows.forEach(([, l]) => l.forEach(x => seen[kind][x.id] = x));
   return rows.map(([t, l]) => `<h2>${t}</h2><div class="hscroll rel">${l.map(x => tile(kind, x)).join('')}</div>`).join('');
@@ -2026,7 +2110,7 @@ async function renderShow(id, token) {
     const nSkip = list.filter(isSkipped).length, canSkip = list.some(e => isAired(e) && !state.watched[e.key] && !isSkipped(e));
     return `<details class="season" data-show="${id}" data-season="${n}" ${openSeasons[id].has(+n) ? 'open' : ''}>
       <summary class="${nSkip && !canSkip && !w ? 'skipped' : ''}"><span class="sp">${esc(seasonName(n))}${!list.some(isAired) && list[0] && list[0].air ? `<small class="sprem">premiera ${fmtDate(list[0].air)}</small>` : ''}<span class="sbar"><b style="width:${av.length ? w / av.length * 100 : 0}%"></b></span></span>
-        <span class="muted small">${nSkip ? `<span class="skiptag">${nSkip === list.length ? 'pominięty' : `${nSkip} pomin.`}</span> ` : ''}${w}/${list.length - nSkip}</span>
+        <span class="muted small">${all && Math.min(...av.map(e => rwCount(state.watched[e.key]))) ? rwBadge({ rw: Array(Math.min(...av.map(e => rwCount(state.watched[e.key])))) }) + ' ' : ''}${nSkip ? `<span class="skiptag">${nSkip === list.length ? 'pominięty' : `${nSkip} pomin.`}</span> ` : ''}${w}/${list.length - nSkip}</span>
         ${all ? `<button class="skipbtn" data-act="rewatchSeason" data-show="${id}" data-season="${n}" title="Obejrzany ponownie">↻</button>`
           : canSkip || nSkip ? `<button class="skipbtn" data-act="skipSeason" data-show="${id}" data-season="${n}" title="${canSkip ? 'Nie obejrzę tego sezonu' : 'Przywróć sezon'}">${canSkip ? '⊘' : '↺'}</button>` : ''}
         <button class="chk sm ${all ? 'on' : ''}" data-act="season" data-show="${id}" data-season="${n}" ${av.length ? '' : 'disabled'} title="Oznacz cały sezon">✓</button></summary>
@@ -2035,7 +2119,7 @@ async function renderShow(id, token) {
         const sk = isSkipped(e);
         return `<li class="ep ${a ? '' : 'future'} ${on ? 'seen' : ''} ${sk ? 'skipped' : ''}">
           <span data-act="epInfo" data-id="${e.key}">${thumb(e, s)}</span>
-          <div class="m" data-act="epInfo" data-id="${e.key}"><div><b>E${pad(e.number)}</b>${esc(e.name)} ${r || ''}${state.notes[e.key] ? ' <span title="Masz notatkę">📝</span>' : ''}</div>
+          <div class="m" data-act="epInfo" data-id="${e.key}"><div><b>E${pad(e.number)}</b>${esc(e.name)} ${r || ''}${rwBadge(state.watched[e.key])}${state.notes[e.key] ? ' <span title="Masz notatkę">📝</span>' : ''}</div>
           <small>${sk ? '<span class="skiptag">nie obejrzę</span> · ' : ''}${e.air ? fmtDate(e.air) : 'data nieznana'}${a ? '' : ' · ' + dayWord(e.air || todayStr())}</small></div>
           ${!on ? `<button class="skipbtn" data-act="skipEp" data-id="${e.key}" title="${sk ? 'Przywróć odcinek' : 'Nie obejrzę tego odcinka'}">${sk ? '↺' : '⊘'}</button>` : ''}
           <button class="chk sm ${on ? 'on' : ''}" data-act="ep" data-id="${e.key}" ${a ? '' : 'disabled'} title="${on ? 'Odznacz' : 'Obejrzany'}">✓</button>
@@ -2060,6 +2144,7 @@ async function renderShow(id, token) {
     <div class="bg" style="background-image:url('${esc(img(s.backdrop_path, 'w780') || img(s.poster_path) || '')}')"></div>
     <button class="back" data-act="back" title="Wstecz">‹</button>
     <button class="hfav ${fav ? 'on' : ''}" data-act="favShow" data-id="${id}" title="${fav ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${fav ? '♥' : '♡'}</button>
+    <button class="hno ${disliked()['tv:' + id] ? 'on' : ''}" data-act="dislike" data-kind="tv" data-id="${id}" title="${disliked()['tv:' + id] ? 'Cofnij „nie podoba mi się”' : 'Nie podoba mi się — nie proponuj podobnych'}">👎</button>
     <div class="in">
       ${poster(img(s.poster_path), s.name)}
       <div>
@@ -2163,7 +2248,7 @@ function renderMovies(sub) {
       <div class="body">
         <div class="t">${state.favs['movie:' + m.id] ? '❤ ' : ''}${esc(m.title)}</div>
         <div class="n">${[m.year, m.runtime && m.runtime + ' min'].filter(Boolean).join(' · ')}</div>
-        ${sub === 'seen' ? `<div class="n">Obejrzany ${fmtDate(m.seenAt)} ${m.reaction || ''}</div>${m.rating ? `<div class="stars">${'★'.repeat(m.rating)}<span class="off">${'★'.repeat(5 - m.rating)}</span></div>` : ''}`
+        ${sub === 'seen' ? `<div class="n">Obejrzany ${fmtDate(m.seenAt)} ${m.reaction || ''} ${rwBadge(m)}${rwCount(m) ? ` · ostatnio ${fmtDate(m.rw[m.rw.length - 1])}` : ''}</div>${m.rating ? `<div class="stars">${'★'.repeat(m.rating)}<span class="off">${'★'.repeat(5 - m.rating)}</span></div>` : ''}`
                          : `<div class="n">${m.release && daysFrom(m.release) >= 0 ? `🎬 Premiera w Polsce: ${dayWord(m.release.slice(0, 10))}` : esc((m.genres || []).slice(0, 3).join(', '))}</div>`}
       </div>
       ${sub === 'seen' ? '' : movieUnreleased(m.id) ? '<span class="chk off" title="Jeszcze przed premierą">📅</span>' : `<button class="chk" title="Oznacz jako obejrzany" data-act="mSeen" data-id="${m.id}">✓</button>`}
@@ -2186,6 +2271,7 @@ async function renderMovie(id, token) {
     <div class="bg" style="background-image:url('${esc(img(m.backdrop_path, 'w780') || img(m.poster_path) || '')}')"></div>
     <button class="back" data-act="back" title="Wstecz">‹</button>
     <button class="hfav ${fav ? 'on' : ''}" data-act="favMovie" data-id="${id}" title="${fav ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}">${fav ? '♥' : '♡'}</button>
+    <button class="hno ${disliked()['movie:' + id] ? 'on' : ''}" data-act="dislike" data-kind="movie" data-id="${id}" title="${disliked()['movie:' + id] ? 'Cofnij „nie podoba mi się”' : 'Nie podoba mi się — nie proponuj podobnych'}">👎</button>
     <div class="in">
       ${poster(img(m.poster_path), m.title)}
       <div>
@@ -2280,8 +2366,8 @@ function renderStats() {
   view.innerHTML = `
     <div class="sthead"><a class="back2" href="#/profile">‹ Profil</a><h2>Statystyki</h2></div>
     <div class="tcards">
-      <div class="tcard tv"><small>Seriale</small><b>${fmtDur(tvMin)}</b><span>${plural(eps.length, 'odcinek', 'odcinki', 'odcinków')}</span></div>
-      <div class="tcard mv"><small>Filmy</small><b>${fmtDur(mvMin)}</b><span>${plural(films.length, 'film', 'filmy', 'filmów')}</span></div>
+      <div class="tcard tv"><small>Seriale</small><b>${fmtDur(tvMin)}</b><span>${plural(eps.length, 'odcinek', 'odcinki', 'odcinków')}${eps.length - Object.values(state.watched).filter(w => w.t).length ? ` · w tym ↻ ${eps.length - Object.values(state.watched).filter(w => w.t).length} ponownie` : ''}</span></div>
+      <div class="tcard mv"><small>Filmy</small><b>${fmtDur(mvMin)}</b><span>${plural(films.length, 'film', 'filmy', 'filmów')}${films.length - Object.values(state.movies).filter(m => m.status === 'seen' && m.seenAt).length ? ` · w tym ↻ ${films.length - Object.values(state.movies).filter(m => m.status === 'seen' && m.seenAt).length} ponownie` : ''}</span></div>
       <div class="tcard all"><small>Razem przed ekranem</small><b>${fmtDur(tvMin + mvMin)}</b><span>${(tvMin + mvMin) / 1440 >= 1 ? `to ${((tvMin + mvMin) / 1440).toFixed(1).replace('.', ',')} doby bez przerwy` : 'od początku korzystania z aplikacji'} · ${plural(finished, 'serial ukończony', 'seriale ukończone', 'seriali ukończonych')}</span></div>
     </div>
     ${years.length ? `<div class="pills years">${years.map(y => `<a data-act="statYear" data-y="${y}" class="${y === statsYear ? 'on' : ''}">${y}</a>`).join('')}</div>` : ''}
@@ -2319,6 +2405,7 @@ function libSets() {
     'seen-movies': ['Filmy obejrzane', 'movie', movies.filter(m => m.status === 'seen').sort((a, b) => (b.seenAt || 0) - (a.seenAt || 0))],
     'later-movies': ['Filmy na później', 'movie', movies.filter(m => m.status === 'watch').sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0))],
     'favs': ['Ulubione', 'fav', Object.values(state.favs).sort((a, b) => b.t - a.t)],
+    'disliked': ['Nie podoba mi się', 'fav', Object.values(disliked()).sort((a, b) => b.t - a.t)],
   };
 }
 function libItem(type, x, sel) {
@@ -2328,7 +2415,7 @@ function libItem(type, x, sel) {
   const pic = type === 'tv' ? x.s.poster || (x.d && img(x.d.show.poster_path)) : type === 'movie' ? x.poster : x.poster || ((x.type === 'tv' ? state.shows : state.movies)[x.id] || {}).poster;
   const rating = type === 'tv' ? x.s.rating : type === 'movie' ? x.rating : 0;
   const sub = type === 'tv' ? (x.aired ? `${x.done}/${x.aired} odc.` : '')
-    : type === 'movie' ? (x.status === 'seen' && x.seenAt ? fmtDate(x.seenAt) : movieUnreleased(x.id) ? '📅 ' + (x.release ? fmtDate(x.release.slice(0, 10)) : 'przed premierą') : x.year || '')
+    : type === 'movie' ? (x.status === 'seen' && x.seenAt ? fmtDate(x.seenAt) + (rwCount(x) ? ` · ↻${rwCount(x) + 1}×` : '') : movieUnreleased(x.id) ? '📅 ' + (x.release ? fmtDate(x.release.slice(0, 10)) : 'przed premierą') : x.year || '')
     : (x.type === 'tv' ? 'serial' : 'film');
   const lock = sel && type === 'movie' && movieUnreleased(x.id);
   const inner = `${poster(pic, name)}${rating ? `<div class="ms">${'★'.repeat(rating)}</div>` : ''}${sel ? `<span class="selmark">${lock ? '📅' : '✓'}</span>` : ''}
@@ -2344,7 +2431,7 @@ async function renderLib(key, token) {
   const sets = libSets(), cfg = sets[key];
   if (!cfg) { location.hash = '#/profile'; return; }
   const [title, type, items] = cfg, canBulk = key === 'later-tv' || key === 'later-movies', sel = canBulk && selMode === key;
-  view.innerHTML = `<div class="libhead"><button class="back2" data-act="back" title="Wstecz">‹</button><h1>${title} <small>(${items.length})</small></h1>
+  view.innerHTML = `<div class="libhead"><button class="back3" data-act="back" title="Wstecz">‹</button><h1>${title} <small>(${items.length})</small></h1>
       ${canBulk && items.length ? `<button class="btn ${sel ? '' : 'ghost'} sm" data-act="selMode" data-k="${key}">${sel ? 'Gotowe' : 'Zaznacz kilka'}</button>` : ''}</div>
     ${items.length > 8 ? `<div class="search libsearch"><span class="ico">⌕</span><input id="libFilter" type="search" placeholder="Szukaj na tej liście…" autocomplete="off"></div>` : ''}
     ${sel ? '<p class="muted small" style="margin:4px 0 10px">Stuknij plakaty, które już obejrzano, i zatwierdź przyciskiem na dole.</p>' : ''}
@@ -2366,14 +2453,14 @@ async function loadFriends(token) {
 const friendsPanel = () => `<section class="shelf" id="friendsBox">${friendsInner()}</section>`;
 function friendsInner() {
   const f = friends || { friends: [], incoming: [], outgoing: [] };
-  const person = (n, btns) => `<div class="frow"><a href="#/friend/${encodeURIComponent(n)}" class="fname"><span class="avatar sm">${initials(n)}</span><b>${esc(n)}</b></a>${btns}</div>`;
+  const person = (n, btns) => `<div class="frow"><a href="#/friend/${encodeURIComponent(n)}" class="fname"><span class="avatar sm">${avatarHtml((f.avatars || {})[n], n)}</span><b>${esc(n)}</b></a>${btns}</div>`;
   return `<h2>Znajomi <small>(${f.friends.length})</small></h2>
     <div class="fadd"><input id="friendName" placeholder="Nazwa użytkownika znajomego" autocomplete="off" autocapitalize="off" maxlength="30"><button class="btn sm" data-act="friendAdd">Dodaj</button></div>
-    ${f.incoming.length ? `<div class="fsec">Zaproszenia do Ciebie</div>${f.incoming.map(n => `<div class="frow"><span class="fname"><span class="avatar sm">${initials(n)}</span><b>${esc(n)}</b></span>
+    ${f.incoming.length ? `<div class="fsec">Zaproszenia do Ciebie</div>${f.incoming.map(n => `<div class="frow"><span class="fname"><span class="avatar sm">${avatarHtml((f.avatars || {})[n], n)}</span><b>${esc(n)}</b></span>
       <button class="btn sm" data-act="friendAccept" data-u="${esc(n)}">Przyjmij</button><button class="btn ghost sm" data-act="friendRemove" data-u="${esc(n)}" data-m="decline">Odrzuć</button></div>`).join('')}` : ''}
     ${f.friends.length ? f.friends.map(n => person(n, `<a class="btn ghost sm" href="#/friend/${encodeURIComponent(n)}">Profil ›</a>`)).join('')
       : friends ? '<div class="shelf-empty">Dodaj kogoś po nazwie użytkownika — zobaczycie nawzajem swoje listy seriali i filmów (recenzje i notatki zostają prywatne).</div>' : '<div class="muted small">Ładowanie…</div>'}
-    ${f.outgoing.length ? `<div class="fsec">Wysłane zaproszenia</div>${f.outgoing.map(n => `<div class="frow"><span class="fname"><span class="avatar sm">${initials(n)}</span><b>${esc(n)}</b><small class="muted">czeka na akceptację</small></span>
+    ${f.outgoing.length ? `<div class="fsec">Wysłane zaproszenia</div>${f.outgoing.map(n => `<div class="frow"><span class="fname"><span class="avatar sm">${avatarHtml((f.avatars || {})[n], n)}</span><b>${esc(n)}</b><small class="muted">czeka na akceptację</small></span>
       <button class="btn ghost sm" data-act="friendRemove" data-u="${esc(n)}" data-m="cancel">Anuluj</button></div>`).join('')}` : ''}`;
 }
 async function renderFriend(name, token) {
@@ -2385,12 +2472,12 @@ async function renderFriend(name, token) {
   const mins = p.minutes || 0, days = Math.floor(mins / 1440), hours = Math.floor(mins % 1440 / 60);
   const both = (kind, id) => inLibrary(kind, id) ? '<span class="both" title="Też to masz">✓</span>' : '';
   const sMini = s => `<a class="mini" href="#/show/${s.id}">${poster(s.poster, s.name)}${both('tv', s.id)}<div class="nm">${esc(s.name)}</div><div class="sub2">${s.eps ? plural(s.eps, 'odcinek', 'odcinki', 'odcinków') : 'na później'}</div></a>`;
-  const mMini = m => `<a class="mini" href="#/movie/${m.id}">${poster(m.poster, m.title)}${both('movie', m.id)}<div class="nm">${esc(m.title)}</div><div class="sub2">${m.status === 'seen' && m.seenAt ? fmtDate(m.seenAt) : m.year || ''}</div></a>`;
+  const mMini = m => `<a class="mini" href="#/movie/${m.id}">${poster(m.poster, m.title)}${both('movie', m.id)}<div class="nm">${esc(m.title)}</div><div class="sub2">${m.status === 'seen' && m.seenAt ? fmtDate(m.seenAt) + (rwCount(m) ? ` · ↻${rwCount(m) + 1}×` : '') : m.year || ''}</div></a>`;
   const fMini = f => `<a class="mini" href="#/${f.type === 'tv' ? 'show' : 'movie'}/${f.id}">${poster(f.poster, f.title)}<div class="nm">❤ ${esc(f.title)}</div><div class="sub2">${f.type === 'tv' ? 'serial' : 'film'}</div></a>`;
   const shelf = (title, items, render) => items.length ? `<section class="shelf"><h2>${title} <small>(${items.length})</small></h2><div class="hscroll">${items.map(render).join('')}</div></section>` : '';
   const shows = p.shows.filter(s => !s.dropped).sort((a, b) => b.eps - a.eps), seenM = p.movies.filter(m => m.status === 'seen').sort((a, b) => (b.seenAt || 0) - (a.seenAt || 0));
-  view.innerHTML = `<div class="libhead"><button class="back2" data-act="back" title="Wstecz">‹</button><h1>Profil znajomego</h1></div>
-    <div class="pcard"><div class="prow"><div class="avatar">${initials(p.username)}</div>
+  view.innerHTML = `<div class="libhead"><button class="back3" data-act="back" title="Wstecz">‹</button><h1>Profil znajomego</h1></div>
+    <div class="pcard"><div class="prow"><div class="avatar">${avatarHtml(p.avatar, p.username)}</div>
       <div class="body"><b>${esc(p.username)}</b><div class="muted small">${days} dni ${hours} godz. przed ekranem</div></div>
       <button class="btn ghost sm" data-act="friendRemove" data-u="${esc(p.username)}" data-m="remove">Usuń ze znajomych</button></div>
       <div class="pstats"><div><b>${p.shows.length}</b>seriali</div><div><b>${p.episodes}</b>odcinków</div><div><b>${seenM.length}</b>filmów</div></div></div>
@@ -2402,9 +2489,37 @@ async function renderFriend(name, token) {
     ${!p.shows.length && !p.movies.length ? '<div class="empty"><b>Pusto</b>Ten profil nie ma jeszcze seriali ani filmów.</div>' : ''}
     <p class="muted small" style="text-align:center;margin-top:20px">✓ na plakacie = masz to też na swojej liście</p>`;
 }
+// zdjęcie profilowe: przycięte do kwadratu i zmniejszone (256 px), zapisywane razem z danymi konta
+document.addEventListener('change', async ev => {
+  if (ev.target.id !== 'avatarFile' || !ev.target.files[0]) return;
+  try {
+    const url = URL.createObjectURL(ev.target.files[0]);
+    const im = await new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = bad; i.src = url; });
+    const s = Math.min(im.naturalWidth, im.naturalHeight), c = document.createElement('canvas');
+    c.width = c.height = 256;
+    c.getContext('2d').drawImage(im, (im.naturalWidth - s) / 2, (im.naturalHeight - s) / 2, s, s, 0, 0, 256, 256);
+    URL.revokeObjectURL(url);
+    (state.prefs ||= {}).avatar = c.toDataURL('image/jpeg', .84);
+    save(); toast('Zapisano zdjęcie profilowe'); rerender();
+  } catch (e) { toast('Nie udało się wczytać tego zdjęcia'); }
+});
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'friendName') { e.preventDefault(); actions.friendAdd().catch(err => toast(err.message)); } });
 
 Object.assign(actions, {
+  avatarDel() { delete state.prefs.avatar; save(); toast('Usunięto zdjęcie profilowe'); rerender(); },
+  async dislike(d) {
+    const kind = d.kind, id = +d.id, k = kind + ':' + id, all = state.disliked ||= {};
+    if (all[k]) { delete all[k]; save(); toast('Usunięto z „Nie podoba mi się”'); rerender(); return; }
+    const x = (kind === 'tv' ? showCache[id] && showCache[id].show : movieCache[id]) || seen[kind][id] || {};
+    const gn = x.genres ? x.genres.map(g => gname(g.name)) : (x.genre_ids || []).map(g => genres[kind][g]).filter(Boolean);
+    let rel = [...((x.recommendations || {}).results || []), ...((x.similar || {}).results || [])].map(r => r.id);
+    if (!rel.length) rel = ((await tmdb(`${kind}/${id}/recommendations`).catch(() => ({ results: [] }))).results || []).map(r => r.id);
+    all[k] = { type: kind, id, title: x.name || x.title || '', poster: img(x.poster_path), genres: gn, rel: [...new Set(rel)].slice(0, 40), t: Date.now() };
+    save(); toast('👎 Zapamiętano — podobne tytuły nie będą proponowane');
+    const grid = $('#fyGrid') || $('#feedGrid');
+    if (grid) grid.querySelectorAll('.tile').forEach(el => { if (noRel().has(kind + ':' + el.dataset.id)) el.remove(); });
+    else rerender();
+  },
   undo() {
     if (!undoSnap) return;
     state = JSON.parse(undoSnap); undoSnap = null; save();
@@ -2489,18 +2604,23 @@ async function renderProfile(token) {
   const count = (list, f) => { const c = {}; list.forEach(x => (x.genres || []).forEach(g => c[g] = (c[g] || 0) + f(x))); return Object.entries(c).sort((a, b) => b[1] - a[1]).slice(0, 5); };
   const topG = count(Object.values(state.shows), s => (perShow[s.id] || 0) + 1), topMG = count(seenM, () => 1);
   const showName = id => (state.shows[id] && state.shows[id].name) || (showCache[id] && showCache[id].show.name) || 'Serial';
+  const rwShow = {};
+  w.forEach(x => { if (rwCount(x)) rwShow[x.s] = (rwShow[x.s] || 0) + rwCount(x); });
+  const again = ' <span class="rwb">↻ ponownie</span>';
   const hist = [
     ...w.map(x => ({ t: x.t, href: `#/show/${x.s}`, html: `<b>${esc(showName(x.s))}</b> <span class="muted">${esc(x.c || '')} ${esc(x.n || '')}</span>` })),
+    ...w.flatMap(x => (x.rw || []).map(t => ({ t, href: `#/show/${x.s}`, html: `<b>${esc(showName(x.s))}</b> <span class="muted">${esc(x.c || '')} ${esc(x.n || '')}</span>${again}` }))),
     ...seenM.map(m => ({ t: m.seenAt, href: `#/movie/${m.id}`, html: `🎬 <b>${esc(m.title)}</b> <span class="muted">${m.year || ''}</span>` })),
+    ...seenM.flatMap(m => (m.rw || []).map(t => ({ t, href: `#/movie/${m.id}`, html: `🎬 <b>${esc(m.title)}</b> <span class="muted">${m.year || ''}</span>${again}` }))),
   ].sort((a, b) => b.t - a.t).slice(0, 12);
   const hrs = n => `${Math.floor(n / 60)} h ${n % 60} min`;
   const bars = list => list.map(([g, n]) => `<div class="grow"><span class="lbl">${esc(g)}</span><div class="bar"><b style="width:${n / list[0][1] * 100}%"></b></div></div>`).join('');
   const miniStars = r => r ? `<div class="ms">${'★'.repeat(r)}</div>` : '';
   const showMini = x => `<a class="mini" href="#/show/${x.s.id}">${poster(x.s.poster || (x.d && img(x.d.show.poster_path)), x.s.name)}${miniStars(x.s.rating)}
-    <div class="nm">${esc(x.s.name)}</div><div class="sub2">${x.aired ? `${x.done}/${x.aired} odc.` : ''}</div>
+    <div class="nm">${esc(x.s.name)}</div><div class="sub2">${x.aired ? `${x.done}/${x.aired} odc.` : ''}${rwShow[x.s.id] ? ` · ↻${rwShow[x.s.id]}` : ''}</div>
     ${x.aired && x.done < x.aired ? `<div class="bar"><b style="width:${x.done / x.aired * 100}%"></b></div>` : ''}</a>`;
   const movieMini = m => `<a class="mini" href="#/movie/${m.id}">${poster(m.poster, m.title)}${miniStars(m.rating)}
-    <div class="nm">${esc(m.title)}</div><div class="sub2">${m.status === 'seen' && m.seenAt ? fmtDate(m.seenAt) : m.release && daysFrom(m.release) >= 0 ? '📅 ' + fmtDate(m.release.slice(0, 10)) : m.year || ''}</div></a>`;
+    <div class="nm">${esc(m.title)}</div><div class="sub2">${m.status === 'seen' && m.seenAt ? fmtDate(m.seenAt) + (rwCount(m) ? ` · ↻${rwCount(m) + 1}×` : '') : m.release && daysFrom(m.release) >= 0 ? '📅 ' + fmtDate(m.release.slice(0, 10)) : m.year || ''}</div></a>`;
   const favMini = f => `<a class="mini" href="#/${f.type === 'tv' ? 'show' : 'movie'}/${f.id}">${poster(f.poster || ((f.type === 'tv' ? state.shows : state.movies)[f.id] || {}).poster, f.title)}
     <div class="nm">❤ ${esc(f.title)}</div><div class="sub2">${f.type === 'tv' ? 'serial' : 'film'}</div></a>`;
   const shelf = (key, title, items, render, emptyText) => `<section class="shelf"><a class="sec-head" href="#/lib/${key}"><h2>${title} <small>(${items.length})</small></h2><span class="more">Wszystkie ›</span></a>
@@ -2509,8 +2629,8 @@ async function renderProfile(token) {
   view.innerHTML = `
     <div class="pcard">
       <div class="prow">
-        <div class="avatar">${initials(user)}</div>
-        <div class="body"><b>${esc(user)}</b><div class="muted small">${months ? months + ' mies. ' : ''}${days} dni ${hours} godz. przed ekranem</div></div>
+        <label class="avatar ph" title="Zmień zdjęcie profilowe">${avatarHtml((state.prefs || {}).avatar, user)}<span class="cam">📷</span><input type="file" accept="image/*" id="avatarFile"></label>
+        <div class="body"><b>${esc(user)}</b>${(state.prefs || {}).avatar ? ' <button class="linkbtn" data-act="avatarDel">usuń zdjęcie</button>' : ''}<div class="muted small">${months ? months + ' mies. ' : ''}${days} dni ${hours} godz. przed ekranem</div></div>
         <button class="btn ghost sm" data-act="logout">Wyloguj</button>
       </div>
       <div class="pstats">
@@ -2531,6 +2651,7 @@ async function renderProfile(token) {
     ${shelf('seen-movies', 'Filmy obejrzane', seenM.sort((a, b) => (b.seenAt || 0) - (a.seenAt || 0)), movieMini, 'Brak obejrzanych filmów.')}
     ${shelf('later-movies', 'Filmy na później', laterM.sort((a, b) => b.addedAt - a.addedAt), movieMini, 'Dodaj film przyciskiem „Chcę obejrzeć później”.')}
     ${shelf('favs', 'Ulubione', favs, favMini, 'Kliknij ♡ przy serialu lub filmie, aby dodać go do ulubionych.')}
+    ${Object.keys(disliked()).length ? `<a class="pcard-link dis" href="#/lib/disliked">👎 Nie podoba mi się (${Object.keys(disliked()).length}) — podobne nie są proponowane ›</a>` : ''}
     <section class="shelf"><h2>Moje recenzje <small>(${reviews.length})</small></h2>
       ${reviews.length ? reviews.map(r => `<a class="revcard" href="#/${r.kind === 'tv' ? 'show' : 'movie'}/${r.id}">
         ${poster(r.poster, r.title, 'sm')}
