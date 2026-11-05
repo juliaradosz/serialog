@@ -637,3 +637,10 @@ Zmiany:
 Testy (widok telefonu, konta testowe): menu ⋯ i platformy (Netflix, HBO Max, Disney Plus… z logo); rok 2025 → wszystkie propozycje z 2025; filtr platform → zapytanie z `with_watch_providers`; ✕ pokazuje się po wpisaniu; „Dla nastolatków”: 6 anime → 0 po ukryciu; kalendarz: 4 dni z premierami w listopadzie; znajomy: „Obejrzane wspólnie (2)”; „Obejrzane wszystko” bez okienka (61 odcinków); strzałka wstecz zostaje u góry po przewinięciu; „Dla Ciebie”: 12 pierwszych z 6 różnych źródeł. Konta testowe usunięte (zostało tylko „julkar8”).
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload** (zmienił się też serwer). Na iPhonie nową ikonę widać po usunięciu starej z ekranu i ponownym „Dodaj do ekranu początkowego”.
+
+### 2026-11-05 — Polecenie 37
+> zmień nazwę aplikacji na SeenIt
+
+Kroki: zamiana „Seansik” → „SeenIt” w `index.html` (tytuł strony, nazwa na ekranie telefonu, logo „Seen**It**” w nagłówku, na logowaniu i w podglądzie wyglądu), `manifest.json` i `server.py`; `manifest.json?v=3`, żeby telefon pobrał nową nazwę → commit i push.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**. Na iPhonie nazwa pod ikoną zmieni się po ponownym „Dodaj do ekranu początkowego”.

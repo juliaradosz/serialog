@@ -1,4 +1,4 @@
-"""Seansik — serwer z kontami użytkowników.
+"""SeenIt — serwer z kontami użytkowników.
 
 Uruchomienie lokalne:  python server.py  (albo start.bat)  -> http://localhost:8000
 Hosting (np. PythonAnywhere): plik WSGI z linią  from server import application
@@ -394,7 +394,7 @@ def route(req):
 
 # ---------- uruchomienie lokalne (start.bat / python server.py) ----------
 class Handler(BaseHTTPRequestHandler):
-    server_version = 'Seansik'
+    server_version = 'SeenIt'
 
     def run(self):
         path, _, query = self.path.partition('?')
@@ -432,5 +432,5 @@ def application(environ, start_response):
 if __name__ == '__main__':
     init_db()
     host, port = os.environ.get('HOST', '127.0.0.1'), int(os.environ.get('PORT', '8000'))
-    print(f'Seansik działa: http://{"localhost" if host in ("127.0.0.1", "0.0.0.0") else host}:{port}  (Ctrl+C zatrzymuje)')
+    print(f'SeenIt działa: http://{"localhost" if host in ("127.0.0.1", "0.0.0.0") else host}:{port}  (Ctrl+C zatrzymuje)')
     ThreadingHTTPServer((host, port), Handler).serve_forever()

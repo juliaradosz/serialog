@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Seansik</title>
+<title>SeenIt</title>
 <!-- instalacja na ekranie głównym telefonu (iPhone: Udostępnij → Do ekranu początkowego) -->
-<link rel="manifest" href="manifest.json?v=2">
+<link rel="manifest" href="manifest.json?v=3">
 <link rel="apple-touch-icon" href="icon-180.png?v=2">
 <link rel="icon" type="image/png" href="icon-192.png?v=2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Seansik">
+<meta name="apple-mobile-web-app-title" content="SeenIt">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#f5efe6">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -699,7 +699,7 @@ a.sec-head .more{font-size:13px;font-weight:700;color:var(--accent-ink);white-sp
 </head>
 <body>
 <div class="app">
-  <header class="top"><div class="tl"><button class="hdback" data-act="back" title="Wstecz" hidden>‹</button><a href="#/shows-search" class="logo"><img class="lgi" src="icon-192.png?v=2" alt="">Sean<span>sik</span></a></div><span class="muted" id="count"></span></header>
+  <header class="top"><div class="tl"><button class="hdback" data-act="back" title="Wstecz" hidden>‹</button><a href="#/shows-search" class="logo"><img class="lgi" src="icon-192.png?v=2" alt="">Seen<span>It</span></a></div><span class="muted" id="count"></span></header>
   <main id="view"></main>
 </div>
 <nav class="tabs"><div class="in">
@@ -946,7 +946,7 @@ function renderLogin() {
   const reg = authTab === 'register';
   view.innerHTML = `<div class="login">
     <img class="login-ico" src="icon-192.png?v=2" alt="">
-    <span class="logo">Sean<span>sik</span></span>
+    <span class="logo">Seen<span>It</span></span>
     <div class="muted">Twoje seriale i filmy w jednym miejscu</div>
     <div class="sub" style="margin-top:24px"><a class="${reg ? '' : 'on'}" data-act="authTab" data-t="login">Logowanie</a><a class="${reg ? 'on' : ''}" data-act="authTab" data-t="register">Załóż konto</a></div>
     <form id="authForm">
@@ -975,7 +975,7 @@ function renderLogin() {
 }
 function renderInfo(title, text) {
   document.body.classList.add('auth');
-  view.innerHTML = `<div class="login"><span class="logo"><img class="lgi" src="icon-192.png?v=2" alt="">Sean<span>sik</span></span><div class="empty" style="padding-top:30px"><b>${title}</b>${text}</div></div>`;
+  view.innerHTML = `<div class="login"><span class="logo"><img class="lgi" src="icon-192.png?v=2" alt="">Seen<span>It</span></span><div class="empty" style="padding-top:30px"><b>${title}</b>${text}</div></div>`;
 }
 
 // ---------- seriale ----------
@@ -3008,7 +3008,7 @@ function openLook() {
   $('#sheet').innerHTML = `<div class="look">
     <div class="look-head"><b>Dostosuj wygląd</b><button class="x" data-act="close" title="Zamknij">✕</button></div>
     <div class="lprev" aria-hidden="true"><div class="lp-bg">
-      <div class="lp-top"><b>Sean<span>sik</span></b><small>podgląd</small></div>
+      <div class="lp-top"><b>Seen<span>It</span></b><small>podgląd</small></div>
       <div class="lp-card"><span class="lp-poster"></span><div class="lp-body"><b>Twój serial</b><small>S02E05 · za 3 dni</small><span class="lp-bar"><i></i></span></div><span class="lp-chk">✓</span></div>
       <div class="lp-row"><span class="lp-btn">✓ Obejrzany</span><span class="lp-ghost">＋ Na później</span><span class="lp-chip">Dramat</span></div>
       <div class="lp-tabs"><i class="on"></i><i></i><i></i><i></i><i></i></div>
