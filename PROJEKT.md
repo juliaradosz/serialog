@@ -669,3 +669,17 @@ Zmiany:
 Test: suwak na 100 → przezroczystość kart 30%, rozmycie 34 px, zapisane w ustawieniach konta; podgląd zmienia się od razu. Konto testowe usunięte.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
+
+### 2026-11-05 — Polecenie 40
+> przyciski koło sezonów trochę większe (zaznaczenie, że się oglądało, i że obejrzało się jeszcze raz); przyciski „Obejrzane wszystko”, „Przerwij oglądanie” i „Usuń z moich” ze szkła, a nie z białym tłem; „Przerwij oglądanie” bez pytania „czy na pewno”
+
+Kroki: style w `index.html` → `actions.drop` bez okienka z pytaniem → test w widoku telefonu na koncie testowym (Breaking Bad) → sprzątanie konta.
+
+Zmiany:
+- Przy sezonach: ✓ (cały sezon obejrzany) ma 44 px zamiast 32 px, a ↻ (obejrzany ponownie) i ⊘ (pomiń sezon) mają 42 px zamiast 30 px. Przycisk ↻ jest w kolorze akcentu, żeby łatwiej go było odróżnić.
+- Przyciski pod serialem (Obejrzane wszystko, Przerwij oglądanie, Usuń z moich) są ze szkła, z przezroczystymi ikonkami.
+- „Przerwij oglądanie” działa od razu, bez pytania. W komunikacie widać, do którego odcinka zapisano postęp, i jest „Cofnij”.
+
+Test: ✓ przy sezonie 44 px, ↻ 42 px; przerwanie bez okienka, serial w „Przerwane”, komunikat z „Cofnij”. Konto testowe usunięte.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.

@@ -717,6 +717,16 @@ a.sec-head .more{font-size:13px;font-weight:700;color:var(--accent-ink);white-sp
 .toast.show{transform:translate(-50%,0) scale(1)}
 .toast{width:max-content}
 .toast .undo{background:var(--accent);color:#fff;border-radius:999px;padding:5px 13px}
+/* większe przyciski przy sezonach (✓ obejrzany, ↻ ponownie, ⊘ pomiń) — łatwiej trafić palcem */
+.season summary{gap:12px}
+.season summary .chk.sm{width:44px;height:44px;font-size:19px;border-width:2px}
+.season summary .skipbtn{width:42px;height:42px;font-size:19px;border-width:1.5px}
+.season summary .skipbtn[data-act="rewatchSeason"]{border-style:solid;border-color:color-mix(in srgb,var(--accent) 45%,transparent);color:var(--accent-ink);background:var(--accent-soft)}
+/* przyciski pod serialem (Obejrzane wszystko, Przerwij, Usuń) — szkło zamiast białego tła */
+.sactions button{background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:var(--shadow),var(--glass-hi);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}
+.sactions button span{background:color-mix(in srgb,var(--card) 55%,transparent);box-shadow:var(--glass-hi)}
+.sactions button.on{background:color-mix(in srgb,var(--accent-soft) 70%,transparent)}
+.sactions button.danger span{background:color-mix(in srgb,#d9534f 14%,transparent)}
 </style>
 </head>
 <body>
@@ -1252,10 +1262,8 @@ const actions = {
   playSwap(d) { const box = document.querySelector('.yt'); if (box) { box.outerHTML = `<div class="yt on"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(d.k)}?autoplay=1&rel=0" title="Zwiastun" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`; } },
   async drop(d) {
     const id = +d.id, last = showCache[id] && lastSeenEp(showCache[id]);
-    const v = await ask('Przerwać oglądanie?', `„${esc(state.shows[id].name)}” trafi do „Przerwane”. ${last ? `Twój postęp (obejrzane do ${code(last)}) zostanie zapisany` : 'Serial zostanie na Twoim koncie'} i w każdej chwili możesz wznowić oglądanie.`,
-      [{ label: 'Tak, przerwij oglądanie', value: true }, { label: 'Anuluj', value: false, ghost: true }]);
-    if (!v) return;
-    state.shows[id].dropped = Date.now(); save(); toast('Przeniesiono do „Przerwane”'); updateTodayDot(); rerender();
+    state.shows[id].dropped = Date.now(); save();
+    toast.msg = `Przerwano${last ? ` (postęp do ${code(last)} zapisany)` : ''} — jest w „Przerwane”`; updateTodayDot(); rerender();
   },
   resume(d) { const id = +d.id; delete state.shows[id].dropped; save(); toast('Wznowiono oglądanie ✓'); updateTodayDot(); rerender(); },
   skipEp(d) {
