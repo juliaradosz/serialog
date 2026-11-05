@@ -718,3 +718,16 @@ Przyczyna: po zmianie z polecenia 42 aplikacja sięga pod pasek z godziną, ale 
 Poprawka w `index.html`: reguła z odstępem przeniesiona na koniec stylów, tak żeby niczego jej nie nadpisywało. Test: symulacja iPhone'a z wycięciem 47 px w widoku telefonu → nagłówek 0–107 px, logo od 60 px (pod zegarem), zakładki od 107 px (bez przerwy), wyszukiwarka zaraz pod nimi. Konto testowe usunięte.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**, zamknąć i otworzyć aplikację na telefonie.
+
+### 2026-11-05 — Polecenie 44
+> w sekcji „Dla Ciebie” usuń napis u góry („Seriale podobne do tytułów…”) i daj możliwość wybrania platformy
+
+Kroki: zmiany w `renderForYou`, `buildForYou` i `forYouMore` (`index.html`) → test w widoku telefonu na koncie testowym → sprzątanie.
+
+Zmiany:
+- Usunięty opis u góry „Dla Ciebie”. Zamiast niego jest rząd przycisków: **📺 Moje platformy** (włącza/wyłącza filtr), ⚙ (zmiana platform) i **↻ Inne** (nowe propozycje).
+- Z włączonymi platformami propozycje są tylko z Twoich serwisów: aplikacja pobiera popularne tytuły z tych platform i z Twoich ulubionych gatunków, a podobne do Twoich tytułów zostają tylko wtedy, gdy są na tych platformach. Dalsze propozycje przy przewijaniu też są z platform. Ten sam wybór działa w Szukaj i w gatunkach.
+
+Test: konto testowe, tylko Netflix → 40 propozycji, 8 z 8 sprawdzonych dostępnych na Netflixie w Polsce; opis u góry zniknął. Konto testowe usunięte.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.

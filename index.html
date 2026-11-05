@@ -1140,7 +1140,7 @@ async function plProviderList() {
   return provList = [...m.values()].filter(p => !/Store|Amazon Video|Amazon Channel|Google Play|Rakuten|Chili|Microsoft|Apple TV Channel/i.test(p.name))
     .sort((a, b) => rank(a) - rank(b)).slice(0, 24);
 }
-const resetFeeds = () => { feeds.tv = feeds.movie = null; listView = null; };
+const resetFeeds = () => { feeds.tv = feeds.movie = null; listView = null; forYou = null; };
 function paintPlatforms() {
   const on = new Set(myPlats().map(p => p.id));
   $('#sheet').innerHTML = `<div class="look"><div class="look-head"><b>Moje platformy</b><button class="x" data-act="close" title="Zamknij">✕</button></div>
@@ -1856,11 +1856,24 @@ async function buildForYou() {
     const res = await tmdb(`discover/${kind}`, { with_genres: g.id, sort_by: 'popularity.desc', 'vote_count.gte': kind === 'movie' ? 300 : 50, page: 1 + Math.floor(r() * 8) }).catch(() => ({ results: [] }));
     (res.results || []).forEach(x => add(kind, x, .6, `gatunek: ${g.name}`));
   }));
+  // „Moje platformy”: tylko tytuły dostępne w Twoich serwisach (popularne + z ulubionych gatunków)
+  let avail = null;
+  if (platOn()) {
+    avail = { tv: new Set(), movie: new Set() };
+    const pp = platParams();
+    await Promise.all(['tv', 'movie'].flatMap(kind => {
+      const best = Object.entries(taste[kind]).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 3)
+        .map(([n]) => Object.keys(genres[kind]).find(k => genres[kind][k] === n)).filter(Boolean);
+      const qs = [[null, 1], [null, 2], [null, 3], ...best.flatMap(g => [[g, 1], [g, 2]])];
+      return qs.map(([g, page]) => tmdb(`discover/${kind}`, { ...pp, ...(g ? { with_genres: g } : {}), sort_by: 'popularity.desc', page })
+        .then(res => (res.results || []).forEach(x => { avail[kind].add(x.id); add(kind, x, g ? .5 : .3, g ? `gatunek: ${genres[kind][g]}` : 'na Twoich platformach'); })).catch(() => {}));
+    }));
+  }
   // wynik = podobieństwo do Twoich tytułów (więcej, gdy pasuje do kilku naraz) + dopasowanie do gatunków + ocena widzów + odrobina losowości
   const rank = kind => {
     const list = Object.values(cand).filter(c => c.kind === kind)
       .map(c => ({ ...c, fit: genreFit(taste, kind, c.x), s: c.score + 1.4 * genreFit(taste, kind, c.x) + quality(c.x) + r() * .35 }))
-      .filter(c => c.fit > -.5).sort((a, b) => b.s - a.s);
+      .filter(c => c.fit > -.5 && (!avail || avail[kind].has(c.x.id))).sort((a, b) => b.s - a.s);
     // mieszanie: na zmianę po jednej najlepszej propozycji od każdego Twojego tytułu (a nie kilkanaście „bo: ten sam tytuł” pod rząd)
     const groups = new Map();
     list.forEach(c => { const k = (Object.entries(c.by).sort((a, b) => b[1] - a[1])[0] || [''])[0]; groups.has(k) ? groups.get(k).push(c) : groups.set(k, [c]); });
@@ -1869,7 +1882,7 @@ async function buildForYou() {
     return out;
   };
   Object.values(cand).forEach(c => seen[c.kind][c.x.id] = c.x);
-  return { tv: rank('tv'), movie: rank('movie'), allSeeds: shuffled(seeds.sort((a, b) => b.w - a.w).slice(0, 30), 3), topG, taste, cursor: {}, pages: {}, loading: false };
+  return { avail, tv: rank('tv'), movie: rank('movie'), allSeeds: shuffled(seeds.sort((a, b) => b.w - a.w).slice(0, 30), 3), topG, taste, cursor: {}, pages: {}, loading: false };
 }
 let fyKind = 'tv';  // zakładka w „Dla Ciebie” (przełączana bez przeładowania propozycji)
 async function renderForYou(token) {
@@ -1883,8 +1896,10 @@ async function renderForYou(token) {
     if (token !== renderToken) return;
   }
   const list = forYou[fyKind], isTv = fyKind === 'tv', hidden = noG(fyKind).length + Object.keys(noCats(fyKind)).length;
-  view.innerHTML = head + `<div class="fy-head"><div class="muted small">${isTv ? 'Seriale' : 'Filmy'} podobne do tytułów z Twojej listy (najbardziej liczą się ulubione, wysoko ocenione i oglądane ponownie), dopasowane do Twoich ulubionych gatunków i dobrze oceniane przez widzów. Przerwane i 👎 sprawiają, że podobne się nie pojawiają.${hidden ? ` <a class="link" href="#/${isTv ? 'shows' : 'movies'}-genres">Ukryte gatunki: ${hidden}</a>` : ''}</div>
-    <button class="btn ghost sm" data-act="forYouRefresh">↻ Inne propozycje</button></div>
+  view.innerHTML = head + `<div class="sfilters">
+      <button class="fchip ${platOn() ? 'on' : ''}" data-act="platToggle">📺 ${myPlats().length ? `Moje platformy <small>${myPlats().length}</small>` : 'Wybierz platformy'}</button>
+      ${myPlats().length ? '<button class="fchip ico" data-act="openPlatforms" title="Zmień platformy">⚙</button>' : ''}
+      <button class="fchip" data-act="forYouRefresh" style="margin-left:auto">↻ Inne</button></div>
     <h2>${isTv ? 'Seriale' : 'Filmy'}, które mogą Ci się spodobać</h2>
     <div class="grid" id="fyGrid">${list.filter(c => !blocked(fyKind, c.x)).map(c => fyTile(fyKind, c)).join('')}</div>
     <div id="fySentinel" class="loading small">Szukam kolejnych propozycji…</div>`;
@@ -1898,7 +1913,7 @@ async function forYouMore(kind) {
   if (!f || f.loading) return [];
   f.loading = true;
   const shown = new Set(f[kind].map(c => c.x.id)), fresh = [];
-  const take = (x, why) => { if (!x.poster_path || inLibrary(kind, x.id) || blocked(kind, x) || shown.has(x.id)) return; shown.add(x.id); seen[kind][x.id] = x; fresh.push({ kind, x, score: 0, why: new Set(why ? [why] : []) }); };
+  const take = (x, why, disc) => { if (f.avail && !disc && !f.avail[kind].has(x.id)) return; if (!x.poster_path || inLibrary(kind, x.id) || blocked(kind, x) || shown.has(x.id)) return; shown.add(x.id); seen[kind][x.id] = x; fresh.push({ kind, x, score: 0, why: new Set(why ? [why] : []) }); };
   const seeds = f.allSeeds.filter(s => s.kind === kind);
   await Promise.all([0, 1, 2].map(async () => {
     if (!seeds.length) return;
@@ -1909,8 +1924,8 @@ async function forYouMore(kind) {
     (res.results || []).forEach(x => take(x, s.title));
   }));
   const g = f.topG[kind], gp = (f.pages['g' + kind] = (f.pages['g' + kind] || 0) + 1);
-  const res = await tmdb(`discover/${kind}`, { ...(g ? { with_genres: g.id } : {}), sort_by: 'popularity.desc', 'vote_count.gte': kind === 'movie' ? 200 : 30, page: Math.min(gp, 500) }).catch(() => ({ results: [] }));
-  (res.results || []).forEach(x => take(x, g ? `gatunek: ${g.name}` : 'popularne'));
+  const res = await tmdb(`discover/${kind}`, { ...(g && !(f.avail && gp % 2) ? { with_genres: g.id } : {}), ...(f.avail ? platParams() : {}), sort_by: 'popularity.desc', 'vote_count.gte': kind === 'movie' ? (f.avail ? 50 : 200) : (f.avail ? 10 : 30), page: Math.min(f.avail ? 3 + gp : gp, 500) }).catch(() => ({ results: [] }));
+  (res.results || []).forEach(x => { if (f.avail) f.avail[kind].add(x.id); take(x, g && !(f.avail && gp % 2) ? `gatunek: ${g.name}` : f.avail ? 'na Twoich platformach' : 'popularne', true); });
   const out = fresh.map(c => ({ ...c, s: 1.4 * genreFit(f.taste, kind, c.x) + quality(c.x) + Math.random() * .35 })).filter(c => genreFit(f.taste, kind, c.x) > -.5).sort((a, b) => b.s - a.s);
   f[kind].push(...out);
   f.loading = false;
