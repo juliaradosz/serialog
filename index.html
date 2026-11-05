@@ -732,6 +732,17 @@ a.sec-head .more{font-size:13px;font-weight:700;color:var(--accent-ink);white-sp
 [data-dark="1"] .top::before{display:none}
 .top{padding-top:calc(13px + env(safe-area-inset-top))}  /* odstęp na wycięcie ekranu musi być po zwykłym „padding” nagłówka */
 .top .tl,.top #count{position:relative;z-index:1}
+/* profil znajomego: wspólne propozycje */
+.fpicks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.fpick{display:flex;flex-direction:column;gap:3px;padding:12px;border-radius:16px;background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:var(--shadow),var(--glass-hi);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}
+.fpick span{font-size:22px}.fpick b{font-size:14.5px;line-height:1.2}.fpick small{font-size:11.5px;color:var(--muted);font-weight:600;line-height:1.3}
+.fpick.wide{grid-column:1/-1}
+.lmini{position:relative}.lmini>a{display:block;color:inherit}
+.lrm{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;background:var(--glass-bg2);border:1px solid var(--glass-border);font-size:12px;font-weight:800;color:var(--text);display:flex;align-items:center;justify-content:center;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.lpin{width:100%;margin-top:6px;padding:6px 4px;font-size:12px}
+.lres{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.lrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:var(--glass-hi)}
+.lrow .body{flex:1;min-width:0;display:flex;flex-direction:column}.lrow b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lrow small{color:var(--muted);font-size:12px;font-weight:600}
 </style>
 </head>
 <body>
@@ -1475,8 +1486,8 @@ async function render() {
   if (!hasTmdb) return renderInfo('Brak klucza TMDB', 'Wklej klucz API z themoviedb.org do pliku <b>tmdb_klucz.txt</b> w folderze aplikacji i uruchom ponownie start.bat.');
   document.body.classList.remove('auth');
   const [, page = 'shows-search', arg] = location.hash.split('/');
-  const tab = page.startsWith('show') ? 'shows' : page.startsWith('movie') ? 'movies' : page.startsWith('cinema') ? 'cinema' : ['towatch', 'calendar'].includes(page) ? 'upcoming' : ['stats', 'lib', 'friend', 'friends'].includes(page) ? 'profile' : page;
-  const subPage = ['show', 'movie', 'person', 'lib', 'friend', 'friends', 'stats', 'calendar', 'shows-list', 'movies-list'].includes(page);
+  const tab = page.startsWith('show') ? 'shows' : page.startsWith('movie') ? 'movies' : page.startsWith('cinema') ? 'cinema' : ['towatch', 'calendar'].includes(page) ? 'upcoming' : ['stats', 'lib', 'friend', 'friends', 'friend-both', 'friend-pick', 'friend-later'].includes(page) ? 'profile' : page;
+  const subPage = ['show', 'movie', 'person', 'lib', 'friend', 'friends', 'friend-both', 'friend-pick', 'friend-later', 'stats', 'calendar', 'shows-list', 'movies-list'].includes(page);
   $('.hdback').hidden = !subPage; document.body.classList.toggle('subpage', subPage);
   document.querySelectorAll('.tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
   const nS = Object.keys(state.shows).length, nM = Object.keys(state.movies).length;
@@ -1502,6 +1513,9 @@ async function render() {
       case 'lib': return await renderLib(arg, token);
       case 'friend': return await renderFriend(decodeURIComponent(arg || ''), token);
       case 'friends': return await renderFriends(token, arg);
+      case 'friend-both': return await renderFriendBoth(decodeURIComponent(arg || ''), token);
+      case 'friend-pick': return await renderFriendPick(decodeURIComponent(arg || ''), token);
+      case 'friend-later': return await renderFriendLater(decodeURIComponent(arg || ''), token);
       case 'calendar': return await renderCalendar(token);
       default: return await renderWatch(token);
     }
@@ -2803,6 +2817,11 @@ async function renderFriend(name, token) {
       <div class="body"><b>${esc(p.username)}</b><div class="muted small">${days} dni ${hours} godz. przed ekranem</div></div>
       <button class="btn ghost sm" data-act="friendRemove" data-u="${esc(p.username)}" data-m="remove">Usuń ze znajomych</button></div>
       <div class="pstats three"><div><b>${p.shows.length}</b>seriali</div><div><b>${seenM.length}</b>filmów</div><div><b>${together.length}</b>wspólnie</div></div></div>
+    <div class="fpicks">
+      <a class="fpick wide" href="#/friend-later/${encodeURIComponent(p.username)}"><span>📌</span><b>Na później razem</b><small>wspólna lista do obejrzenia — dopisujcie oboje, plus to, co oboje macie na później</small></a>
+      <a class="fpick" href="#/friend-both/${encodeURIComponent(p.username)}"><span>🤝</span><b>Coś dla Was obojga</b><small>pasuje do gustu Was dwojga, nikt z Was jeszcze nie oglądał</small></a>
+      <a class="fpick" href="#/friend-pick/${encodeURIComponent(p.username)}"><span>✨</span><b>Może Ci się spodobać</b><small>z tego, co obejrzał(a) ${esc(p.username)}, a Ty jeszcze nie</small></a>
+    </div>
     ${together.length ? shelf('Obejrzane wspólnie', together, tMini) : '<div class="shelf-empty" style="margin-top:14px">Nie macie jeszcze wspólnie obejrzanych seriali ani filmów.</div>'}
     ${shelf('Seriale', shows, sMini)}
     ${shelf('Przerwane', p.shows.filter(s => s.dropped), sMini)}
@@ -2812,6 +2831,127 @@ async function renderFriend(name, token) {
     ${!p.shows.length && !p.movies.length ? '<div class="empty"><b>Pusto</b>Ten profil nie ma jeszcze seriali ani filmów.</div>' : ''}
     <p class="muted small" style="text-align:center;margin-top:20px">✓ na plakacie = masz to też na swojej liście</p>`;
 }
+// ---------- propozycje ze znajomym ----------
+const friendCache = {};  // wyniki liczone raz na wizytę (powrót z serialu nie liczy od nowa)
+const fTaste = (p, kind, x) => { const ids = gIds(x); if (!ids.length) return 0; return ids.reduce((a, id) => a + (((p.taste || {})[kind] || {})[genres[kind][id]] || 0), 0) / ids.length; };
+const friendWatched = p => new Set([...p.shows.filter(s => s.eps).map(s => 'tv:' + s.id), ...p.movies.filter(m => m.status === 'seen').map(m => 'movie:' + m.id)]);
+const iWatched = (kind, id) => kind === 'tv' ? Object.values(state.watched).some(w => +w.s === +id) : (state.movies[id] || {}).status === 'seen';
+const pct = f => Math.round(Math.max(5, Math.min(99, 55 + f * 45)));
+const whyTile = (kind, x, why) => tile(kind, x).replace(/<\/div>\s*$/, `<div class="why">${why}</div></div>`);
+async function friendData(name) {
+  return api('/api/friends/profile?u=' + encodeURIComponent(name));
+}
+const fHead = (title, sub) => `<div class="libhead"><h1>${title}</h1></div><p class="muted small" style="margin:-4px 0 12px">${sub}</p>`;
+const fGrids = (items, empty) => ['tv', 'movie'].map(kind => { const l = items.filter(c => c.kind === kind);
+  return l.length ? `<h2>${kind === 'tv' ? 'Seriale' : 'Filmy'} <small>(${l.length})</small></h2><div class="grid">${l.map(c => whyTile(kind, c.x, c.why)).join('')}</div>` : ''; }).join('') || `<div class="empty"><b>Na razie brak propozycji</b>${empty}</div>`;
+
+// 1) „Coś dla Was obojga”: podobne do tytułów, które lubicie oboje, pasujące do gustu obojga; bez tego, co ktoś z Was już obejrzał
+async function renderFriendBoth(name, token) {
+  const key = 'both:' + name;
+  if (!friendCache[key]) {
+    view.innerHTML = fHead('🤝 Coś dla Was obojga', 'Szukam tytułów, które spodobają się Wam obojgu…') + '<div class="loading">Porównuję Wasze gusty…</div>';
+    const p = await friendData(name), taste = tasteProfile(), fw = friendWatched(p);
+    const perShow = {}; Object.values(state.watched).forEach(w => perShow[w.s] = (perShow[w.s] || 0) + 1);
+    const mine = [...Object.values(state.shows).filter(s => !s.dropped && !(s.rating && s.rating <= 2) && (perShow[s.id] || state.favs['tv:' + s.id]))
+        .map(s => ({ kind: 'tv', id: s.id, title: s.name, w: .6 + Math.log2(1 + (perShow[s.id] || 0)) * .6 + (s.rating ? (s.rating - 3) * .8 : 0) + (state.favs['tv:' + s.id] ? 2 : 0) })),
+      ...Object.values(state.movies).filter(m => m.status === 'seen' && !(m.rating && m.rating <= 2))
+        .map(m => ({ kind: 'movie', id: m.id, title: m.title, w: 1.6 + (m.rating ? (m.rating - 3) * .8 : 0) + (state.favs['movie:' + m.id] ? 2 : 0) }))]
+      .sort((a, b) => b.w - a.w).slice(0, 10).map(s => ({ ...s, who: 'me' }));
+    const theirs = (p.likes || []).slice(0, 10).map(s => ({ kind: s.type, id: s.id, title: s.title, w: 1.5, who: 'friend' }));
+    const cand = {};
+    await Promise.all([...mine, ...theirs].map(async s => {
+      const res = await tmdb(`${s.kind}/${s.id}/recommendations`).catch(() => ({ results: [] }));
+      (res.results || []).forEach((x, i) => {
+        if (!x.poster_path || inLibrary(s.kind, x.id) || fw.has(s.kind + ':' + x.id) || blocked(s.kind, x)) return;
+        const c = cand[s.kind + ':' + x.id] ||= { kind: s.kind, x, me: 0, fr: 0, bm: '', bf: '' };
+        const v = s.w * (1 - i / 40);
+        if (s.who === 'me') { c.me += v; c.bm ||= s.title; } else { c.fr += v; c.bf ||= s.title; }
+      });
+    }));
+    // najwyżej te, które pasują do obojga naraz (iloczyn), potem gatunki obojga i ocena widzów
+    const list = Object.values(cand).map(c => {
+      const fm = genreFit(taste, c.kind, c.x), ff = fTaste(p, c.kind, c.x);
+      return { ...c, fm, ff, s: Math.sqrt((c.me + .3) * (c.fr + .3)) + .9 * (fm + ff) + quality(c.x) };
+    }).filter(c => c.fm > -.4 && c.ff > -.4).sort((a, b) => b.s - a.s);
+    const out = ['tv', 'movie'].flatMap(k => list.filter(c => c.kind === k).slice(0, 24)).map(c => ({ kind: c.kind, x: c.x,
+      why: `${pct((c.fm + c.ff) / 2)}% dla Was · ${esc([c.bm && 'Ty: ' + c.bm, c.bf && esc(name) + ': ' + c.bf].filter(Boolean).join(' · ') || 'Wasze gatunki')}` }));
+    out.forEach(c => seen[c.kind][c.x.id] = c.x);
+    friendCache[key] = out;
+    if (token !== renderToken) return;
+  }
+  view.innerHTML = fHead('🤝 Coś dla Was obojga', `Ty i ${esc(name)}: propozycje podobne do tytułów, które lubicie, dopasowane do gatunków Was obojga. Bez tego, co któreś z Was już obejrzało (oceny znajomego zostają prywatne).`) +
+    `<div class="sfilters"><button class="fchip" data-act="friendRefresh" data-k="${esc(key)}" style="margin-left:auto">↻ Inne</button></div>` +
+    fGrids(friendCache[key], 'Obejrzyjcie i oceńcie kilka tytułów — wtedy łatwiej znaleźć coś dla Was dwojga.');
+}
+// 2) „Może Ci się spodobać”: z tego, co obejrzał znajomy, to, co pasuje do Ciebie, a czego sam(a) nie oglądałeś/aś
+async function renderFriendPick(name, token) {
+  const key = 'pick:' + name;
+  if (!friendCache[key]) {
+    view.innerHTML = fHead('✨ Może Ci się spodobać', `Przeglądam, co obejrzał(a) ${esc(name)}…`) + '<div class="loading">Dopasowuję do Twojego gustu…</div>';
+    const p = await friendData(name), taste = tasteProfile(), liked = new Set((p.likes || []).map(s => s.type + ':' + s.id));
+    const titles = [...p.shows.filter(s => s.eps && !s.dropped).map(s => ({ kind: 'tv', id: s.id })), ...p.movies.filter(m => m.status === 'seen').map(m => ({ kind: 'movie', id: m.id }))]
+      .filter(c => !iWatched(c.kind, c.id)).sort((a, b) => liked.has(b.kind + ':' + b.id) - liked.has(a.kind + ':' + a.id)).slice(0, 60);
+    const full = await Promise.all(titles.map(c => (seen[c.kind][c.id] && seen[c.kind][c.id].genre_ids ? Promise.resolve(seen[c.kind][c.id]) : tmdb(`${c.kind}/${c.id}`)).catch(() => null)));
+    const out = titles.map((c, i) => ({ ...c, x: full[i] })).filter(c => c.x && !blocked(c.kind, c.x))
+      .map(c => { const fit = genreFit(taste, c.kind, c.x), lk = liked.has(c.kind + ':' + c.id); return { ...c, fit, lk, s: 1.6 * fit + quality(c.x) + (lk ? .6 : 0) }; })
+      .filter(c => c.fit > -.35).sort((a, b) => b.s - a.s)
+      .map(c => ({ kind: c.kind, x: c.x, why: `${pct(c.fit)}% dla Ciebie${c.lk ? ` · ❤ ${esc(name)} to lubi` : ''}${inLibrary(c.kind, c.x.id) ? ' · masz na liście' : ''}` }));
+    out.forEach(c => seen[c.kind][c.x.id] = c.x);
+    friendCache[key] = out;
+    if (token !== renderToken) return;
+  }
+  view.innerHTML = fHead('✨ Może Ci się spodobać', `Tytuły, które obejrzał(a) ${esc(name)}, a Ty jeszcze nie — od najlepiej pasujących do Twoich gatunków i ocen.`) +
+    fGrids(friendCache[key], `${esc(name)} nie ma jeszcze obejrzanych tytułów, których Ty nie znasz (albo nie pasują do Twojego gustu).`);
+}
+// 3) „Na później razem”: wspólna lista dwojga znajomych (na serwerze) + to, co oboje macie na później
+const laterCache = {};
+async function renderFriendLater(name, token) {
+  if (!laterCache[name]) {
+    view.innerHTML = fHead('📌 Na później razem', 'Ładowanie…') + '<div class="loading">Ładowanie wspólnej listy…</div>';
+    const [p, l] = await Promise.all([friendData(name), api('/api/friends/later?u=' + encodeURIComponent(name))]);
+    laterCache[name] = { p, items: l.items };
+    if (token !== renderToken) return;
+  }
+  const { p, items } = laterCache[name], onList = new Set(items.map(x => x.type + ':' + x.id));
+  // oboje na później: Twoje „na później” (serial bez obejrzanych odcinków, film „chcę obejrzeć”) i znajomego
+  const myLater = new Set([...Object.values(state.shows).filter(s => !s.dropped && !iWatched('tv', s.id)).map(s => 'tv:' + s.id), ...Object.values(state.movies).filter(m => m.status === 'watch').map(m => 'movie:' + m.id)]);
+  const both = [...p.shows.filter(s => !s.eps && !s.dropped && myLater.has('tv:' + s.id)).map(s => ({ type: 'tv', id: s.id, title: s.name, poster: s.poster })),
+    ...p.movies.filter(m => m.status === 'watch' && myLater.has('movie:' + m.id)).map(m => ({ type: 'movie', id: m.id, title: m.title, poster: m.poster }))].filter(x => !onList.has(x.type + ':' + x.id));
+  const mini = (x, extra) => `<div class="mini lmini"><a href="#/${x.type === 'tv' ? 'show' : 'movie'}/${x.id}">${poster(x.poster, x.title)}<div class="nm">${esc(x.title)}</div></a>${extra}</div>`;
+  view.innerHTML = fHead('📌 Na później razem', `Ty i ${esc(name)}: co chcecie obejrzeć. Oboje widzicie tę listę i oboje możecie ją zmieniać.`) +
+    `<div class="search libsearch"><input id="laterQ" type="search" placeholder="Dodaj serial lub film…" autocomplete="off"><button class="clr" data-act="clearQ" title="Wyczyść" hidden>✕</button></div>
+    <div id="laterRes"></div>
+    <h2>Wspólna lista <small>(${items.length})</small></h2>
+    ${items.length ? `<div class="libgrid">${items.map(x => mini(x, `<div class="sub2">${x.type === 'tv' ? 'serial' : 'film'} · ${x.mine ? 'od Ciebie' : 'od ' + esc(name)}</div>
+      <button class="lrm" data-act="laterDel" data-u="${esc(name)}" data-kind="${x.type}" data-id="${x.id}" title="Usuń ze wspólnej listy">✕</button>`)).join('')}</div>`
+      : '<div class="shelf-empty">Wpisz tytuł powyżej i dodaj coś, co chcecie razem obejrzeć.</div>'}
+    ${both.length ? `<h2>Oboje macie na później <small>(${both.length})</small></h2><p class="muted small" style="margin:-4px 0 10px">Te tytuły są na liście „na później” u każdego z Was.</p>
+      <div class="libgrid">${both.map(x => mini(x, `<button class="btn ghost sm lpin" data-act="laterAdd" data-u="${esc(name)}" data-kind="${x.type}" data-id="${x.id}" data-t="${esc(x.title)}" data-p="${esc(x.poster || '')}">📌 Na wspólną</button>`)).join('')}</div>` : ''}`;
+  const q = $('#laterQ');
+  let tm = null;
+  q.addEventListener('input', () => {
+    clearTimeout(tm);
+    tm = setTimeout(async () => {
+      const v = q.value.trim(), box = $('#laterRes'); if (!box) return;
+      if (!v) { box.innerHTML = ''; return; }
+      box.innerHTML = '<div class="loading small">Szukam…</div>';
+      const [tv, mv] = await Promise.all([searchTitles('tv', v).catch(() => []), searchTitles('movie', v).catch(() => [])]);
+      if (q.value.trim() !== v || !$('#laterRes')) return;
+      const res = [...tv.slice(0, 5).map(x => ['tv', x]), ...mv.slice(0, 5).map(x => ['movie', x])].filter(([, x]) => x.poster_path);
+      box.innerHTML = res.length ? `<div class="lres">${res.map(([k, x]) => { const nm = k === 'tv' ? x.name : x.title, y = ((k === 'tv' ? x.first_air_date : x.release_date) || '').slice(0, 4), on = onList.has(k + ':' + x.id);
+        return `<div class="lrow">${poster(img(x.poster_path), nm, 'xs')}<div class="body"><b>${esc(nm)}</b><small>${k === 'tv' ? 'serial' : 'film'}${y ? ' · ' + y : ''}</small></div>
+          <button class="btn sm ${on ? 'ghost' : ''}" ${on ? 'disabled' : ''} data-act="laterAdd" data-u="${esc(name)}" data-kind="${k}" data-id="${x.id}" data-t="${esc(nm)}" data-p="${esc(img(x.poster_path) || '')}">${on ? '✓ Jest' : '＋ Dodaj'}</button></div>`; }).join('')}</div>`
+        : '<div class="shelf-empty">Nic nie znaleziono.</div>';
+    }, 350);
+  });
+}
+async function laterOp(d, op) {
+  const r = await api('/api/friends/later', { method: 'POST', body: JSON.stringify({ username: d.u, op, type: d.kind, id: +d.id, title: d.t || '', poster: d.p || '' }) });
+  if (laterCache[d.u]) laterCache[d.u].items = r.items;
+  toast(op === 'add' ? `📌 Dodano do „Na później razem” z ${d.u}` : 'Usunięto ze wspólnej listy'); rerender();
+}
+Object.assign(actions, { laterAdd: d => laterOp(d, 'add'), laterDel: d => laterOp(d, 'remove') });
+Object.assign(actions, { friendRefresh(d) { delete friendCache[d.k]; scrollTo(0, 0); rerender(); } });
 // zdjęcie profilowe: przycięte do kwadratu i zmniejszone (256 px), zapisywane razem z danymi konta
 document.addEventListener('change', async ev => {
   if (ev.target.id !== 'avatarFile' || !ev.target.files[0]) return;

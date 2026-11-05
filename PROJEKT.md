@@ -731,3 +731,18 @@ Zmiany:
 Test: konto testowe, tylko Netflix → 40 propozycji, 8 z 8 sprawdzonych dostępnych na Netflixie w Polsce; opis u góry zniknął. Konto testowe usunięte.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
+
+### 2026-11-05 — Polecenie 45
+> 1. na profilu znajomego opcja „zasugeruj film lub serial” — aplikacja weźmie pod uwagę, co obie osoby oglądają i jak oceniają, i zaproponuje tytuły dla obojga, bez już obejrzanych; 2. na profilu znajomego „Może Ci się spodobać” — tytuły, które znajomy obejrzał, a które aplikacja uważa, że spodobają się Tobie (tylko te, których sam nie oglądałeś); 3. (dopisane w trakcie) na profilu znajomego wspólna lista seriali i filmów na później — to, co oboje macie w planach obejrzeć
+
+Kroki: `server.py` → nowa funkcja `friend_likes` (gust znajomego: ulubione tytuły w losowej kolejności i ulubione gatunki, liczone na serwerze z ocen, ale bez wysyłania samych ocen), nowa tabela `shared_later` i zapytania `GET/POST /api/friends/later` (tylko dla znajomych, do 300 tytułów; usunięcie ze znajomych czyści wspólną listę) → `index.html`: łatki `patch45.py` i `patch46.py` (scratchpad), trzy nowe strony → test na dwóch kontach testowych (znajomi) → poprawki (kolejność kafelków, krótszy podpis „od Ciebie / od …”) → sprzątanie kont i wspólnej listy testowej.
+
+Zmiany (profil znajomego → trzy kafelki pod licznikami):
+1. **📌 Na później razem** — wspólna lista dwojga znajomych: wyszukiwarka „Dodaj serial lub film…”, lista z podpisem, kto dodał, ✕ usuwa. Obie osoby widzą i zmieniają tę samą listę. Pod spodem sekcja „Oboje macie na później”: tytuły, które każde z Was ma u siebie na później (przycisk „📌 Na wspólną”).
+2. **🤝 Coś dla Was obojga** — podobne do tytułów, które lubicie Ty (Twoje oceny, ulubione, obejrzane) i znajomy (jego ulubione z serwera); najwyżej te, które pasują do Was obojga naraz, dopasowane do gatunków obojga i dobrze oceniane przez widzów. Bez tytułów, które masz na liście, i bez tego, co znajomy już obejrzał; bez 👎 i ukrytych gatunków. Przy każdym: „N% dla Was · Ty: … · znajomy: …”, przycisk ↻ Inne.
+3. **✨ Może Ci się spodobać** — z tego, co obejrzał znajomy, tylko to, czego Ty nie oglądałeś/aś, od najlepiej pasujących do Twoich gatunków i ocen („N% dla Ciebie”, „❤ znajomy to lubi”, „masz na liście”).
+- Prywatność: oceny, recenzje i notatki znajomego nadal nie wychodzą z serwera (sprawdzone: w odpowiedzi nie ma żadnych ocen).
+
+Test (konta test_ja2 i test_ola): „Dla Was obojga” → 48 propozycji, 0 z listy którejkolwiek osoby, np. „Zadzwoń do Saula — 97% dla Was · Ty: Breaking Bad · test_ola: Breaking Bad”; „Może Ci się spodobać” → Matrix 78%, Interstellar 70%, Stranger Things 57% (bez Breaking Bad, który już oglądasz); „Na później razem” → „Oboje macie na później”: Wiedźmin i Incepcja, dodanie z wyszukiwarki (Diuna: Proroctwo) i z sekcji „oboje”, ta sama lista widoczna u drugiej osoby. Brak błędów w konsoli. Konta testowe i ich wspólna lista usunięte.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload** (zmienił się serwer — nowa tabela tworzy się sama).

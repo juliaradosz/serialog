@@ -13,6 +13,8 @@ w zapytaniach, więc klucz nigdy nie trafia do przeglądarki).
 import hashlib
 import hmac
 import json
+import math
+import random
 import os
 import re
 import secrets
@@ -76,6 +78,17 @@ def init_db():
                 accepted INTEGER NOT NULL DEFAULT 0,
                 created INTEGER NOT NULL,
                 PRIMARY KEY (from_id, to_id));
+            -- wspólna lista „Na później razem” dwojga znajomych (a_id < b_id)
+            CREATE TABLE IF NOT EXISTS shared_later (
+                a_id INTEGER NOT NULL REFERENCES users(id),
+                b_id INTEGER NOT NULL REFERENCES users(id),
+                kind TEXT NOT NULL,
+                tid INTEGER NOT NULL,
+                title TEXT NOT NULL,
+                poster TEXT NOT NULL DEFAULT '',
+                added_by INTEGER NOT NULL,
+                created INTEGER NOT NULL,
+                PRIMARY KEY (a_id, b_id, kind, tid));
         ''')
 
 
@@ -232,8 +245,48 @@ def avatar_of(state):
     return a if isinstance(a, str) and a.startswith('data:image/') and len(a) < 400000 else None
 
 
+def shared_later_list(con, me, other):
+    a, b = sorted((me, other))
+    rows = con.execute('SELECT kind, tid, title, poster, added_by, created FROM shared_later WHERE a_id = ? AND b_id = ? ORDER BY created DESC', (a, b)).fetchall()
+    return [{'type': r['kind'], 'id': r['tid'], 'title': r['title'], 'poster': r['poster'], 'mine': r['added_by'] == me, 't': r['created']} for r in rows]
+
+
 def are_friends(con, a, b):
     return con.execute('SELECT 1 FROM friends WHERE accepted = 1 AND ((from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?))', (a, b, b, a)).fetchone()
+
+
+def friend_likes(state):
+    """Gust znajomego do wspólnych propozycji: tytuły, które lubi najbardziej (w losowej kolejności),
+    i ulubione gatunki (od -1 do 1). Same oceny, recenzje i notatki nie wychodzą z serwera."""
+    watched = state.get('watched') or {}
+    favs = state.get('favs') or {}
+    per_show = {}
+    for w in watched.values():
+        per_show[str(w.get('s'))] = per_show.get(str(w.get('s')), 0) + 1 + len(w.get('rw') or [])
+    seeds, g = [], {'tv': {}, 'movie': {}}
+
+    def add_g(kind, names, v):
+        for n in names or []:
+            g[kind][n] = g[kind].get(n, 0) + v
+    for s in (state.get('shows') or {}).values():
+        r, eps = s.get('rating') or 0, per_show.get(str(s.get('id')), 0)
+        fav = ('tv:%s' % s.get('id')) in favs
+        add_g('tv', s.get('genres'), -1.5 if s.get('dropped') else .4 + math.log2(1 + eps) * .5 + ((r - 3) * .7 if r else 0) + (1.5 if fav else 0))
+        if s.get('dropped') or (r and r <= 2) or not (eps or fav):
+            continue
+        seeds.append((.6 + math.log2(1 + eps) * .6 + ((r - 3) * .8 if r else 0) + (2 if fav else 0), {'type': 'tv', 'id': s.get('id'), 'title': s.get('name')}))
+    for m in (state.get('movies') or {}).values():
+        r, fav, seen = m.get('rating') or 0, ('movie:%s' % m.get('id')) in favs, m.get('status') == 'seen'
+        add_g('movie', m.get('genres'), (1 if seen else .5) + ((r - 3) * .7 if r else 0) + (1.5 if fav else 0) + len(m.get('rw') or []) * .5)
+        if not seen or (r and r <= 2):
+            continue
+        seeds.append((1.6 + ((r - 3) * .8 if r else 0) + (2 if fav else 0) + len(m.get('rw') or []) * .5, {'type': 'movie', 'id': m.get('id'), 'title': m.get('title')}))
+    for k in g:
+        mx = max([1] + [abs(v) for v in g[k].values()])
+        g[k] = {n: round(v / mx, 1) for n, v in g[k].items()}
+    top = [x for _, x in sorted(seeds, key=lambda p: -p[0])[:16]]
+    random.shuffle(top)
+    return {'likes': top, 'taste': g}
 
 
 def friend_profile(state):
@@ -251,7 +304,7 @@ def friend_profile(state):
         if m['status'] == 'seen':
             minutes += next((x.get('runtime') or 0 for x in (state.get('movies') or {}).values() if x.get('id') == m['id']), 0)
     favs = [{'type': f.get('type'), 'id': f.get('id'), 'title': f.get('title'), 'poster': f.get('poster')} for f in (state.get('favs') or {}).values()]
-    return {'shows': shows, 'movies': movies, 'favs': favs, 'episodes': sum(per_show.values()), 'minutes': minutes, 'avatar': avatar_of(state)}
+    return {'shows': shows, 'movies': movies, 'favs': favs, 'episodes': sum(per_show.values()), 'minutes': minutes, 'avatar': avatar_of(state), **friend_likes(state)}
 
 
 def static_file(path):
@@ -308,6 +361,16 @@ def route(req):
             data = friend_profile(json.loads(row['data']) if row else {})
             data['username'] = other['username']
             return json_response(200, data)
+        if path == '/api/friends/later':
+            user = current_user(req)
+            if not user:
+                return json_response(401, {'error': 'Niezalogowany'})
+            name = dict(urllib.parse.parse_qsl(query)).get('u', '')
+            with db() as con:
+                other = user_by_name(con, name)
+                if not other or not are_friends(con, user['id'], other['id']):
+                    return json_response(403, {'error': 'Tylko dla znajomych'})
+                return json_response(200, {'items': shared_later_list(con, user['id'], other['id'])})
         if path == '/api/config':
             return json_response(200, {'tmdb': bool(tmdb_key())})
         if path == '/api/me':
@@ -331,6 +394,34 @@ def route(req):
                 with db() as con:
                     con.execute('DELETE FROM sessions WHERE token = ?', (token,))
             return json_response(200, {'ok': True}, session_cookie(req, '', 0))
+        if path == '/api/friends/later':  # dopisanie / usunięcie tytułu ze wspólnej listy „Na później razem”
+            user = current_user(req)
+            if not user:
+                return json_response(401, {'error': 'Niezalogowany'})
+            data = read_json(req)
+            if not isinstance(data, dict) or data.get('type') not in ('tv', 'movie') or data.get('op') not in ('add', 'remove'):
+                return json_response(400, {'error': 'Nieprawidłowe dane'})
+            try:
+                tid = int(data.get('id'))
+            except (TypeError, ValueError):
+                return json_response(400, {'error': 'Nieprawidłowe dane'})
+            title = str(data.get('title') or '')[:200]
+            poster = str(data.get('poster') or '')
+            if not poster.startswith('https://image.tmdb.org/') or len(poster) > 300:
+                poster = ''
+            with db() as con:
+                other = user_by_name(con, data.get('username', ''))
+                if not other or not are_friends(con, user['id'], other['id']):
+                    return json_response(403, {'error': 'Tylko dla znajomych'})
+                a, b = sorted((user['id'], other['id']))
+                if data['op'] == 'remove':
+                    con.execute('DELETE FROM shared_later WHERE a_id = ? AND b_id = ? AND kind = ? AND tid = ?', (a, b, data['type'], tid))
+                elif title:
+                    n = con.execute('SELECT COUNT(*) FROM shared_later WHERE a_id = ? AND b_id = ?', (a, b)).fetchone()[0]
+                    if n >= 300:
+                        return json_response(400, {'error': 'Wspólna lista jest pełna (300 tytułów)'})
+                    con.execute('INSERT OR IGNORE INTO shared_later VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (a, b, data['type'], tid, title, poster, user['id'], int(time.time())))
+                return json_response(200, {'items': shared_later_list(con, user['id'], other['id'])})
         if path in ('/api/friends/add', '/api/friends/accept', '/api/friends/remove'):
             user = current_user(req)
             if not user:
@@ -347,6 +438,7 @@ def route(req):
                     return json_response(400, {'error': 'Nie możesz dodać samej/samego siebie'})
                 if path == '/api/friends/remove':  # usunięcie znajomego, odrzucenie lub cofnięcie zaproszenia
                     con.execute('DELETE FROM friends WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?)', (me, them, them, me))
+                    con.execute('DELETE FROM shared_later WHERE a_id = ? AND b_id = ?', tuple(sorted((me, them))))
                 elif path == '/api/friends/accept':
                     con.execute('UPDATE friends SET accepted = 1 WHERE from_id = ? AND to_id = ?', (them, me))
                 else:
