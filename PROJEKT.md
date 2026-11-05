@@ -644,3 +644,16 @@ Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload** (zmien
 Kroki: zamiana „Seansik” → „SeenIt” w `index.html` (tytuł strony, nazwa na ekranie telefonu, logo „Seen**It**” w nagłówku, na logowaniu i w podglądzie wyglądu), `manifest.json` i `server.py`; `manifest.json?v=3`, żeby telefon pobrał nową nazwę → commit i push.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**. Na iPhonie nazwa pod ikoną zmieni się po ponownym „Dodaj do ekranu początkowego”.
+
+### 2026-11-05 — Polecenie 38
+> dodaj więcej efektu szkła, np. dla komunikatów, okienek itp., żeby wyglądało nowocześnie
+
+Kroki: nowe style w `index.html` → test w widoku telefonu (okienko „Przerwać oglądanie?”, komunikat z „Cofnij”, menu ⋯) → poprawka: rozmycie tła pod panelem wyłączało szkło samego panelu (zagnieżdżony backdrop-filter), więc tło jest tylko przyciemnione, a szkło ma panel → sprzątanie konta testowego.
+
+Zmiany:
+- **Okienka z pytaniem** — matowe szkło z delikatnym połyskiem, zaokrąglone, z „wyskakującą” animacją.
+- **Panele wysuwane od dołu** (menu ⋯, platformy, wygląd, odcinek) — szkło z połyskiem, większe zaokrąglenie i uchwyt u góry.
+- **Komunikaty** (np. „Zapisano ✓ · Cofnij”) — jasne szkło zamiast ciemnego paska, wjeżdżają z animacją, przycisk „Cofnij” w kolorze akcentu.
+- Przyciski ✕ w okienkach też w szkle. W ciemnych motywach połysk jest słabszy.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
