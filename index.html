@@ -2999,9 +2999,9 @@ const themeOf = () => THEMES.find(x => x[0] === document.documentElement.dataset
 // wartości startowe suwaków = kolory aktualnego motywu
 function lookDefaults() {
   const th = themeOf(), [ah, as] = hexHsl(th[4]), [bh, bs] = hexHsl(th[2]);
-  return { ah, as, bh, bs: Math.min(bs, 60), bl: 0 };
+  return { ah, as, bh, bs: Math.min(bs, 60), bl: 0, gl: 75 };
 }
-const LOOK_VARS = ['--accent', '--accent-ink', '--accent-soft', '--bg', '--card', '--card2', '--line'];
+const LOOK_VARS = ['--accent', '--accent-ink', '--accent-soft', '--bg', '--card', '--card2', '--line', '--glass-bg', '--glass-bg2', '--glass-blur'];
 function applyLook(c) {
   const st = document.documentElement.style;
   if (!c) { LOOK_VARS.forEach(v => st.removeProperty(v)); return; }
@@ -3014,6 +3014,13 @@ function applyLook(c) {
   st.setProperty('--card', hsl(c.bh, c.bs * (dark ? .5 : .7), (dark ? 14 : 99) + c.bl / (dark ? 1 : 4)));
   st.setProperty('--card2', hsl(c.bh, c.bs * (dark ? .5 : 1), (dark ? 18 : 90) + c.bl));
   st.setProperty('--line', hsl(c.bh, c.bs * (dark ? .45 : .8), (dark ? 24 : 85) + c.bl));
+  // efekt szkła: 0 = pełne karty, 100 = mocno przezroczyste i rozmyte
+  if (c.gl != null) {
+    const g = cl(c.gl, 0, 100), a = Math.round(94 - g * .64);
+    st.setProperty('--glass-bg', `color-mix(in srgb,var(--card) ${a}%,transparent)`);
+    st.setProperty('--glass-bg2', `color-mix(in srgb,var(--card) ${Math.min(97, a + 22)}%,transparent)`);
+    st.setProperty('--glass-blur', `blur(${Math.round(4 + g * .3)}px) saturate(${(1 + g * .012).toFixed(2)})`);
+  } else ['--glass-bg', '--glass-bg2', '--glass-blur'].forEach(v => st.removeProperty(v));
 }
 function setLook(c, persist) {
   applyLook(c);
@@ -3024,6 +3031,7 @@ const LOOK_SLIDERS = [
   ['ah', 'Kolor akcentu', 0, 359, 'przyciski, paski, wyróżnienia'], ['as', 'Natężenie akcentu', 10, 100, 'od stonowanego do żywego'],
   ['bh', 'Kolor tła', 0, 359, 'odcień tła i kart'], ['bs', 'Natężenie tła', 0, 60, 'od neutralnego do kolorowego'],
   ['bl', 'Jasność tła', -6, 6, 'ciemniej ← → jaśniej'],
+  ['gl', 'Efekt szkła', 0, 100, 'pełne karty ← → mocne szkło'],
 ];
 function openLook() {
   const cur = (state.prefs && state.prefs.look) || null, c = cur || lookDefaults(), th = themeOf()[0];
@@ -3041,7 +3049,7 @@ function openLook() {
     <div class="muted small" style="margin:16px 0 4px">2. Dopasuj kolory ${cur ? '<span class="tag">własne</span>' : ''}</div>
     ${LOOK_SLIDERS.map(([k, label, min, max, hint]) => `<label class="slider ${k === 'ah' || k === 'bh' ? 'hue' : ''}">
       <span class="sl-top"><b>${label}</b><small>${hint}</small></span>
-      <input type="range" min="${min}" max="${max}" step="1" value="${c[k]}" data-k="${k}"></label>`).join('')}
+      <input type="range" min="${min}" max="${max}" step="1" value="${c[k] ?? (k === 'gl' ? 75 : 0)}" data-k="${k}"></label>`).join('')}
     <div class="actions" style="margin:16px 0 0">
       <button class="btn" data-act="close">Gotowe</button>
       ${cur ? '<button class="btn ghost" data-act="lookReset">Przywróć kolory motywu</button>' : ''}
@@ -3051,7 +3059,8 @@ function openLook() {
   // suwaki pokazują kolory, na które się zmieni (np. natężenie: od szarego do pełnego koloru)
   const paint = o => {
     const tr = { as: `linear-gradient(90deg,hsl(${o.ah} 10% 50%),hsl(${o.ah} 100% 47%))`, bs: `linear-gradient(90deg,hsl(${o.bh} 0% 92%),hsl(${o.bh} 60% 88%))`,
-      bl: `linear-gradient(90deg,hsl(${o.bh} ${o.bs}% 82%),hsl(${o.bh} ${o.bs}% 99%))` };
+      bl: `linear-gradient(90deg,hsl(${o.bh} ${o.bs}% 82%),hsl(${o.bh} ${o.bs}% 99%))`,
+      gl: `linear-gradient(90deg,hsl(${o.bh} ${Math.min(o.bs, 30)}% 96%),hsl(${o.bh} ${Math.min(o.bs, 30)}% 96% / .2)),linear-gradient(90deg,hsl(${o.ah} 70% 60% / .55),hsl(${(o.ah + 120) % 360} 60% 60% / .55))` };
     document.querySelectorAll('.look input[type=range]').forEach(i => { if (tr[i.dataset.k]) { i.style.background = tr[i.dataset.k]; i.classList.add('trk'); } });
   };
   paint(c);

@@ -657,3 +657,15 @@ Zmiany:
 - Przyciski ✕ w okienkach też w szkle. W ciemnych motywach połysk jest słabszy.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
+
+### 2026-11-05 — Polecenie 39
+> do zmiany wyglądu aplikacji (na profilu) dodaj też efekt szkła i pasek — użytkownik będzie to zmieniał pod siebie
+
+Kroki: nowy suwak w `index.html` (lista `LOOK_SLIDERS`, `applyLook`, `lookDefaults`, pasek z kolorami w `paint`) → test w widoku telefonu → sprzątanie konta testowego.
+
+Zmiany:
+- **Suwak „Efekt szkła”** w Profil → ⋯ → Dostosuj wygląd (od 0 = pełne, nieprzezroczyste karty do 100 = mocno przezroczyste i rozmyte szkło). Domyślnie 75, czyli tak jak dotąd. Zmienia karty, przyciski, nagłówek, dolne menu i podgląd na górze okna na żywo; zapisuje się na koncie razem z kolorami. „Przywróć kolory motywu” wraca do domyślnego szkła.
+
+Test: suwak na 100 → przezroczystość kart 30%, rozmycie 34 px, zapisane w ustawieniach konta; podgląd zmienia się od razu. Konto testowe usunięte.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
