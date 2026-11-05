@@ -800,3 +800,17 @@ Zmiana w `server.py` (`name_key`): przy zakładaniu konta liczy się już tylko 
 Test: przy istniejącym „test_ola” → „Test_Ola” i „TEST_OLA” odrzucone (409), „test.ola”, „test-ola”, „test_o1a”, „test_0la”, „test_óla” zakładają się normalnie. Konta testowe usunięte.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
+
+### 2026-11-05 — Polecenie 50
+> 1. jak wchodzę w profil znajomego, to profil znajomego zrób inną czcionką — tą samą co imię użytkownika itp. 2. „Na później razem” zrób jako okładki, a nie taki brzydki napis bez niczego; pod tym niech będzie „Coś dla Was obojga” i „Może Ci się spodobać” w takiej formie, jak jest teraz
+
+Kroki: łatka `patch50.py` (scratchpad) na `index.html` → dopisanie czcionki nagłówków półek → test na dwóch kontach testowych (znajomi ze wspólną listą) w widoku telefonu → sprzątanie kont testowych.
+
+Zmiany:
+- **Czcionka**: tytuł „Profil znajomego” / „Profil użytkownika” i nagłówki półek na profilu znajomego (Na później razem, Obejrzane wspólnie, Seriale, Filmy…) są teraz czcionką imienia (Nunito, pogrubiona). Tą samą czcionką są tytuły podstron znajomego (Na później razem, Coś dla Was obojga, Może Ci się spodobać).
+- **Na później razem**: zamiast kafelka z napisem jest półka z okładkami wspólnej listy (pod każdą „od Ciebie” / „od znajomego”). Pierwsza okładka to „＋ Dodaj”, która otwiera wspólną listę z wyszukiwarką. Nagłówek „📌 Na później razem (liczba) ›” też otwiera całą listę. Gdy lista jest pusta, widać tylko „＋ Dodaj” i krótki opis.
+- Pod spodem bez zmian: kafelki „🤝 Coś dla Was obojga” i „✨ Może Ci się spodobać”.
+
+Test: dwa konta testowe, 2 tytuły na wspólnej liście → okładki widoczne, „Dodaj” otwiera `#/friend-later/…`. Konta testowe usunięte.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
