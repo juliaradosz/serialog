@@ -730,6 +730,8 @@ a.sec-head .more{font-size:13px;font-weight:700;color:var(--accent-ink);white-sp
 /* telefon: aplikacja sięga pod pasek z godziną (bez białego paska u góry); delikatny cień, żeby godzina była czytelna na jasnym tle */
 .top::before{content:"";position:absolute;left:0;right:0;top:0;height:env(safe-area-inset-top);pointer-events:none;background:linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,0))}
 [data-dark="1"] .top::before{display:none}
+.top{padding-top:calc(13px + env(safe-area-inset-top))}  /* odstęp na wycięcie ekranu musi być po zwykłym „padding” nagłówka */
+.top .tl,.top #count{position:relative;z-index:1}
 </style>
 </head>
 <body>

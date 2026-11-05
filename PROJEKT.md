@@ -709,3 +709,12 @@ Zmiany w `index.html`:
 - Kolor paska systemowego (`theme-color`, np. na Androidzie) zmienia się razem z motywem.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**, potem zamknąć aplikację i otworzyć ponownie. Jeśli pasek dalej jest biały: usunąć ikonę z ekranu i dodać ją jeszcze raz (iPhone zapamiętuje to ustawienie przy dodawaniu ikony).
+
+### 2026-11-05 — Polecenie 43
+> (zrzut z telefonu) napraw, bo teraz całkowicie zepsułeś
+
+Przyczyna: po zmianie z polecenia 42 aplikacja sięga pod pasek z godziną, ale odstęp nagłówka na wycięcie ekranu (`padding-top: env(safe-area-inset-top)`) był nadpisywany przez późniejszą regułę `padding: 13px 16px`. Logo chowało się pod zegarem, a pod nagłówkiem zostawała pusta przerwa (zakładki i wyszukiwarka są przyklejone niżej, z uwzględnieniem wycięcia).
+
+Poprawka w `index.html`: reguła z odstępem przeniesiona na koniec stylów, tak żeby niczego jej nie nadpisywało. Test: symulacja iPhone'a z wycięciem 47 px w widoku telefonu → nagłówek 0–107 px, logo od 60 px (pod zegarem), zakładki od 107 px (bez przerwy), wyszukiwarka zaraz pod nimi. Konto testowe usunięte.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**, zamknąć i otworzyć aplikację na telefonie.
