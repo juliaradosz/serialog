@@ -50,11 +50,9 @@ USERNAME_RE = re.compile(r'^[\w.\-]{3,30}$')
 
 
 def name_key(name):
-    """Postać nazwy do porównań: bez wielkości liter, polskich znaków, kropek/podkreśleń/myślników
-    i z ujednoliconymi podobnymi znakami (0→o, 1/i/l→l) — „Julka”, „júlka”, „jul.ka” i „JU1KA” to ta sama nazwa."""
-    n = unicodedata.normalize('NFKD', str(name).casefold().replace('ł', 'l'))
-    n = ''.join(c for c in n if not unicodedata.combining(c) and c not in '._-')
-    return n.translate(str.maketrans({'0': 'o', '1': 'l', 'i': 'l', '3': 'e', '5': 's'}))
+    """Postać nazwy do porównań: liczy się tylko wielkość liter („Julka” = „julka”, „Łukasz” = „łukasz”).
+    Polskie znaki, kropki, podkreślenia, myślniki i cyfry rozróżniają nazwy („jul.ka”, „júlka”, „ju1ka” to inne konta)."""
+    return unicodedata.normalize('NFC', str(name)).casefold()
 failed_logins = {}  # ip -> [czasy nieudanych prób]
 
 
@@ -512,7 +510,7 @@ def route(req):
             key = name_key(username)
             with db() as con:
                 if any(name_key(r['username']) == key for r in con.execute('SELECT username FROM users')):
-                    return json_response(409, {'error': 'Ta nazwa jest zajęta albo bardzo podobna do istniejącej — wybierz inną'})
+                    return json_response(409, {'error': 'Ta nazwa użytkownika jest już zajęta'})
             try:
                 with db() as con:
                     cur = con.execute('INSERT INTO users (username, salt, pw_hash, created) VALUES (?, ?, ?, ?)',

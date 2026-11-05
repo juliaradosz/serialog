@@ -791,3 +791,12 @@ Zmiany:
 Test: 5 podobnych nazw → 409; admin → lista kont z linkami, kliknięcie → „Profil użytkownika”, podgląd administratora, bez „Usuń ze znajomych”, bez kafelków wspólnych list. Konta testowe usunięte.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
+
+### 2026-11-05 — Polecenie 49
+> (z listy z polecenia 48: polskie znaki i akcenty; kropki, podkreślenia i myślniki; podobnie wyglądające znaki 0/o, 1/i/l) — zrób tak, żeby akurat te dało się zrobić
+
+Zmiana w `server.py` (`name_key`): przy zakładaniu konta liczy się już tylko wielkość liter — „Julka”, „JULKA” i „julka” to ta sama nazwa (także z polskimi literami: „Łukasz” = „łukasz”). Polskie znaki i akcenty, kropki, podkreślenia, myślniki i cyfry znowu rozróżniają nazwy. Komunikat wrócił do „Ta nazwa użytkownika jest już zajęta”.
+
+Test: przy istniejącym „test_ola” → „Test_Ola” i „TEST_OLA” odrzucone (409), „test.ola”, „test-ola”, „test_o1a”, „test_0la”, „test_óla” zakładają się normalnie. Konta testowe usunięte.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
