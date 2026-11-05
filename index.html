@@ -607,6 +607,29 @@ a.sec-head .more{font-size:13px;font-weight:700;color:var(--accent-ink);white-sp
 .avatar.ph .cam{position:absolute;right:-4px;bottom:-4px;width:22px;height:22px;border-radius:50%;background:var(--card);box-shadow:var(--shadow);font-size:11px;display:flex;align-items:center;justify-content:center}
 .linkbtn{font-size:12px;color:var(--muted);text-decoration:underline;padding:0 4px}
 .rwb{display:inline-block;padding:0 6px;margin-left:4px;border-radius:8px;background:var(--accent-soft);color:var(--accent-ink);font-size:11px;font-weight:800;line-height:18px;white-space:nowrap;vertical-align:1px}
+/* podgląd w „Dostosuj wygląd” — przyklejony u góry okna, zmienia się razem z suwakami */
+.lprev{position:sticky;top:-16px;z-index:2;margin:10px -4px 14px;padding:6px 4px 8px;background:var(--glass-bg2);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.lp-bg{position:relative;overflow:hidden;border-radius:18px;padding:10px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line)}
+.lp-bg::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(60% 50% at 6% 4%,color-mix(in srgb,var(--accent) 48%,transparent),transparent 72%),radial-gradient(55% 45% at 98% 40%,color-mix(in srgb,var(--ok) 40%,transparent),transparent 72%),
+    radial-gradient(60% 50% at 30% 110%,color-mix(in srgb,var(--gold) 34%,transparent),transparent 72%)}
+.lp-bg>*{position:relative}
+.lp-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.lp-top b{font-family:Fraunces,serif;font-size:16px}.lp-top b span{color:var(--accent)}.lp-top small{font-size:11px;color:var(--muted);font-weight:700}
+.lp-card{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:var(--shadow),var(--glass-hi);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}
+.lp-poster{width:30px;height:44px;border-radius:6px;flex:none;background:linear-gradient(160deg,var(--accent-soft),var(--accent))}
+.lp-body{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}.lp-body b{font-size:13px}.lp-body small{font-size:11px;color:var(--muted)}
+.lp-bar{height:4px;border-radius:2px;background:var(--card2);margin-top:5px;overflow:hidden}.lp-bar i{display:block;width:60%;height:100%;background:var(--accent)}
+.lp-chk{width:26px;height:26px;border-radius:50%;background:var(--ok);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.lp-row{display:flex;gap:6px;margin-top:8px;align-items:center}
+.lp-btn{padding:5px 10px;border-radius:9px;background:var(--accent);color:#fff;font-size:11px;font-weight:800}
+.lp-ghost{padding:5px 10px;border-radius:9px;background:var(--glass-bg);border:1px solid var(--glass-border);font-size:11px;font-weight:800}
+.lp-chip{margin-left:auto;padding:3px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-size:11px;font-weight:700}
+.lp-tabs{display:flex;justify-content:space-around;margin:10px -10px -10px;padding:8px 0;background:color-mix(in srgb,var(--card) 62%,transparent);border-top:1px solid var(--glass-border)}
+.lp-tabs i{width:16px;height:16px;border-radius:5px;background:var(--line)}.lp-tabs i.on{background:var(--accent)}
+.slider input.trk{-webkit-appearance:none;appearance:none;height:14px;border-radius:7px}
+.slider input.trk::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--text);box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.slider input.trk::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--text)}
 </style>
 </head>
 <body>
@@ -691,7 +714,13 @@ function noRel() {
   }
   return noRelSet;
 }
-const blocked = (kind, x) => hiddenG(kind, x) || noRel().has(kind + ':' + x.id);
+// ukryte kategorie: Polskie (po kraju/języku), po języku i gatunkach (anime, K-dramy…) albo po zapamiętanych tytułach (kategorie z tagów)
+const noCats = kind => (((state.prefs || {}).noCats || {})[kind] || {});
+const catBlocked = (kind, x) => Object.values(noCats(kind)).some(r => (r.polish && isPolish(x))
+  || (r.lang && x.original_language === r.lang && (r.genres || []).every(g => (x.genre_ids || (x.genres || []).map(y => y.id)).includes(g)))
+  || (r.genres && !r.lang && r.genres.every(g => (x.genre_ids || (x.genres || []).map(y => y.id)).includes(g)))
+  || (r.ids || []).includes(x.id));
+const blocked = (kind, x) => hiddenG(kind, x) || catBlocked(kind, x) || noRel().has(kind + ':' + x.id);
 // tytuły dodane przed wejściem na ekran — na listach gatunków już się nie pokazują (dodane teraz zostają, żeby siatka nie skakała)
 let visitStart = Date.now();
 const addedBefore = (kind, id) => { const o = kind === 'tv' ? state.shows[id] : state.movies[id]; return !!o && (o.addedAt || 0) < visitStart; };
@@ -741,7 +770,7 @@ function toast(msg, undo) {
 }
 // zmiany, które można cofnąć przyciskiem w dymku (zapis stanu sprzed kliknięcia)
 let undoSnap = null;
-const UNDOABLE = new Set(['dislike', 'ep', 'season', 'allSeen', 'watchNext', 'mSeen', 'mList', 'follow', 'unfollow', 'drop', 'resume', 'skipEp', 'skipSeason',
+const UNDOABLE = new Set(['noCat', 'noGenre', 'dislike', 'ep', 'season', 'allSeen', 'watchNext', 'mSeen', 'mList', 'follow', 'unfollow', 'drop', 'resume', 'skipEp', 'skipSeason',
   'bulkSeen', 'rewatch', 'rewatchSeason', 'mRewatch', 'swapShow']);
 
 // ---------- serwer: konta i TMDB ----------
@@ -1606,7 +1635,7 @@ async function renderForYou(token) {
     forYou = await (forYouP ||= buildForYou().finally(() => { forYouP = null; }));  // jedno liczenie naraz
     if (token !== renderToken) return;
   }
-  const list = forYou[fyKind], isTv = fyKind === 'tv', hidden = noG(fyKind).length;
+  const list = forYou[fyKind], isTv = fyKind === 'tv', hidden = noG(fyKind).length + Object.keys(noCats(fyKind)).length;
   view.innerHTML = head + `<div class="fy-head"><div class="muted small">${isTv ? 'Seriale' : 'Filmy'} podobne do tytułów z Twojej listy (najbardziej liczą się ulubione, wysoko ocenione i oglądane ponownie), dopasowane do Twoich ulubionych gatunków i dobrze oceniane przez widzów. Przerwane i 👎 sprawiają, że podobne się nie pojawiają.${hidden ? ` <a class="link" href="#/${isTv ? 'shows' : 'movies'}-genres">Ukryte gatunki: ${hidden}</a>` : ''}</div>
     <button class="btn ghost sm" data-act="forYouRefresh">↻ Inne propozycje</button></div>
     <h2>${isTv ? 'Seriale' : 'Filmy'}, które mogą Ci się spodobać</h2>
@@ -1798,20 +1827,23 @@ async function loadMoreFeed() {
 }
 
 // ---------- widok: gatunki i listy ----------
+const catTile = (kind, base, key, name, icon, hue) => { const off = !!noCats(kind)[key];
+  return `<a class="genre ${off ? 'off' : ''}" style="--h:${hue}" href="#/${base}-list/${key}"><span>${icon}</span><em>${esc(name)}${off ? '<small>ukryta w propozycjach</small>' : ''}</em>
+    <button class="gno ${off ? 'on' : ''}" data-act="noCat" data-kind="${kind}" data-k="${key}" title="${off ? 'Pokaż znowu w propozycjach' : 'Nie lubię — ukryj w propozycjach'}">${off ? '↺' : '🚫'}</button></a>`; };
 function renderGenres(kind) {
   const base = kind === 'tv' ? 'shows' : 'movies';
   const list = Object.entries(genres[kind]);
   view.innerHTML = (kind === 'tv' ? showTabs('genres') : movieTabs('genres')) +
     `<h2>Na co masz ochotę?</h2>
-    <p class="muted small" style="margin:-4px 0 12px">Nie lubisz jakiegoś gatunku? Stuknij <b>🚫</b> — tytuły z nim przestaną pojawiać się w propozycjach.</p>
+    <p class="muted small" style="margin:-4px 0 12px">Nie lubisz jakiegoś gatunku albo kategorii? Stuknij <b>🚫</b> — takie tytuły przestaną pojawiać się w propozycjach.</p>
     <div class="genres">
-      <a class="genre" style="--h:350" href="#/${base}-list/polish"><span><i class="plb big"></i></span>Polskie</a>
+      ${catTile(kind, base, 'polish', 'Polskie', '<i class="plb big"></i>', 350)}
       ${list.map(([id, name], i) => { const off = noG(kind).includes(+id);
         return `<a class="genre ${off ? 'off' : ''}" style="--h:${GENRE_HUES[i % GENRE_HUES.length]}" href="#/${base}-list/g${id}"><span>${GENRE_ICON[id] || '🎬'}</span><em>${esc(name)}${off ? '<small>ukryty w propozycjach</small>' : ''}</em>
         <button class="gno ${off ? 'on' : ''}" data-act="noGenre" data-kind="${kind}" data-g="${id}" title="${off ? 'Pokaż znowu w propozycjach' : 'Nie lubię — ukryj w propozycjach'}">${off ? '↺' : '🚫'}</button></a>`; }).join('')}
     </div>
     <h2>Więcej kategorii</h2>
-    <div class="genres">${EXTRA_CATS[kind].map(([k, name, icon], i) => `<a class="genre" style="--h:${GENRE_HUES[(i + 5) % GENRE_HUES.length]}" href="#/${base}-list/x${k}"><span>${icon}</span><em>${esc(name)}</em></a>`).join('')}</div>`;
+    <div class="genres">${EXTRA_CATS[kind].map(([k, name, icon], i) => catTile(kind, base, 'x' + k, name, icon, GENRE_HUES[(i + 5) % GENRE_HUES.length])).join('')}</div>`;
 }
 async function renderList(kind, key, token) {
   const cfg = listConfig(kind, key);
@@ -2528,6 +2560,22 @@ Object.assign(actions, {
     if (sheetKey) openEpisode(sheetKey);
     rerender();
   },
+  async noCat(d) {
+    const p = state.prefs ||= {}, all = (p.noCats ||= {})[d.kind] ||= {}, key = d.k;
+    if (all[key]) { delete all[key]; save(); toast('Kategoria znowu pojawi się w propozycjach'); rerender(); return; }
+    let rule;
+    if (key === 'polish') rule = { polish: true };
+    else {
+      const c = EXTRA_CATS[d.kind].find(x => 'x' + x[0] === key), pr = c[3];
+      if (pr.with_original_language) rule = { lang: pr.with_original_language, genres: pr.with_genres ? pr.with_genres.split(',').map(Number) : [] };
+      else if (pr.with_genres && !pr.with_keywords) rule = { genres: pr.with_genres.split(',').map(Number) };
+      else {  // kategoria z tagów — zapamiętujemy jej najpopularniejsze tytuły
+        const pages = await Promise.all([1, 2, 3, 4, 5].map(page => tmdb(`discover/${d.kind}`, { ...pr, sort_by: 'popularity.desc', page }).catch(() => ({ results: [] }))));
+        rule = { ids: [...new Set(pages.flatMap(r => (r.results || []).map(x => x.id)))] };
+      }
+    }
+    all[key] = rule; save(); toast('Ukryto tę kategorię w propozycjach'); rerender();
+  },
   noGenre(d) {
     const p = state.prefs ||= {}, ng = p.noGenres ||= {}, list = ng[d.kind] ||= [], g = +d.g;
     const i = list.indexOf(g);
@@ -2606,13 +2654,6 @@ async function renderProfile(token) {
   const showName = id => (state.shows[id] && state.shows[id].name) || (showCache[id] && showCache[id].show.name) || 'Serial';
   const rwShow = {};
   w.forEach(x => { if (rwCount(x)) rwShow[x.s] = (rwShow[x.s] || 0) + rwCount(x); });
-  const again = ' <span class="rwb">↻ ponownie</span>';
-  const hist = [
-    ...w.map(x => ({ t: x.t, href: `#/show/${x.s}`, html: `<b>${esc(showName(x.s))}</b> <span class="muted">${esc(x.c || '')} ${esc(x.n || '')}</span>` })),
-    ...w.flatMap(x => (x.rw || []).map(t => ({ t, href: `#/show/${x.s}`, html: `<b>${esc(showName(x.s))}</b> <span class="muted">${esc(x.c || '')} ${esc(x.n || '')}</span>${again}` }))),
-    ...seenM.map(m => ({ t: m.seenAt, href: `#/movie/${m.id}`, html: `🎬 <b>${esc(m.title)}</b> <span class="muted">${m.year || ''}</span>` })),
-    ...seenM.flatMap(m => (m.rw || []).map(t => ({ t, href: `#/movie/${m.id}`, html: `🎬 <b>${esc(m.title)}</b> <span class="muted">${m.year || ''}</span>${again}` }))),
-  ].sort((a, b) => b.t - a.t).slice(0, 12);
   const hrs = n => `${Math.floor(n / 60)} h ${n % 60} min`;
   const bars = list => list.map(([g, n]) => `<div class="grow"><span class="lbl">${esc(g)}</span><div class="bar"><b style="width:${n / list[0][1] * 100}%"></b></div></div>`).join('');
   const miniStars = r => r ? `<div class="ms">${'★'.repeat(r)}</div>` : '';
@@ -2668,7 +2709,6 @@ async function renderProfile(token) {
     ${topG.length || topMG.length ? `<h2>Ulubione gatunki</h2><div class="panel">
       ${topG.length ? `<div class="muted small" style="margin-bottom:4px">Seriale</div>${bars(topG)}` : ''}
       ${topMG.length ? `<div class="muted small" style="margin:${topG.length ? 14 : 0}px 0 4px">Filmy</div>${bars(topMG)}` : ''}</div>` : ''}
-    ${hist.length ? `<h2>Ostatnio obejrzane</h2>${hist.map(x => `<a class="hist" href="${x.href}"><span>${x.html}</span><span class="muted">${fmtDate(x.t)}</span></a>`).join('')}` : ''}
     <h2>Ustawienia</h2>
     <div class="panel">
       <div class="muted small" style="margin:0 0 8px">Dane</div>
@@ -2744,6 +2784,12 @@ function openLook() {
   const cur = (state.prefs && state.prefs.look) || null, c = cur || lookDefaults(), th = themeOf()[0];
   $('#sheet').innerHTML = `<div class="look">
     <div class="look-head"><b>Dostosuj wygląd</b><button class="x" data-act="close" title="Zamknij">✕</button></div>
+    <div class="lprev" aria-hidden="true"><div class="lp-bg">
+      <div class="lp-top"><b>Seria<span>Log</span></b><small>podgląd</small></div>
+      <div class="lp-card"><span class="lp-poster"></span><div class="lp-body"><b>Twój serial</b><small>S02E05 · za 3 dni</small><span class="lp-bar"><i></i></span></div><span class="lp-chk">✓</span></div>
+      <div class="lp-row"><span class="lp-btn">✓ Obejrzany</span><span class="lp-ghost">＋ Na później</span><span class="lp-chip">Dramat</span></div>
+      <div class="lp-tabs"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+    </div></div>
     <div class="muted small" style="margin:4px 0 8px">1. Wybierz motyw</div>
     <div class="themes">${THEMES.map(([k, n, bg, card, acc]) => `<a class="th ${th === k ? 'on' : ''}" data-act="theme" data-v="${k}">
       <span class="sw" style="background:${bg}"><u style="background:${card}"></u><i style="background:${acc}"></i></span>${n}</a>`).join('')}</div>
@@ -2757,8 +2803,15 @@ function openLook() {
     </div></div>`;
   $('#sheetWrap').classList.remove('hidden');
   const read = () => { const o = { ...c }; document.querySelectorAll('.look input[type=range]').forEach(i => o[i.dataset.k] = +i.value); return o; };
+  // suwaki pokazują kolory, na które się zmieni (np. natężenie: od szarego do pełnego koloru)
+  const paint = o => {
+    const tr = { as: `linear-gradient(90deg,hsl(${o.ah} 10% 50%),hsl(${o.ah} 100% 47%))`, bs: `linear-gradient(90deg,hsl(${o.bh} 0% 92%),hsl(${o.bh} 60% 88%))`,
+      bl: `linear-gradient(90deg,hsl(${o.bh} ${o.bs}% 82%),hsl(${o.bh} ${o.bs}% 99%))` };
+    document.querySelectorAll('.look input[type=range]').forEach(i => { if (tr[i.dataset.k]) { i.style.background = tr[i.dataset.k]; i.classList.add('trk'); } });
+  };
+  paint(c);
   document.querySelectorAll('.look input[type=range]').forEach(i => {
-    i.oninput = () => applyLook(read());               // podgląd na żywo
+    i.oninput = () => { const o = read(); applyLook(o); paint(o); };   // podgląd na żywo
     i.onchange = () => { setLook(read(), true); };      // zapis po puszczeniu suwaka
   });
 }

@@ -605,3 +605,15 @@ Zmiany:
 Testy (widok telefonu, konta testowe): 👎 na „To” → 38 podobnych zablokowanych, brak w liście Horror; nowe kategorie (Romanse 787 seriali); zdjęcie → zapis 4,6 kB, widoczne u znajomego; powtórka w historii; brak błędów w konsoli. Konta testowe usunięte (zostało tylko „julkar8”).
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload** (zmienił się też serwer).
+
+### 2026-11-05 — Polecenie 35
+> 1. jak się edytuje wygląd aplikacji, to niech będzie widoczne, na co się zmienia — niech aplikacja da podgląd, jak będzie tło wyglądało; 2. daj możliwość oznaczenia każdej kategorii jako nielubianej, np. polskie; 3. usuń z profilu „Ostatnio obejrzane”.
+
+Zmiany:
+1. **Podgląd w „Dostosuj wygląd”** — u góry okna przyklejona miniatura aplikacji (tło z kolorowymi plamami, karta serialu w szkle, pasek postępu, przyciski, etykieta, dolne menu), która zmienia się na żywo przy wyborze motywu i przesuwaniu suwaków. Suwaki natężenia i jasności pokazują na pasku kolory, na które się zmieni (np. od szarego do pełnego koloru).
+2. **🚫 przy każdej kategorii** — także „Polskie” i wszystkie z „Więcej kategorii”. Polskie: ukrywa tytuły z Polski / po polsku; Anime, K-dramy, Kino koreańskie, Komedie romantyczne: po języku i gatunkach; kategorie z tagów (np. Romanse, Dla nastolatków): zapamiętuje ich 100 najpopularniejszych tytułów. Ukryte nie pojawiają się w Szukaj, „Dla Ciebie”, podobnych tytułach ani na innych listach; ↺ przywraca, działa też „Cofnij”.
+3. Z Profilu usunięta sekcja **„Ostatnio obejrzane”**.
+
+Testy (widok telefonu, konto testowe): podgląd zmienia kolor tła razem z suwakiem; 19 przycisków 🚫 przy kategoriach seriali; ukryte Polskie/Romanse/Anime → 0 polskich w propozycjach Szukaj, reguły działają na przykładowych tytułach; brak „Ostatnio obejrzane”; brak błędów w konsoli. Konto testowe usunięte.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
