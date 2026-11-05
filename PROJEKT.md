@@ -814,3 +814,21 @@ Zmiany:
 Test: dwa konta testowe, 2 tytuły na wspólnej liście → okładki widoczne, „Dodaj” otwiera `#/friend-later/…`. Konta testowe usunięte.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
+
+### 2026-11-05 — Polecenie 51
+> jak dodaje się filmy lub seriale do obejrzenia ze znajomymi, to niech będzie możliwość zaznaczenia, czy się już obejrzało, czy nie. Jeśli to film i się obejrzało już, to trafia na sam dół pod sekcję: już obejrzane. Daj też opcję, że wspólnie obejrzało się 1 sezon, 2 itp.
+
+Kroki: łatka `patch51.py` (scratchpad) na `server.py` i `index.html` → test na dwóch kontach testowych w widoku telefonu → sprzątanie kont testowych.
+
+Zmiany:
+- **Serwer**: tabela `shared_later` dostała kolumny `seen` (obejrzane razem) i `seasons` (sezony obejrzane razem, np. „1,2”). Kolumny dodają się same przy starcie serwera, bez utraty danych. Nowa operacja `update` w `/api/friends/later`, a przy `add` można od razu podać „obejrzane”.
+- **Dodawanie (wyszukiwarka na wspólnej liście)**: przy każdym tytule są dwa przyciski: „＋ Do obejrzenia” i „✓ Już obejrzane”.
+- **Wspólna lista**: sekcje „Do obejrzenia razem”, „Oboje macie na później” i na samym dole „Już obejrzane razem” (okładki lekko przygaszone).
+  - Film: przycisk „✓ Obejrzane” przenosi go na dół, a ponowne stuknięcie („✓ Obejrzany”) cofa go na listę.
+  - Serial: przycisk „📺 Sezony” otwiera okienko z sezonami (Sezon 1, Sezon 2…). Zaznaczone sezony widać pod okładką („👯 sezony 1–3 razem”). Gdy zaznaczycie wszystkie albo „✓ Obejrzane całe razem”, serial trafia do „Już obejrzane razem”.
+  - Oboje znajomi widzą i mogą zmieniać te zaznaczenia.
+- **Profil znajomego**: na półce „Na później razem” są tylko tytuły jeszcze nieobejrzane, a pod serialem widać obejrzane sezony.
+
+Test: dodanie filmu jako obejrzanego → od razu w „Już obejrzane razem”; sezony 1–3 zaznaczone → „sezony 1–3 razem”; „Obejrzane całe razem” i „✓ Obejrzane” przy filmie → wszystko na dole; na profilu znajomego zostało tylko „＋ Dodaj”. Konta testowe usunięte.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.

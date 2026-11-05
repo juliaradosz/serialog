@@ -97,6 +97,11 @@ def init_db():
                 created INTEGER NOT NULL,
                 PRIMARY KEY (a_id, b_id, kind, tid));
         ''')
+        cols = {r[1] for r in con.execute('PRAGMA table_info(shared_later)')}
+        if 'seen' not in cols:  # obejrzane razem (film / cały serial)
+            con.execute('ALTER TABLE shared_later ADD COLUMN seen INTEGER NOT NULL DEFAULT 0')
+        if 'seasons' not in cols:  # sezony obejrzane razem, np. „1,2”
+            con.execute("ALTER TABLE shared_later ADD COLUMN seasons TEXT NOT NULL DEFAULT ''")
 
 
 
@@ -270,8 +275,16 @@ def avatar_of(state):
 
 def shared_later_list(con, me, other):
     a, b = sorted((me, other))
-    rows = con.execute('SELECT kind, tid, title, poster, added_by, created FROM shared_later WHERE a_id = ? AND b_id = ? ORDER BY created DESC', (a, b)).fetchall()
-    return [{'type': r['kind'], 'id': r['tid'], 'title': r['title'], 'poster': r['poster'], 'mine': r['added_by'] == me, 't': r['created']} for r in rows]
+    rows = con.execute('SELECT kind, tid, title, poster, added_by, created, seen, seasons FROM shared_later WHERE a_id = ? AND b_id = ? ORDER BY created DESC', (a, b)).fetchall()
+    return [{'type': r['kind'], 'id': r['tid'], 'title': r['title'], 'poster': r['poster'], 'mine': r['added_by'] == me, 't': r['created'],
+             'seen': bool(r['seen']), 'seasons': [int(x) for x in r['seasons'].split(',') if x.isdigit()]} for r in rows]
+
+
+def clean_seasons(v):
+    if not isinstance(v, list):
+        return ''
+    out = sorted({int(x) for x in v if isinstance(x, int) and not isinstance(x, bool) and 0 < x < 200})
+    return ','.join(map(str, out[:100]))
 
 
 def are_friends(con, a, b):
@@ -446,7 +459,7 @@ def route(req):
             if not user:
                 return json_response(401, {'error': 'Niezalogowany'})
             data = read_json(req)
-            if not isinstance(data, dict) or data.get('type') not in ('tv', 'movie') or data.get('op') not in ('add', 'remove'):
+            if not isinstance(data, dict) or data.get('type') not in ('tv', 'movie') or data.get('op') not in ('add', 'remove', 'update'):
                 return json_response(400, {'error': 'Nieprawidłowe dane'})
             try:
                 tid = int(data.get('id'))
@@ -463,11 +476,15 @@ def route(req):
                 a, b = sorted((user['id'], other['id']))
                 if data['op'] == 'remove':
                     con.execute('DELETE FROM shared_later WHERE a_id = ? AND b_id = ? AND kind = ? AND tid = ?', (a, b, data['type'], tid))
+                elif data['op'] == 'update':  # zaznaczenie „obejrzane razem” i sezonów obejrzanych razem
+                    con.execute('UPDATE shared_later SET seen = ?, seasons = ? WHERE a_id = ? AND b_id = ? AND kind = ? AND tid = ?',
+                                (1 if data.get('seen') else 0, clean_seasons(data.get('seasons')), a, b, data['type'], tid))
                 elif title:
                     n = con.execute('SELECT COUNT(*) FROM shared_later WHERE a_id = ? AND b_id = ?', (a, b)).fetchone()[0]
                     if n >= 300:
                         return json_response(400, {'error': 'Wspólna lista jest pełna (300 tytułów)'})
-                    con.execute('INSERT OR IGNORE INTO shared_later VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (a, b, data['type'], tid, title, poster, user['id'], int(time.time())))
+                    con.execute('INSERT OR IGNORE INTO shared_later (a_id, b_id, kind, tid, title, poster, added_by, created, seen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                (a, b, data['type'], tid, title, poster, user['id'], int(time.time()), 1 if data.get('seen') else 0))
                 return json_response(200, {'items': shared_later_list(con, user['id'], other['id'])})
         if path in ('/api/friends/add', '/api/friends/accept', '/api/friends/remove'):
             user = current_user(req)

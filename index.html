@@ -752,6 +752,14 @@ a.arow{color:inherit;align-items:center}.arow .go{font-size:20px;color:var(--mut
 .addmini .poster{display:flex;align-items:center;justify-content:center;aspect-ratio:2/3;background:var(--glass-bg);border:2px dashed var(--glass-border);box-sizing:border-box;color:var(--accent-ink)}
 .addmini .poster span{font-size:30px;font-weight:300}
 .lshelf + .fpicks{margin-top:4px}
+.lpin.on{color:var(--ok);border-color:var(--ok)}
+.lseas{font-size:11px;font-weight:700;color:var(--accent-ink);margin-top:2px;line-height:1.25}
+.ldone .poster{filter:saturate(.55) brightness(.92)}
+.laddb{display:flex;flex-direction:column;gap:5px;flex:none}.laddb .btn{padding:6px 10px;font-size:12px;white-space:nowrap}
+.lsgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.lsb{padding:11px 6px;border-radius:12px;background:var(--glass-bg);border:1px solid var(--glass-border);font:700 13.5px Nunito,sans-serif;color:var(--text)}
+.lsb.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.lsall{width:100%}
 </style>
 </head>
 <body>
@@ -2825,8 +2833,8 @@ async function renderFriend(name, token) {
   const tMini = x => `<a class="mini" href="#/${x.kind === 'tv' ? 'show' : 'movie'}/${x.id}">${poster(x.poster, x.title)}<span class="both" title="Obejrzane wspólnie">👯</span><div class="nm">${esc(x.title)}</div><div class="sub2">${x.sub}</div></a>`;
   const viaAdmin = p.friend === false;
   if (later && !viaAdmin) laterCache[name] = { p, items: later.items };
-  const lItems = later && !viaAdmin ? later.items : [], lHref = '#/friend-later/' + encodeURIComponent(p.username);
-  const lMini = x => `<a class="mini" href="#/${x.type === 'tv' ? 'show' : 'movie'}/${x.id}">${poster(x.poster, x.title)}<div class="nm">${esc(x.title)}</div><div class="sub2">${x.mine ? 'od Ciebie' : 'od ' + esc(p.username)}</div></a>`;
+  const lItems = later && !viaAdmin ? later.items.filter(x => !x.seen) : [], lHref = '#/friend-later/' + encodeURIComponent(p.username);
+  const lMini = x => `<a class="mini" href="#/${x.type === 'tv' ? 'show' : 'movie'}/${x.id}">${poster(x.poster, x.title)}<div class="nm">${esc(x.title)}</div><div class="sub2">${x.seasons && x.seasons.length ? '👯 ' + seasonsTxt(x.seasons) : x.mine ? 'od Ciebie' : 'od ' + esc(p.username)}</div></a>`;
   const laterShelf = viaAdmin ? '' : `<section class="shelf lshelf"><h2><a href="${lHref}">📌 Na później razem${lItems.length ? ` <small>(${lItems.length})</small>` : ''}<span class="go">›</span></a></h2>
     <div class="hscroll"><a class="mini addmini" href="${lHref}"><div class="poster"><span>＋</span></div><div class="nm">Dodaj</div><div class="sub2">serial lub film</div></a>${lItems.map(lMini).join('')}</div>
     ${lItems.length ? '' : '<p class="muted small" style="margin:-4px 0 0">Wspólna lista do obejrzenia — dopisujcie oboje.</p>'}</section>`;
@@ -2972,15 +2980,20 @@ async function renderFriendLater(name, token) {
   const both = [...p.shows.filter(s => !s.eps && !s.dropped && myLater.has('tv:' + s.id)).map(s => ({ type: 'tv', id: s.id, title: s.name, poster: s.poster })),
     ...p.movies.filter(m => m.status === 'watch' && myLater.has('movie:' + m.id)).map(m => ({ type: 'movie', id: m.id, title: m.title, poster: m.poster }))].filter(x => !onList.has(x.type + ':' + x.id));
   const mini = (x, extra) => `<div class="mini lmini"><a href="#/${x.type === 'tv' ? 'show' : 'movie'}/${x.id}">${poster(x.poster, x.title)}<div class="nm">${esc(x.title)}</div></a>${extra}</div>`;
+  const todo = items.filter(x => !x.seen), done = items.filter(x => x.seen);
+  const card = x => mini(x, `<div class="sub2">${x.type === 'tv' ? 'serial' : 'film'} · ${x.mine ? 'od Ciebie' : 'od ' + esc(name)}</div>
+      ${x.type === 'tv' && x.seasons.length && !x.seen ? `<div class="lseas">👯 ${seasonsTxt(x.seasons)}</div>` : ''}
+      <button class="btn ghost sm lpin ${x.seen ? 'on' : ''}" data-act="${x.type === 'tv' ? 'laterSeasons' : 'laterSeen'}" data-u="${esc(name)}" data-kind="${x.type}" data-id="${x.id}">${x.type === 'tv' ? (x.seen ? '✓ Obejrzany' : '📺 Sezony') : x.seen ? '✓ Obejrzany' : '✓ Obejrzane'}</button>
+      <button class="lrm" data-act="laterDel" data-u="${esc(name)}" data-kind="${x.type}" data-id="${x.id}" title="Usuń ze wspólnej listy">✕</button>`);
   view.innerHTML = fHead('📌 Na później razem', `Ty i ${esc(name)}: co chcecie obejrzeć. Oboje widzicie tę listę i oboje możecie ją zmieniać.`) +
     `<div class="search libsearch"><input id="laterQ" type="search" placeholder="Dodaj serial lub film…" autocomplete="off"><button class="clr" data-act="clearQ" title="Wyczyść" hidden>✕</button></div>
     <div id="laterRes"></div>
-    <h2>Wspólna lista <small>(${items.length})</small></h2>
-    ${items.length ? `<div class="libgrid">${items.map(x => mini(x, `<div class="sub2">${x.type === 'tv' ? 'serial' : 'film'} · ${x.mine ? 'od Ciebie' : 'od ' + esc(name)}</div>
-      <button class="lrm" data-act="laterDel" data-u="${esc(name)}" data-kind="${x.type}" data-id="${x.id}" title="Usuń ze wspólnej listy">✕</button>`)).join('')}</div>`
-      : '<div class="shelf-empty">Wpisz tytuł powyżej i dodaj coś, co chcecie razem obejrzeć.</div>'}
+    <h2>Do obejrzenia razem <small>(${todo.length})</small></h2>
+    ${todo.length ? `<div class="libgrid">${todo.map(card).join('')}</div>`
+      : `<div class="shelf-empty">${done.length ? 'Wszystko obejrzane! Dodaj coś nowego powyżej.' : 'Wpisz tytuł powyżej i dodaj coś, co chcecie razem obejrzeć.'}</div>`}
     ${both.length ? `<h2>Oboje macie na później <small>(${both.length})</small></h2><p class="muted small" style="margin:-4px 0 10px">Te tytuły są na liście „na później” u każdego z Was.</p>
-      <div class="libgrid">${both.map(x => mini(x, `<button class="btn ghost sm lpin" data-act="laterAdd" data-u="${esc(name)}" data-kind="${x.type}" data-id="${x.id}" data-t="${esc(x.title)}" data-p="${esc(x.poster || '')}">📌 Na wspólną</button>`)).join('')}</div>` : ''}`;
+      <div class="libgrid">${both.map(x => mini(x, `<button class="btn ghost sm lpin" data-act="laterAdd" data-u="${esc(name)}" data-kind="${x.type}" data-id="${x.id}" data-t="${esc(x.title)}" data-p="${esc(x.poster || '')}">📌 Na wspólną</button>`)).join('')}</div>` : ''}
+    ${done.length ? `<h2>Już obejrzane razem <small>(${done.length})</small></h2><div class="libgrid ldone">${done.map(card).join('')}</div>` : ''}`;
   const q = $('#laterQ');
   let tm = null;
   q.addEventListener('input', () => {
@@ -2994,17 +3007,56 @@ async function renderFriendLater(name, token) {
       const res = [...tv.slice(0, 5).map(x => ['tv', x]), ...mv.slice(0, 5).map(x => ['movie', x])].filter(([, x]) => x.poster_path);
       box.innerHTML = res.length ? `<div class="lres">${res.map(([k, x]) => { const nm = k === 'tv' ? x.name : x.title, y = ((k === 'tv' ? x.first_air_date : x.release_date) || '').slice(0, 4), on = onList.has(k + ':' + x.id);
         return `<div class="lrow">${poster(img(x.poster_path), nm, 'xs')}<div class="body"><b>${esc(nm)}</b><small>${k === 'tv' ? 'serial' : 'film'}${y ? ' · ' + y : ''}</small></div>
-          <button class="btn sm ${on ? 'ghost' : ''}" ${on ? 'disabled' : ''} data-act="laterAdd" data-u="${esc(name)}" data-kind="${k}" data-id="${x.id}" data-t="${esc(nm)}" data-p="${esc(img(x.poster_path) || '')}">${on ? '✓ Jest' : '＋ Dodaj'}</button></div>`; }).join('')}</div>`
+          ${on ? '<button class="btn sm ghost" disabled>✓ Jest</button>' : `<div class="laddb"><button class="btn sm" data-act="laterAdd" data-u="${esc(name)}" data-kind="${k}" data-id="${x.id}" data-t="${esc(nm)}" data-p="${esc(img(x.poster_path) || '')}">＋ Do obejrzenia</button>
+          <button class="btn sm ghost" data-act="laterAddSeen" data-u="${esc(name)}" data-kind="${k}" data-id="${x.id}" data-t="${esc(nm)}" data-p="${esc(img(x.poster_path) || '')}">✓ Już obejrzane</button></div>`}</div>`; }).join('')}</div>`
         : '<div class="shelf-empty">Nic nie znaleziono.</div>';
     }, 350);
   });
 }
-async function laterOp(d, op) {
-  const r = await api('/api/friends/later', { method: 'POST', body: JSON.stringify({ username: d.u, op, type: d.kind, id: +d.id, title: d.t || '', poster: d.p || '' }) });
+async function laterOp(d, op, extra = {}) {
+  const r = await api('/api/friends/later', { method: 'POST', body: JSON.stringify({ username: d.u, op, type: d.kind, id: +d.id, title: d.t || '', poster: d.p || '', ...extra }) });
   if (laterCache[d.u]) laterCache[d.u].items = r.items;
-  toast(op === 'add' ? `📌 Dodano do „Na później razem” z ${d.u}` : 'Usunięto ze wspólnej listy'); rerender();
+  if (op !== 'update') toast(op === 'remove' ? 'Usunięto ze wspólnej listy' : extra.seen ? `✓ Dodano do „Już obejrzane razem” z ${d.u}` : `📌 Dodano do „Na później razem” z ${d.u}`);
+  rerender();
+  return r.items;
 }
-Object.assign(actions, { laterAdd: d => laterOp(d, 'add'), laterDel: d => laterOp(d, 'remove') });
+// „S1, S2 i S4 razem” / „S1–3 razem”
+function seasonsTxt(ss) {
+  const parts = []; let i = 0;
+  while (i < ss.length) { let j = i; while (j + 1 < ss.length && ss[j + 1] === ss[j] + 1) j++; parts.push(j > i + 1 ? `${ss[i]}–${ss[j]}` : j === i + 1 ? `${ss[i]}, ${ss[j]}` : `${ss[i]}`); i = j + 1; }
+  return (ss.length > 1 ? 'sezony ' : 'sezon ') + parts.join(', ') + ' razem';
+}
+const laterItem = d => ((laterCache[d.u] || {}).items || []).find(x => x.type === d.kind && x.id === +d.id);
+async function laterSeasonsSheet(d) {
+  const it = laterItem(d); if (!it) return;
+  const wrap = $('#sheetWrap'), sh = $('#sheet');
+  sh.innerHTML = `<div class="look-head"><b>${esc(it.title)}</b><button class="x" data-act="close">✕</button></div><div class="loading small">Ładowanie sezonów…</div>`;
+  wrap.classList.remove('hidden');
+  let nums = [];
+  try { const s = showCache[it.id] || await tmdb('tv/' + it.id); nums = (s.seasons || []).map(x => x.season_number).filter(n => n > 0); } catch (e) {}
+  const draw = () => {
+    const cur = laterItem(d) || it;
+    sh.innerHTML = `<div class="look-head"><b>${esc(cur.title)}</b><button class="x" data-act="close">✕</button></div>
+      <p class="muted small" style="margin:0 0 10px">Które sezony obejrzeliście razem z ${esc(d.u)}? Widzicie to oboje.</p>
+      ${nums.length ? `<div class="lsgrid">${nums.map(n => `<button class="lsb ${cur.seen || cur.seasons.includes(n) ? 'on' : ''}" data-n="${n}">${cur.seen || cur.seasons.includes(n) ? '✓ ' : ''}Sezon ${n}</button>`).join('')}</div>` : '<div class="shelf-empty">Nie udało się wczytać sezonów.</div>'}
+      <button class="btn lsall ${cur.seen ? 'ghost' : ''}" data-all="1">${cur.seen ? '↺ Jednak nie całość' : '✓ Obejrzane całe razem'}</button>`;
+    sh.querySelectorAll('[data-n],[data-all]').forEach(b => b.onclick = async () => {
+      const c = laterItem(d) || it;
+      let seen = c.seen, ss = c.seen ? [...nums] : [...c.seasons];
+      if (b.dataset.all) { seen = !c.seen; ss = seen ? [...nums] : []; }
+      else { const n = +b.dataset.n; ss = ss.includes(n) ? ss.filter(x => x !== n) : [...ss, n].sort((x, y) => x - y); seen = nums.length > 0 && nums.every(n => ss.includes(n)); }
+      b.disabled = true;
+      try { await laterOp(d, 'update', { seen, seasons: ss }); } catch (e) { toast(e.message); }
+      if (seen && !c.seen) { toast('✓ Przeniesione do „Już obejrzane razem”'); wrap.classList.add('hidden'); return; }
+      draw();
+    });
+  };
+  draw();
+}
+Object.assign(actions, { laterAdd: d => laterOp(d, 'add'), laterDel: d => laterOp(d, 'remove'),
+  laterAddSeen: d => laterOp(d, 'add', { seen: true }),
+  laterSeen: d => { const it = laterItem(d); return laterOp(d, 'update', { seen: !(it && it.seen), seasons: it ? it.seasons : [] }).then(() => toast(it && it.seen ? 'Wróciło do „Do obejrzenia razem”' : '✓ Przeniesione do „Już obejrzane razem”')); },
+  laterSeasons: d => laterSeasonsSheet(d) });
 Object.assign(actions, { friendRefresh(d) { delete friendCache[d.k]; scrollTo(0, 0); rerender(); } });
 // zdjęcie profilowe: przycięte do kwadratu i zmniejszone (256 px), zapisywane razem z danymi konta
 document.addEventListener('change', async ev => {
