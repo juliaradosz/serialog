@@ -778,3 +778,16 @@ Zmiany — zwykły użytkownik nie widzi żadnego śladu administratora ani rzec
 Test (zwykłe konto): `/api/me` → tylko `{"username": …}`; `/api/admin/users` → 404; `#/admin` → przekierowanie do Profilu; menu ⋯: Statystyki, Moje platformy, Dostosuj wygląd, Wyloguj się; na stronie nigdzie słowa „admin”/„Administrator”. Konto testowe usunięte.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
+
+### 2026-11-05 — Polecenie 48
+> zablokuj możliwość, że ktoś da tę samą nazwę, i jeśli admin sprawdza konta, to niech ma możliwość kliknięcia i wejścia na te konta
+
+Kroki: łatka `patch49.py` (scratchpad) na `server.py` i `index.html` → poprawki po teście (`friend` zawsze true/false; ukrycie kafelków wspólnych list, bo styl `display:grid` nadpisywał `hidden`) → test z adminem z `admini.txt` → sprzątanie (konta testowe, plik `admini.txt`).
+
+Zmiany:
+- **Nazwy kont**: identyczne nazwy były już blokowane (także przy innej wielkości liter). Teraz blokowane są też nazwy **bardzo podobne**: inne wielkie/małe litery, polskie znaki i akcenty (ł/l, ó/o), kropki, podkreślenia i myślniki oraz podobne znaki (0/o, 1/i/l, 3/e, 5/s). Przykład: przy istniejącym „test_ola” odrzucone są „Test_Ola”, „test.ola”, „test_o1a”, „TEST-OLA”, „test_óla” — komunikat „Ta nazwa jest zajęta albo bardzo podobna do istniejącej — wybierz inną”. Istniejące konta się nie zmieniają.
+- **Admin → Konta użytkowników**: każde konto da się stuknąć (›). Otwiera się „Profil użytkownika” z dopiskiem „🛠 Podgląd administratora” — listy seriali i filmów, ulubione, czas przed ekranem; bez ocen, recenzji i notatek (tak jak u znajomego). Bez przycisku „Usuń ze znajomych” i bez wspólnych list (te są tylko dla znajomych). Własne konto otwiera Twój Profil. Serwer pozwala oglądać cudze profile spoza znajomych tylko adminowi.
+
+Test: 5 podobnych nazw → 409; admin → lista kont z linkami, kliknięcie → „Profil użytkownika”, podgląd administratora, bez „Usuń ze znajomych”, bez kafelków wspólnych list. Konta testowe usunięte.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.

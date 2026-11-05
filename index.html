@@ -744,6 +744,8 @@ a.sec-head .more{font-size:13px;font-weight:700;color:var(--accent-ink);white-sp
 .lrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:var(--glass-hi)}
 .lrow .body{flex:1;min-width:0;display:flex;flex-direction:column}.lrow b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lrow small{color:var(--muted);font-size:12px;font-weight:600}
 .arow{align-items:flex-start}.arow .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.arow b{font-size:14.5px}.arow small{color:var(--muted);font-size:12px;font-weight:600}
+.fpicks[hidden]{display:none}
+a.arow{color:inherit;align-items:center}.arow .go{font-size:20px;color:var(--muted);flex:none}
 </style>
 </head>
 <body>
@@ -2814,17 +2816,19 @@ async function renderFriend(name, token) {
   const together = [...shows.filter(s => s.eps && mine[s.id]).map(s => ({ kind: 'tv', id: s.id, title: s.name, poster: s.poster, sub: 'serial' })),
     ...seenM.filter(m => (state.movies[m.id] || {}).status === 'seen').map(m => ({ kind: 'movie', id: m.id, title: m.title, poster: m.poster, sub: 'film' }))];
   const tMini = x => `<a class="mini" href="#/${x.kind === 'tv' ? 'show' : 'movie'}/${x.id}">${poster(x.poster, x.title)}<span class="both" title="Obejrzane wspólnie">👯</span><div class="nm">${esc(x.title)}</div><div class="sub2">${x.sub}</div></a>`;
-  view.innerHTML = `<div class="libhead"><button class="back3" data-act="back" title="Wstecz">‹</button><h1>Profil znajomego</h1></div>
+  const viaAdmin = p.friend === false;
+  view.innerHTML = `<div class="libhead"><button class="back3" data-act="back" title="Wstecz">‹</button><h1>${viaAdmin ? 'Profil użytkownika' : 'Profil znajomego'}</h1></div>
+    ${viaAdmin ? '<p class="muted small" style="margin:-4px 0 8px">🛠 Podgląd administratora — to konto nie jest w Twoich znajomych. Widać listy, bez ocen, recenzji i notatek.</p>' : ''}
     <div class="pcard"><div class="prow"><div class="avatar">${avatarHtml(p.avatar, p.username)}</div>
       <div class="body"><b>${esc(p.username)}</b><div class="muted small">${days} dni ${hours} godz. przed ekranem</div></div>
-      <button class="btn ghost sm" data-act="friendRemove" data-u="${esc(p.username)}" data-m="remove">Usuń ze znajomych</button></div>
+      ${viaAdmin ? '' : `<button class="btn ghost sm" data-act="friendRemove" data-u="${esc(p.username)}" data-m="remove">Usuń ze znajomych</button>`}</div>
       <div class="pstats three"><div><b>${p.shows.length}</b>seriali</div><div><b>${seenM.length}</b>filmów</div><div><b>${together.length}</b>wspólnie</div></div></div>
-    <div class="fpicks">
+    <div class="fpicks" ${viaAdmin ? 'hidden' : ''}>
       <a class="fpick wide" href="#/friend-later/${encodeURIComponent(p.username)}"><span>📌</span><b>Na później razem</b><small>wspólna lista do obejrzenia — dopisujcie oboje, plus to, co oboje macie na później</small></a>
       <a class="fpick" href="#/friend-both/${encodeURIComponent(p.username)}"><span>🤝</span><b>Coś dla Was obojga</b><small>pasuje do gustu Was dwojga, nikt z Was jeszcze nie oglądał</small></a>
       <a class="fpick" href="#/friend-pick/${encodeURIComponent(p.username)}"><span>✨</span><b>Może Ci się spodobać</b><small>z tego, co obejrzał(a) ${esc(p.username)}, a Ty jeszcze nie</small></a>
     </div>
-    ${together.length ? shelf('Obejrzane wspólnie', together, tMini) : '<div class="shelf-empty" style="margin-top:14px">Nie macie jeszcze wspólnie obejrzanych seriali ani filmów.</div>'}
+    ${together.length ? shelf('Obejrzane wspólnie', together, tMini) : viaAdmin ? '' : '<div class="shelf-empty" style="margin-top:14px">Nie macie jeszcze wspólnie obejrzanych seriali ani filmów.</div>'}
     ${shelf('Seriale', shows, sMini)}
     ${shelf('Przerwane', p.shows.filter(s => s.dropped), sMini)}
     ${shelf('Filmy obejrzane', seenM, mMini)}
@@ -2842,10 +2846,10 @@ async function renderAdmin(token) {
   const when = s => s ? new Date(s * 1000).toLocaleString('pl-PL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
   const week = Date.now() / 1000 - 7 * 86400, fresh = d.users.filter(u => u.created > week).length;
   view.innerHTML = `<div class="libhead"><h1>Konta użytkowników <small>(${d.users.length})</small></h1></div>
-    <p class="muted small" style="margin:-4px 0 12px">${fresh ? `Nowe w ostatnim tygodniu: <b>${fresh}</b> · ` : ''}od najnowszych. Widać tylko nazwy i daty — hasła są zaszyfrowane, a listy, recenzje i notatki zostają prywatne.</p>
-    ${d.users.map(u => `<div class="frow arow"><span class="avatar sm">${avatarHtml(u.avatar, u.username)}</span>
+    <p class="muted small" style="margin:-4px 0 12px">${fresh ? `Nowe w ostatnim tygodniu: <b>${fresh}</b> · ` : ''}od najnowszych, stuknij konto, aby zobaczyć profil. Widać tylko nazwy i daty — hasła są zaszyfrowane, a listy, recenzje i notatki zostają prywatne.</p>
+    ${d.users.map(u => `<a class="frow arow" href="${u.me ? '#/profile' : '#/friend/' + encodeURIComponent(u.username)}"><span class="avatar sm">${avatarHtml(u.avatar, u.username)}</span>
       <div class="body"><b>${esc(u.username)}${u.admin ? ' <span class="tag">admin</span>' : ''}${u.me ? ' <span class="tag">Ty</span>' : ''}</b>
-        <small>założone ${when(u.created)}</small><small>ostatnio aktywne ${when(u.active)} · ${plural(u.shows, 'serial', 'seriale', 'seriali')}, ${plural(u.movies, 'film', 'filmy', 'filmów')} · znajomi: ${u.friends}</small></div></div>`).join('')}`;
+        <small>założone ${when(u.created)}</small><small>ostatnio aktywne ${when(u.active)} · ${plural(u.shows, 'serial', 'seriale', 'seriali')}, ${plural(u.movies, 'film', 'filmy', 'filmów')} · znajomi: ${u.friends}</small></div><span class="go">›</span></a>`).join('')}`;
 }
 
 // ---------- propozycje ze znajomym ----------

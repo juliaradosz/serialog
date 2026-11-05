@@ -13,6 +13,7 @@ w zapytaniach, więc klucz nigdy nie trafia do przeglądarki).
 import hashlib
 import hmac
 import json
+import unicodedata
 import math
 import random
 import os
@@ -46,6 +47,14 @@ STATIC_TYPES = {'.html': 'text/html; charset=utf-8', '.json': 'application/manif
 SESSION_SECONDS = 30 * 24 * 3600
 MAX_BODY = 5 * 1024 * 1024
 USERNAME_RE = re.compile(r'^[\w.\-]{3,30}$')
+
+
+def name_key(name):
+    """Postać nazwy do porównań: bez wielkości liter, polskich znaków, kropek/podkreśleń/myślników
+    i z ujednoliconymi podobnymi znakami (0→o, 1/i/l→l) — „Julka”, „júlka”, „jul.ka” i „JU1KA” to ta sama nazwa."""
+    n = unicodedata.normalize('NFKD', str(name).casefold().replace('ł', 'l'))
+    n = ''.join(c for c in n if not unicodedata.combining(c) and c not in '._-')
+    return n.translate(str.maketrans({'0': 'o', '1': 'l', 'i': 'l', '3': 'e', '5': 's'}))
 failed_logins = {}  # ip -> [czasy nieudanych prób]
 
 
@@ -371,11 +380,14 @@ def route(req):
             name = dict(urllib.parse.parse_qsl(query)).get('u', '')
             with db() as con:
                 other = user_by_name(con, name)
-                if not other or not are_friends(con, user['id'], other['id']):
+                friend = bool(other and are_friends(con, user['id'], other['id']))
+                # administrator może podejrzeć każde konto (tak jak znajomy: listy, bez ocen, recenzji i notatek)
+                if not other or not (friend or is_admin(user['id'], user['username'])):
                     return json_response(403, {'error': 'Ten profil widzą tylko znajomi'})
                 row = con.execute('SELECT data FROM states WHERE user_id = ?', (other['id'],)).fetchone()
             data = friend_profile(json.loads(row['data']) if row else {})
             data['username'] = other['username']
+            data['friend'] = friend
             return json_response(200, data)
         if path == '/api/admin/users':  # lista kont — tylko dla administratora
             user = current_user(req)
@@ -497,6 +509,10 @@ def route(req):
             if len(password) < 6:
                 return json_response(400, {'error': 'Hasło musi mieć co najmniej 6 znaków'})
             salt = secrets.token_bytes(16)
+            key = name_key(username)
+            with db() as con:
+                if any(name_key(r['username']) == key for r in con.execute('SELECT username FROM users')):
+                    return json_response(409, {'error': 'Ta nazwa jest zajęta albo bardzo podobna do istniejącej — wybierz inną'})
             try:
                 with db() as con:
                     cur = con.execute('INSERT INTO users (username, salt, pw_hash, created) VALUES (?, ?, ?, ?)',
