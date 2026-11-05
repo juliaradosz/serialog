@@ -839,6 +839,7 @@ const sectionCache = {};
 const openSeasons = {};
 const genres = { tv: {}, movie: {} };
 const searchQ = { tv: '', movie: '' };
+let isAdmin = false;  // konto administratora (ustawia serwer) — widzi rzeczy techniczne
 let searchTimer = null, renderToken = 0, listView = null, plOnly = true, sheetKey = null;
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -997,7 +998,7 @@ function renderLogin() {
     btn.disabled = true;
     try {
       const r = await api(reg ? '/api/register' : '/api/login', { method: 'POST', body: JSON.stringify({ username: f.get('username'), password: f.get('password') }) });
-      user = r.username;
+      user = r.username; isAdmin = !!r.admin;
       document.body.classList.remove('auth');
       if (hasTmdb) await afterLogin();
       toast(reg ? `Witaj, ${user}! Konto utworzone.` : `Witaj ponownie, ${user}!`);
@@ -1117,6 +1118,8 @@ function feedSources(kind) {
     polish: { pages: 1, path, params: { ...extra, with_origin_country: 'PL', sort_by: 'popularity.desc' } } };
 }
 let provList = null;
+// gdyby baza serwisów nie odpowiadała — najpopularniejsze w Polsce (identyfikatory TMDB)
+const PLAT_FALLBACK = [[8, 'Netflix'], [1899, 'HBO Max'], [337, 'Disney Plus'], [119, 'Amazon Prime Video'], [1773, 'SkyShowtime'], [350, 'Apple TV'], [505, 'Player']].map(([id, name]) => ({ id, name, logo: null }));
 async function plProviderList() {
   if (provList) return provList;
   const res = await Promise.all(['tv', 'movie'].map(k => tmdb(`watch/providers/${k}`, { watch_region: 'PL' }).catch(() => ({ results: [] }))));
@@ -1128,6 +1131,7 @@ async function plProviderList() {
   // najpierw serwisy popularne w Polsce, bez sklepów z wypożyczaniem i kanałów w Amazonie
   const TOP = [/^Netflix$/, /^(HBO )?Max$/, /^Disney/, /Prime Video$/, /SkyShowtime/, /^Apple TV(\+| Plus)?$/, /Canal\+/, /^Player$/, /Polsat Box/, /TVP/, /Viaplay/, /CDA/, /Crunchyroll/, /Filmbox|FILMBOX/, /^YouTube( Premium)?$/];
   const rank = p => { const i = TOP.findIndex(r => r.test(p.name)); return i < 0 ? 100 + p.pr : i; };
+  if (!m.size) return [];  // nie zapamiętujemy pustej listy — spróbujemy ponownie przy następnym otwarciu
   return provList = [...m.values()].filter(p => !/Store|Amazon Video|Amazon Channel|Google Play|Rakuten|Chili|Microsoft|Apple TV Channel/i.test(p.name))
     .sort((a, b) => rank(a) - rank(b)).slice(0, 24);
 }
@@ -1137,13 +1141,13 @@ function paintPlatforms() {
   $('#sheet').innerHTML = `<div class="look"><div class="look-head"><b>Moje platformy</b><button class="x" data-act="close" title="Zamknij">✕</button></div>
     <p class="muted small" style="margin:0 0 12px">Zaznacz serwisy, które masz. Z filtrem <b>📺 Moje platformy</b> w Szukaj i w gatunkach zobaczysz tylko tytuły, które obejrzysz u siebie.</p>
     ${provList && provList.length ? `<div class="plats">${provList.map(p => `<button class="plat ${on.has(p.id) ? 'on' : ''}" data-act="platPick" data-id="${p.id}">${p.logo ? `<img src="${img(p.logo, 'w92')}" alt="">` : '<i></i>'}<span>${esc(p.name)}</span></button>`).join('')}</div>`
-      : '<div class="loading">Ładowanie serwisów…</div>'}
+      : provList ? `<div class="empty"><b>Nie udało się pobrać listy serwisów</b>Sprawdź internet i spróbuj ponownie.<br><br><button class="btn" data-act="openPlatforms">Spróbuj ponownie</button></div>` : '<div class="loading">Ładowanie serwisów…</div>'}
     <div class="actions" style="margin:16px 0 0"><button class="btn" data-act="platDone">Gotowe</button></div></div>`;
 }
 const PLAT_ACTIONS = {
   async openPlatforms() {
     paintPlatforms(); $('#sheetWrap').classList.remove('hidden');
-    if (!provList) { await plProviderList(); paintPlatforms(); }
+    if (!provList || !provList.length) { provList = null; paintPlatforms(); const l = await plProviderList().catch(() => []); provList = l.length ? l : PLAT_FALLBACK; paintPlatforms(); }
   },
   platPick(d, el) {
     const p = state.prefs ||= {}, list = p.platforms ||= [], id = +d.id, i = list.findIndex(x => x.id === id);
@@ -1402,7 +1406,7 @@ const actions = {
   async logout() {
     if (save.t) { clearTimeout(save.t); await pushState(); }
     await api('/api/logout', { method: 'POST' }).catch(() => {});
-    user = null; state = emptyState(); authTab = 'login';
+    user = null; isAdmin = false; state = emptyState(); authTab = 'login';
     location.hash = '#/shows-search'; render();
   },
   export() {
@@ -1728,7 +1732,7 @@ async function renderUpcoming(token) {
   const todayCount = items.filter(it => it.day === today).length;
   view.innerHTML = upTabs('soon') + calBtn + `<div class="muted small">${plural(items.length, 'premiera', 'premiery', 'premier')} w kalendarzu${todayCount ? ` · dziś: ${todayCount}` : ''}</div>` +
     [...groups].map(([day, its]) => `<div class="day"><h3>${day}</h3><div class="list">${its.map(upCard).join('')}</div></div>`).join('') +
-    '<p class="src" style="margin-top:20px">Odcinki zagranicznych seriali mają daty światowej premiery — w polskich serwisach pojawiają się zwykle tego samego dnia. Przy odcinku podany jest serwis dostępny w Polsce.</p>';
+    (!isAdmin ? '' : '<p class="src" style="margin-top:20px">Odcinki zagranicznych seriali mają daty światowej premiery — w polskich serwisach pojawiają się zwykle tego samego dnia. Przy odcinku podany jest serwis dostępny w Polsce.</p>');
 }
 
 // ---------- widok: kino (Polska) ----------
@@ -2419,7 +2423,7 @@ async function renderShow(id, token) {
       ${s.created_by && s.created_by.length ? `<div class="src">Twórcy: ${esc(s.created_by.map(c => c.name).join(', '))}</div>` : ''}</div>
     ${trailerPanel(s, s.name)}
     ${watchPanel(s['watch/providers'], { title: s.name, next: upcomingEp, channel: tvChannel(s) })}
-    ${wiki === null ? '<div class="panel wiki muted small">Sprawdzam dane w Wikipedii…</div>' : wikiPanel(wiki, nSeasons, aired.length)}
+    ${!isAdmin ? '' : wiki === null ? '<div class="panel wiki muted small">Sprawdzam dane w Wikipedii…</div>' : wikiPanel(wiki, nSeasons, aired.length)}
     ${castPanel(cast)}`;
 
   view.innerHTML = `
@@ -2462,7 +2466,7 @@ async function renderShow(id, token) {
     <a data-act="showTab" data-id="${id}" data-t="rel" class="${tab === 'rel' ? 'on' : ''}">Podobne</a>
   </div>
   ${tab === 'eps' ? episodesTab : tab === 'info' ? infoTab : (relatedPanel('tv', s, token, here) || '<div class="empty">Brak podobnych tytułów.</div>')}
-  <p class="src" style="margin-top:20px"><a href="https://www.themoviedb.org/tv/${id}" target="_blank" rel="noopener">Strona w TMDB ↗</a></p>`;
+  ${isAdmin ? `<p class="src" style="margin-top:20px"><a href="https://www.themoviedb.org/tv/${id}" target="_blank" rel="noopener">Strona w TMDB ↗</a> · id ${id}</p>` : ''}`;
 }
 // menu „⋯” na stronie serialu
 function openShowMenu(id) {
@@ -2955,22 +2959,21 @@ async function renderProfile(token) {
     ${shelf('done-tv', 'Seriale obejrzane', doneS, showMini, 'Tu trafią seriale, których wszystkie odcinki obejrzano.')}
     ${shelf('seen-movies', 'Filmy obejrzane', seenM.sort((a, b) => (b.seenAt || 0) - (a.seenAt || 0)), movieMini, 'Brak obejrzanych filmów.')}
     ${shelf('favs', 'Ulubione', favs, favMini, 'Kliknij ♡ przy serialu lub filmie, aby dodać go do ulubionych.')}
-    <p class="muted" style="font-size:12px;margin-top:24px">Recenzje i notatki są prywatne — widzi je tylko właściciel konta. Dane o filmach i serialach: TMDB (themoviedb.org); aplikacja korzysta z API TMDB, ale nie jest przez TMDB wspierana ani certyfikowana. Dostępność w serwisach: JustWatch.</p>`;
+    <p class="muted" style="font-size:12px;margin-top:24px;text-align:center">${isAdmin ? 'Recenzje i notatki są prywatne — widzi je tylko właściciel konta. Dane o filmach i serialach: TMDB (themoviedb.org); aplikacja korzysta z API TMDB, ale nie jest przez TMDB wspierana ani certyfikowana. Dostępność w serwisach: JustWatch.' : 'Dane: TMDB · JustWatch'}</p>`;
 }
 Object.assign(actions, {
   profMenu() {
     const av = (state.prefs || {}).avatar, nd = Object.keys(disliked()).length, pl = myPlats();
     $('#sheet').innerHTML = `<div class="menu pmenu"><div class="look-head"><b>${esc(user)}</b><button class="x" data-act="close" title="Zamknij">✕</button></div>
-      <a class="mi" href="#/friends/add"><span>➕</span><div><b>Dodaj znajomego</b><small>po nazwie użytkownika</small></div></a>
-      <a class="mi" href="#/friends"><span>👥</span><div><b>Znajomi i zaproszenia</b></div></a>
       <a class="mi" href="#/stats"><span>📊</span><div><b>Statystyki</b><small>czas przed ekranem, wykresy, gatunki, lata</small></div></a>
       <button class="mi" data-act="openPlatforms"><span>📺</span><div><b>Moje platformy</b><small>${pl.length ? esc(pl.map(p => p.name).join(', ')) : 'wybierz serwisy, które masz'}</small></div></button>
       <button class="mi" data-act="openLook"><span>🎨</span><div><b>Dostosuj wygląd</b><small>motyw i kolory</small></div></button>
       ${nd ? `<a class="mi" href="#/lib/disliked"><span>👎</span><div><b>Nie podoba mi się</b><small>${plural(nd, 'tytuł', 'tytuły', 'tytułów')}</small></div></a>` : ''}
       ${av ? '<button class="mi" data-act="avatarDel"><span>🖼</span><div><b>Usuń zdjęcie profilowe</b></div></button>' : ''}
-      <button class="mi" data-act="export"><span>⬇</span><div><b>Eksportuj dane</b></div></button>
-      <button class="mi" data-act="import"><span>⬆</span><div><b>Importuj dane</b></div></button>
-      <button class="mi danger" data-act="reset"><span>🗑</span><div><b>Wyczyść wszystko</b></div></button>
+      ${isAdmin ? `<div class="fsec" style="margin:14px 2px 6px">🛠 Administrator</div>
+      <button class="mi" data-act="export"><span>⬇</span><div><b>Eksportuj dane</b><small>kopia zapasowa do pliku</small></div></button>
+      <button class="mi" data-act="import"><span>⬆</span><div><b>Importuj dane</b><small>z pliku kopii</small></div></button>
+      <button class="mi danger" data-act="reset"><span>🗑</span><div><b>Wyczyść wszystko</b></div></button>` : ''}
       <button class="mi out" data-act="logout"><span>🚪</span><div><b>Wyloguj się</b></div></button></div>`;
     $('#sheetWrap').classList.remove('hidden');
   },
@@ -3090,7 +3093,7 @@ async function boot() {
     if (cfg) {
       mode = 'account'; hasTmdb = cfg.tmdb;
       const r = await fetch('/api/me', { cache: 'no-store' });
-      if (r.status === 200) { user = (await r.json()).username; if (hasTmdb) await afterLogin(); }
+      if (r.status === 200) { const me = await r.json(); user = me.username; isAdmin = !!me.admin; if (hasTmdb) await afterLogin(); }
     }
   } catch (e) { /* brak serwera (plik otwarty z dysku) */ }
   render();

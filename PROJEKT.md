@@ -683,3 +683,17 @@ Zmiany:
 Test: ✓ przy sezonie 44 px, ↻ 42 px; przerwanie bez okienka, serial w „Przerwane”, komunikat z „Cofnij”. Konto testowe usunięte.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
+
+### 2026-11-05 — Polecenie 41
+> 1. usuń sekcję znajomych z menu z kropkami (zostaje tylko przy imieniu); 2. moje platformy się nie ładują i nie można wybrać; 3. ustaw mnie jako admina i pokazuj mi rzeczy techniczne, a innym użytkownikom je usuń (eksport, import, wyczyść dane i inne)
+
+Kroki: sprawdzenie strony na PythonAnywhere (`curl`) → tam nadal stara wersja serwera (tytuł „Seansik”, `icon-maskable.png` → 404), więc serwer nie przepuszczał zapytania o listę platform (`watch/providers`), a aplikacja zapamiętywała pustą listę i pokazywała „Ładowanie…” bez końca → poprawki w `index.html` i `server.py` → test na koncie testowym → sprzątanie.
+
+Zmiany:
+1. Menu ⋯ bez „Dodaj znajomego” i „Znajomi i zaproszenia”. Znajomi są tylko pod liczbą przy imieniu.
+2. **Moje platformy**: pusta lista nie jest zapamiętywana; jeśli baza nie odpowie, pokazuje się lista zapasowa (Netflix, HBO Max, Disney Plus, Amazon Prime Video, SkyShowtime, Apple TV, Player), a przy błędzie przycisk „Spróbuj ponownie”. Główna przyczyna: na serwerze trzeba kliknąć **Reload** po `git pull`.
+3. **Administrator**: serwer odsyła `admin` przy logowaniu i w `/api/me`. Admin to pierwsze konto na serwerze albo nazwa `julkar8` (można zmienić zmienną `SERIALOG_ADMINS`). Tylko admin widzi: sekcję „🛠 Administrator” w menu ⋯ (Eksportuj, Importuj, Wyczyść wszystko), panel „Sprawdzone z Wikipedią” i link do TMDB z numerem na stronie serialu, techniczną notkę o datach w Nadchodzących i pełną notkę o źródłach danych w Profilu. Pozostali widzą krótkie „Dane: TMDB · JustWatch”.
+
+Test: zwykłe konto → `admin: false`, menu: Statystyki, Moje platformy, Dostosuj wygląd, Wyloguj; 24 platformy, zaznaczenie działa; widok admina → dodatkowo Eksport, Import, Wyczyść; `is_admin`: konto nr 1 i julkar8 → tak, test_zwykly → nie. Konto testowe usunięte.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` i **koniecznie Reload** (zmienił się serwer).
