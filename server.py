@@ -183,8 +183,20 @@ def session_token(req):
 ADMINS = {n.strip().lower() for n in (os.environ.get('SERIALOG_ADMINS') or 'julkar8').split(',') if n.strip()}
 
 
+ADMINS_FILE = os.path.join(ROOT, 'admini.txt')  # jedna nazwa w linii (plik tylko na serwerze, nie w repozytorium)
+
+
+def admins_from_file():
+    try:
+        with open(ADMINS_FILE, encoding='utf-8') as f:
+            return {l.strip().lower() for l in f if l.strip() and not l.strip().startswith('#')}
+    except OSError:
+        return set()
+
+
 def is_admin(user_id, username):
-    return user_id == 1 or (username or '').lower() in ADMINS
+    name = (username or '').lower()
+    return user_id == 1 or name in ADMINS or name in admins_from_file()
 
 
 def current_user(req):
@@ -361,6 +373,27 @@ def route(req):
             data = friend_profile(json.loads(row['data']) if row else {})
             data['username'] = other['username']
             return json_response(200, data)
+        if path == '/api/admin/users':  # lista kont — tylko dla administratora
+            user = current_user(req)
+            if not user or not is_admin(user['id'], user['username']):
+                return json_response(403, {'error': 'Tylko dla administratora'})
+            with db() as con:
+                rows = con.execute('SELECT users.id, users.username, users.created, states.updated, states.data FROM users '
+                                   'LEFT JOIN states ON states.user_id = users.id ORDER BY users.created DESC').fetchall()
+                fr = {}
+                for r in con.execute('SELECT from_id, to_id FROM friends WHERE accepted = 1'):
+                    fr[r['from_id']] = fr.get(r['from_id'], 0) + 1
+                    fr[r['to_id']] = fr.get(r['to_id'], 0) + 1
+            users = []
+            for r in rows:
+                try:
+                    st = json.loads(r['data']) if r['data'] else {}
+                except ValueError:
+                    st = {}
+                users.append({'username': r['username'], 'created': r['created'], 'active': r['updated'], 'friends': fr.get(r['id'], 0),
+                              'shows': len(st.get('shows') or {}), 'movies': len(st.get('movies') or {}), 'avatar': avatar_of(st),
+                              'admin': is_admin(r['id'], r['username']), 'me': r['id'] == user['id']})
+            return json_response(200, {'users': users})
         if path == '/api/friends/later':
             user = current_user(req)
             if not user:

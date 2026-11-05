@@ -743,6 +743,7 @@ a.sec-head .more{font-size:13px;font-weight:700;color:var(--accent-ink);white-sp
 .lres{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
 .lrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:var(--glass-hi)}
 .lrow .body{flex:1;min-width:0;display:flex;flex-direction:column}.lrow b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lrow small{color:var(--muted);font-size:12px;font-weight:600}
+.arow{align-items:flex-start}.arow .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.arow b{font-size:14.5px}.arow small{color:var(--muted);font-size:12px;font-weight:600}
 </style>
 </head>
 <body>
@@ -1486,8 +1487,8 @@ async function render() {
   if (!hasTmdb) return renderInfo('Brak klucza TMDB', 'Wklej klucz API z themoviedb.org do pliku <b>tmdb_klucz.txt</b> w folderze aplikacji i uruchom ponownie start.bat.');
   document.body.classList.remove('auth');
   const [, page = 'shows-search', arg] = location.hash.split('/');
-  const tab = page.startsWith('show') ? 'shows' : page.startsWith('movie') ? 'movies' : page.startsWith('cinema') ? 'cinema' : ['towatch', 'calendar'].includes(page) ? 'upcoming' : ['stats', 'lib', 'friend', 'friends', 'friend-both', 'friend-pick', 'friend-later'].includes(page) ? 'profile' : page;
-  const subPage = ['show', 'movie', 'person', 'lib', 'friend', 'friends', 'friend-both', 'friend-pick', 'friend-later', 'stats', 'calendar', 'shows-list', 'movies-list'].includes(page);
+  const tab = page.startsWith('show') ? 'shows' : page.startsWith('movie') ? 'movies' : page.startsWith('cinema') ? 'cinema' : ['towatch', 'calendar'].includes(page) ? 'upcoming' : ['stats', 'lib', 'friend', 'friends', 'friend-both', 'friend-pick', 'friend-later', 'admin'].includes(page) ? 'profile' : page;
+  const subPage = ['show', 'movie', 'person', 'lib', 'friend', 'friends', 'friend-both', 'friend-pick', 'friend-later', 'admin', 'stats', 'calendar', 'shows-list', 'movies-list'].includes(page);
   $('.hdback').hidden = !subPage; document.body.classList.toggle('subpage', subPage);
   document.querySelectorAll('.tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
   const nS = Object.keys(state.shows).length, nM = Object.keys(state.movies).length;
@@ -1513,6 +1514,7 @@ async function render() {
       case 'lib': return await renderLib(arg, token);
       case 'friend': return await renderFriend(decodeURIComponent(arg || ''), token);
       case 'friends': return await renderFriends(token, arg);
+      case 'admin': return await renderAdmin(token);
       case 'friend-both': return await renderFriendBoth(decodeURIComponent(arg || ''), token);
       case 'friend-pick': return await renderFriendPick(decodeURIComponent(arg || ''), token);
       case 'friend-later': return await renderFriendLater(decodeURIComponent(arg || ''), token);
@@ -2831,11 +2833,36 @@ async function renderFriend(name, token) {
     ${!p.shows.length && !p.movies.length ? '<div class="empty"><b>Pusto</b>Ten profil nie ma jeszcze seriali ani filmów.</div>' : ''}
     <p class="muted small" style="text-align:center;margin-top:20px">✓ na plakacie = masz to też na swojej liście</p>`;
 }
+// ---------- panel administratora: konta użytkowników ----------
+async function renderAdmin(token) {
+  if (!isAdmin) { view.innerHTML = '<div class="empty"><b>Tylko dla administratora</b></div>'; return; }
+  view.innerHTML = '<div class="libhead"><h1>Konta użytkowników</h1></div><div class="loading">Ładowanie…</div>';
+  const d = await api('/api/admin/users');
+  if (token !== renderToken) return;
+  const when = s => s ? new Date(s * 1000).toLocaleString('pl-PL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+  const week = Date.now() / 1000 - 7 * 86400, fresh = d.users.filter(u => u.created > week).length;
+  view.innerHTML = `<div class="libhead"><h1>Konta użytkowników <small>(${d.users.length})</small></h1></div>
+    <p class="muted small" style="margin:-4px 0 12px">${fresh ? `Nowe w ostatnim tygodniu: <b>${fresh}</b> · ` : ''}od najnowszych. Widać tylko nazwy i daty — hasła są zaszyfrowane, a listy, recenzje i notatki zostają prywatne.</p>
+    ${d.users.map(u => `<div class="frow arow"><span class="avatar sm">${avatarHtml(u.avatar, u.username)}</span>
+      <div class="body"><b>${esc(u.username)}${u.admin ? ' <span class="tag">admin</span>' : ''}${u.me ? ' <span class="tag">Ty</span>' : ''}</b>
+        <small>założone ${when(u.created)}</small><small>ostatnio aktywne ${when(u.active)} · ${plural(u.shows, 'serial', 'seriale', 'seriali')}, ${plural(u.movies, 'film', 'filmy', 'filmów')} · znajomi: ${u.friends}</small></div></div>`).join('')}`;
+}
+
 // ---------- propozycje ze znajomym ----------
 const friendCache = {};  // wyniki liczone raz na wizytę (powrót z serialu nie liczy od nowa)
 const fTaste = (p, kind, x) => { const ids = gIds(x); if (!ids.length) return 0; return ids.reduce((a, id) => a + (((p.taste || {})[kind] || {})[genres[kind][id]] || 0), 0) / ids.length; };
 const friendWatched = p => new Set([...p.shows.filter(s => s.eps).map(s => 'tv:' + s.id), ...p.movies.filter(m => m.status === 'seen').map(m => 'movie:' + m.id)]);
 const iWatched = (kind, id) => kind === 'tv' ? Object.values(state.watched).some(w => +w.s === +id) : (state.movies[id] || {}).status === 'seen';
+// Twój postęp w tytule: 0 = nie zaczęte, 1 = obejrzane; zaczęty serial liczy się jako „jeszcze nie obejrzany”, dopóki nie masz połowy odcinków
+const myEps = id => Object.values(state.watched).filter(w => +w.s === +id).length;
+const myProgress = (kind, id) => {
+  if (kind === 'movie') return (state.movies[id] || {}).status === 'seen' ? 1 : 0;
+  const n = myEps(id); if (!n) return 0;
+  const d = showCache[id], aired = d ? d.episodes.filter(counts).length : 0;
+  return aired ? n / aired : n <= 3 ? .1 : 1;
+};
+const iDone = (kind, id) => myProgress(kind, id) >= .5 || (kind === 'tv' && isDropped(id));
+const myNote = (kind, id) => !inLibrary(kind, id) ? '' : kind === 'tv' && myEps(id) ? ` · zaczęte (${myEps(id)} odc.)` : ' · masz na później';
 const pct = f => Math.round(Math.max(5, Math.min(99, 55 + f * 45)));
 const whyTile = (kind, x, why) => tile(kind, x).replace(/<\/div>\s*$/, `<div class="why">${why}</div></div>`);
 async function friendData(name) {
@@ -2862,24 +2889,34 @@ async function renderFriendBoth(name, token) {
     await Promise.all([...mine, ...theirs].map(async s => {
       const res = await tmdb(`${s.kind}/${s.id}/recommendations`).catch(() => ({ results: [] }));
       (res.results || []).forEach((x, i) => {
-        if (!x.poster_path || inLibrary(s.kind, x.id) || fw.has(s.kind + ':' + x.id) || blocked(s.kind, x)) return;
+        if (!x.poster_path || (inLibrary(s.kind, x.id) && iDone(s.kind, x.id)) || fw.has(s.kind + ':' + x.id) || blocked(s.kind, x)) return;
         const c = cand[s.kind + ':' + x.id] ||= { kind: s.kind, x, me: 0, fr: 0, bm: '', bf: '' };
         const v = s.w * (1 - i / 40);
         if (s.who === 'me') { c.me += v; c.bm ||= s.title; } else { c.fr += v; c.bf ||= s.title; }
       });
     }));
+    // Twoje „na później” i zaczęte seriale, których znajomy nie obejrzał — też kandydaci (bonus, gdy znajomy też ma je na później)
+    const frLater = new Set([...p.shows.filter(s => !s.eps && !s.dropped).map(s => 'tv:' + s.id), ...p.movies.filter(m => m.status === 'watch').map(m => 'movie:' + m.id)]);
+    const myOpen = [...Object.values(state.shows).map(s => ({ kind: 'tv', id: s.id })), ...Object.values(state.movies).map(m => ({ kind: 'movie', id: m.id }))]
+      .filter(c => !iDone(c.kind, c.id) && !fw.has(c.kind + ':' + c.id)).slice(0, 30);
+    const myFull = await Promise.all(myOpen.map(c => (seen[c.kind][c.id] && (seen[c.kind][c.id].genre_ids || seen[c.kind][c.id].genres) ? Promise.resolve(seen[c.kind][c.id]) : tmdb(`${c.kind}/${c.id}`)).catch(() => null)));
+    myOpen.forEach((c, i) => {
+      const x = myFull[i]; if (!x || !x.poster_path || blocked(c.kind, x)) return;
+      const o = cand[c.kind + ':' + c.id] ||= { kind: c.kind, x, me: 0, fr: 0, bm: '', bf: '' };
+      o.me += 1.2; if (frLater.has(c.kind + ':' + c.id)) { o.fr += 1.6; o.bf ||= 'też ma na później'; }
+    });
     // najwyżej te, które pasują do obojga naraz (iloczyn), potem gatunki obojga i ocena widzów
     const list = Object.values(cand).map(c => {
       const fm = genreFit(taste, c.kind, c.x), ff = fTaste(p, c.kind, c.x);
       return { ...c, fm, ff, s: Math.sqrt((c.me + .3) * (c.fr + .3)) + .9 * (fm + ff) + quality(c.x) };
     }).filter(c => c.fm > -.4 && c.ff > -.4).sort((a, b) => b.s - a.s);
     const out = ['tv', 'movie'].flatMap(k => list.filter(c => c.kind === k).slice(0, 24)).map(c => ({ kind: c.kind, x: c.x,
-      why: `${pct((c.fm + c.ff) / 2)}% dla Was · ${esc([c.bm && 'Ty: ' + c.bm, c.bf && esc(name) + ': ' + c.bf].filter(Boolean).join(' · ') || 'Wasze gatunki')}` }));
+      why: `${pct((c.fm + c.ff) / 2)}% dla Was · ${esc([c.bm && 'Ty: ' + c.bm, c.bf && esc(name) + ': ' + c.bf].filter(Boolean).join(' · ') || 'Wasze gatunki')}${myNote(c.kind, c.x.id)}` }));
     out.forEach(c => seen[c.kind][c.x.id] = c.x);
     friendCache[key] = out;
     if (token !== renderToken) return;
   }
-  view.innerHTML = fHead('🤝 Coś dla Was obojga', `Ty i ${esc(name)}: propozycje podobne do tytułów, które lubicie, dopasowane do gatunków Was obojga. Bez tego, co któreś z Was już obejrzało (oceny znajomego zostają prywatne).`) +
+  view.innerHTML = fHead('🤝 Coś dla Was obojga', `Ty i ${esc(name)}: propozycje podobne do tytułów, które lubicie, dopasowane do gatunków Was obojga. Są tu też tytuły, które masz na później albo dopiero zaczęte. Nie ma tego, co któreś z Was już obejrzało (oceny znajomego zostają prywatne).`) +
     `<div class="sfilters"><button class="fchip" data-act="friendRefresh" data-k="${esc(key)}" style="margin-left:auto">↻ Inne</button></div>` +
     fGrids(friendCache[key], 'Obejrzyjcie i oceńcie kilka tytułów — wtedy łatwiej znaleźć coś dla Was dwojga.');
 }
@@ -2890,17 +2927,17 @@ async function renderFriendPick(name, token) {
     view.innerHTML = fHead('✨ Może Ci się spodobać', `Przeglądam, co obejrzał(a) ${esc(name)}…`) + '<div class="loading">Dopasowuję do Twojego gustu…</div>';
     const p = await friendData(name), taste = tasteProfile(), liked = new Set((p.likes || []).map(s => s.type + ':' + s.id));
     const titles = [...p.shows.filter(s => s.eps && !s.dropped).map(s => ({ kind: 'tv', id: s.id })), ...p.movies.filter(m => m.status === 'seen').map(m => ({ kind: 'movie', id: m.id }))]
-      .filter(c => !iWatched(c.kind, c.id)).sort((a, b) => liked.has(b.kind + ':' + b.id) - liked.has(a.kind + ':' + a.id)).slice(0, 60);
+      .filter(c => !iDone(c.kind, c.id)).sort((a, b) => liked.has(b.kind + ':' + b.id) - liked.has(a.kind + ':' + a.id)).slice(0, 60);
     const full = await Promise.all(titles.map(c => (seen[c.kind][c.id] && seen[c.kind][c.id].genre_ids ? Promise.resolve(seen[c.kind][c.id]) : tmdb(`${c.kind}/${c.id}`)).catch(() => null)));
     const out = titles.map((c, i) => ({ ...c, x: full[i] })).filter(c => c.x && !blocked(c.kind, c.x))
       .map(c => { const fit = genreFit(taste, c.kind, c.x), lk = liked.has(c.kind + ':' + c.id); return { ...c, fit, lk, s: 1.6 * fit + quality(c.x) + (lk ? .6 : 0) }; })
       .filter(c => c.fit > -.35).sort((a, b) => b.s - a.s)
-      .map(c => ({ kind: c.kind, x: c.x, why: `${pct(c.fit)}% dla Ciebie${c.lk ? ` · ❤ ${esc(name)} to lubi` : ''}${inLibrary(c.kind, c.x.id) ? ' · masz na liście' : ''}` }));
+      .map(c => ({ kind: c.kind, x: c.x, why: `${pct(c.fit)}% dla Ciebie${c.lk ? ` · ❤ ${esc(name)} to lubi` : ''}${myNote(c.kind, c.x.id)}` }));
     out.forEach(c => seen[c.kind][c.x.id] = c.x);
     friendCache[key] = out;
     if (token !== renderToken) return;
   }
-  view.innerHTML = fHead('✨ Może Ci się spodobać', `Tytuły, które obejrzał(a) ${esc(name)}, a Ty jeszcze nie — od najlepiej pasujących do Twoich gatunków i ocen.`) +
+  view.innerHTML = fHead('✨ Może Ci się spodobać', `Tytuły, które obejrzał(a) ${esc(name)}, a Ty jeszcze nie (także te, które masz na później albo obejrzane tylko pierwsze odcinki) — od najlepiej pasujących do Twojego gustu.`) +
     fGrids(friendCache[key], `${esc(name)} nie ma jeszcze obejrzanych tytułów, których Ty nie znasz (albo nie pasują do Twojego gustu).`);
 }
 // 3) „Na później razem”: wspólna lista dwojga znajomych (na serwerze) + to, co oboje macie na później
@@ -3131,6 +3168,7 @@ Object.assign(actions, {
       ${nd ? `<a class="mi" href="#/lib/disliked"><span>👎</span><div><b>Nie podoba mi się</b><small>${plural(nd, 'tytuł', 'tytuły', 'tytułów')}</small></div></a>` : ''}
       ${av ? '<button class="mi" data-act="avatarDel"><span>🖼</span><div><b>Usuń zdjęcie profilowe</b></div></button>' : ''}
       ${isAdmin ? `<div class="fsec" style="margin:14px 2px 6px">🛠 Administrator</div>
+      <a class="mi" href="#/admin"><span>👤</span><div><b>Konta użytkowników</b><small>kto i kiedy założył konto</small></div></a>
       <button class="mi" data-act="export"><span>⬇</span><div><b>Eksportuj dane</b><small>kopia zapasowa do pliku</small></div></button>
       <button class="mi" data-act="import"><span>⬆</span><div><b>Importuj dane</b><small>z pliku kopii</small></div></button>
       <button class="mi danger" data-act="reset"><span>🗑</span><div><b>Wyczyść wszystko</b></div></button>` : ''}

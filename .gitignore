@@ -17,3 +17,6 @@ email_konfig.txt
 
 # zdjęcia źródłowe (ikona jest w icon-*.png)
 *.jpg
+
+# lista administratorów (tylko na serwerze)
+admini.txt

@@ -746,3 +746,20 @@ Zmiany (profil znajomego → trzy kafelki pod licznikami):
 Test (konta test_ja2 i test_ola): „Dla Was obojga” → 48 propozycji, 0 z listy którejkolwiek osoby, np. „Zadzwoń do Saula — 97% dla Was · Ty: Breaking Bad · test_ola: Breaking Bad”; „Może Ci się spodobać” → Matrix 78%, Interstellar 70%, Stranger Things 57% (bez Breaking Bad, który już oglądasz); „Na później razem” → „Oboje macie na później”: Wiedźmin i Incepcja, dodanie z wyszukiwarki (Diuna: Proroctwo) i z sekcji „oboje”, ta sama lista widoczna u drugiej osoby. Brak błędów w konsoli. Konta testowe i ich wspólna lista usunięte.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload** (zmienił się serwer — nowa tabela tworzy się sama).
+
+### 2026-11-05 — Polecenie 46
+> 1. niech pokazuje też to, co mam dodane do obejrzenia, ale jeszcze nie obejrzałam albo obejrzałam parę pierwszych odcinków; 2. daj mi admina i niech mi się pokazuje, kto tworzy konta i jak się nazywa
+
+Kroki: sprawdzenie strony na PythonAnywhere (`curl`) → działa wersja z poleceń 41–44 (jest obsługa admina, nie ma jeszcze polecenia 45), więc admina nie widać, bo konto na telefonie nie nazywa się `julkar8` i nie jest pierwszym kontem → łatki `patch47.py` (`index.html`) i `patch47s.py` (`server.py`) → `admini.txt` dopisany do `.gitignore` → test na kontach testowych (admin z pliku, zwykłe konto, znajomi) → sprzątanie (konta, wspólna lista, plik testowy `admini.txt`).
+
+Zmiany:
+1. **Propozycje ze znajomym** biorą pod uwagę też Twoje „na później” i zaczęte seriale. Zaczęty serial liczy się jako „jeszcze nie obejrzany”, dopóki nie masz połowy wyemitowanych odcinków; przerwane się nie liczą.
+   - „Może Ci się spodobać”: dopisek „zaczęte (N odc.)” albo „masz na później”.
+   - „Coś dla Was obojga”: Twoje „na później” i zaczęte, których znajomy nie obejrzał, też trafiają do propozycji (wyżej, gdy znajomy też ma je na później: „też ma na później”).
+2. **Administrator**:
+   - Nowy sposób nadania admina: plik `admini.txt` obok `server.py` na serwerze, jedna nazwa konta w linii (plik nie trafia do repozytorium). Nadal działa: pierwsze konto na serwerze i nazwa `julkar8`.
+   - **Konta użytkowników** (menu ⋯ → 🛠 Administrator): lista wszystkich kont od najnowszych — nazwa, data i godzina założenia, ostatnia aktywność, liczba seriali i filmów, znajomi, oznaczenie „admin” / „Ty”, licznik nowych kont z ostatniego tygodnia. Zapytanie `/api/admin/users` działa tylko dla admina (inni dostają 403). Hasła, recenzje i notatki nie są pokazywane.
+
+Test: zwykłe konto → `admin: false`, `/api/admin/users` → 403; konto z `admini.txt` → `admin: true`, lista 3 kont z datami; znajomi: Breaking Bad z 2 z 62 odcinków → w „Może Ci się spodobać” („99% · zaczęte (2 odc.)”), film na później → „masz na później”; „Dla Was obojga” → Incepcja („też ma na później · masz na później”). Konta testowe usunięte.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull`, dopisanie swojej nazwy konta do `admini.txt` (polecenie w odpowiedzi), **Reload**.
