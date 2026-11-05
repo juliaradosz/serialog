@@ -697,3 +697,15 @@ Zmiany:
 Test: zwykłe konto → `admin: false`, menu: Statystyki, Moje platformy, Dostosuj wygląd, Wyloguj; 24 platformy, zaznaczenie działa; widok admina → dodatkowo Eksport, Import, Wyczyść; `is_admin`: konto nr 1 i julkar8 → tak, test_zwykly → nie. Konto testowe usunięte.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` i **koniecznie Reload** (zmienił się serwer).
+
+### 2026-11-05 — Polecenie 42
+> jak włączam aplikację na telefonie, to u góry mam biały pasek — usuń go
+
+Przyczyna: `apple-mobile-web-app-status-bar-style` było ustawione na `default`, więc iPhone w aplikacji z ekranu początkowego rysował nad nią biały pasek systemowy.
+
+Zmiany w `index.html`:
+- Ustawienie zmienione na `black-translucent`: aplikacja sięga pod pasek z godziną, a nagłówek ma już odstęp na wycięcie ekranu (`env(safe-area-inset-top)`).
+- Na jasnych motywach pod godziną jest delikatny cień, żeby była czytelna.
+- Kolor paska systemowego (`theme-color`, np. na Androidzie) zmienia się razem z motywem.
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**, potem zamknąć aplikację i otworzyć ponownie. Jeśli pasek dalej jest biały: usunąć ikonę z ekranu i dodać ją jeszcze raz (iPhone zapamiętuje to ustawienie przy dodawaniu ikony).

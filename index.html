@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="SeenIt">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#f5efe6">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -727,6 +727,9 @@ a.sec-head .more{font-size:13px;font-weight:700;color:var(--accent-ink);white-sp
 .sactions button span{background:color-mix(in srgb,var(--card) 55%,transparent);box-shadow:var(--glass-hi)}
 .sactions button.on{background:color-mix(in srgb,var(--accent-soft) 70%,transparent)}
 .sactions button.danger span{background:color-mix(in srgb,#d9534f 14%,transparent)}
+/* telefon: aplikacja sięga pod pasek z godziną (bez białego paska u góry); delikatny cień, żeby godzina była czytelna na jasnym tle */
+.top::before{content:"";position:absolute;left:0;right:0;top:0;height:env(safe-area-inset-top);pointer-events:none;background:linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,0))}
+[data-dark="1"] .top::before{display:none}
 </style>
 </head>
 <body>
@@ -2994,6 +2997,7 @@ function setTheme(t, persist) {
   const th = THEMES.find(x => x[0] === t) || THEMES[0];
   document.documentElement.dataset.theme = th[0];
   document.documentElement.dataset.dark = th[5] ? '1' : '';
+  const tc = document.querySelector('meta[name=theme-color]'); if (tc) tc.content = th[2];  // pasek systemowy w kolorze tła motywu
   try { localStorage.setItem('serialog.theme', th[0]); } catch (e) {}
   if (persist && user) { (state.prefs ||= {}).theme = th[0]; save(); }  // motyw zapisany też na koncie
 }
