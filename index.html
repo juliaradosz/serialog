@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>SeriaLog</title>
+<title>Seansik</title>
 <!-- instalacja na ekranie głównym telefonu (iPhone: Udostępnij → Do ekranu początkowego) -->
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-180.png">
-<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.json?v=2">
+<link rel="apple-touch-icon" href="icon-180.png?v=2">
+<link rel="icon" type="image/png" href="icon-192.png?v=2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="SeriaLog">
+<meta name="apple-mobile-web-app-title" content="Seansik">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#f5efe6">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -223,7 +223,7 @@ h2 small{font-family:Nunito,sans-serif;font-size:13px;font-weight:600;color:var(
 .pcard{background:var(--card);border-radius:18px;padding:14px 16px;margin-top:16px;box-shadow:var(--shadow)}
 .prow{display:flex;align-items:center;gap:12px}
 .prow .body{flex:1;min-width:0}
-.prow b{font-family:Fraunces,serif;font-size:18px;font-weight:600;display:block}
+.prow b{font-family:Nunito,system-ui,sans-serif;font-size:19px;font-weight:800;letter-spacing:-.2px;display:block}
 .avatar{width:44px;height:44px;border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-family:Fraunces,serif;font-weight:700;font-size:18px;flex:none}
 .pstats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));margin-top:12px;padding-top:12px;border-top:1px solid var(--line);text-align:center;font-size:11.5px;color:var(--muted);font-weight:600}
 .pstats b{display:block;font-size:17px;color:var(--text);font-weight:800}
@@ -630,11 +630,76 @@ a.sec-head .more{font-size:13px;font-weight:700;color:var(--accent-ink);white-sp
 .slider input.trk{-webkit-appearance:none;appearance:none;height:14px;border-radius:7px}
 .slider input.trk::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--text);box-shadow:0 2px 6px rgba(0,0,0,.3)}
 .slider input.trk::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--text)}
+/* nagłówek: strzałka wstecz zawsze u góry ekranu */
+.tl{display:flex;align-items:center;gap:8px;min-width:0}
+.hdback{width:34px;height:34px;flex:none;border-radius:50%;background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:var(--glass-hi);color:var(--text);font-size:23px;font-weight:800;display:flex;align-items:center;justify-content:center;padding-bottom:3px}
+.hdback[hidden]{display:none}
+.logo .lgi{width:30px;height:30px;border-radius:9px;margin-right:9px;object-fit:cover;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.login .logo .lgi{display:none}
+.subpage .hero>.back,.subpage .phead>.back,.subpage .back3,.subpage .sthead .back2{display:none}
+/* pole wyszukiwania z ✕ */
+.search{position:sticky}.search input{padding-right:46px}
+.search input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+.search .clr{position:absolute;right:8px;top:7px;width:30px;height:30px;border-radius:50%;background:var(--card2);color:var(--muted);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.search .clr[hidden]{display:none}
+.libsearch .clr{top:50%;transform:translateY(-50%)}
+.sfilters{display:flex;gap:8px;margin:0 0 6px;align-items:center;flex-wrap:wrap}
+.fsel,.fchip{height:36px;padding:0 13px;border-radius:999px;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text);font:inherit;font-size:13.5px;font-weight:700;box-shadow:var(--glass-hi);display:inline-flex;align-items:center;gap:6px}
+.fsel{-webkit-appearance:none;appearance:none;padding-right:10px;width:auto;max-width:122px;font-size:13.5px!important;flex:none}
+.sfilters{flex-wrap:nowrap}.sfilters .fchip:not(.ico){min-width:0;flex:0 1 auto;white-space:nowrap;overflow:hidden}.sfilters .fchip.ico{flex:none}
+.fsel.on,.fchip.on{background:var(--accent-soft);border-color:transparent;color:var(--accent-ink)}
+.fchip small{background:var(--accent);color:#fff;border-radius:999px;padding:0 6px;font-size:11px;line-height:17px}
+.fchip.ico{width:36px;padding:0;justify-content:center;font-size:16px}
+.sfilters .fchip.ico:last-child{margin-left:auto}
+/* platformy */
+.plats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.plat{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:14px;background:var(--glass-bg);border:2px solid var(--glass-border);font-size:11.5px;font-weight:700;color:var(--text);text-align:center;line-height:1.2}
+.plat img,.plat i{width:44px;height:44px;border-radius:11px;background:var(--card2)}
+.plat.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)}
+.plat.on img{box-shadow:0 0 0 2px var(--accent)}
+/* ukrywanie gatunków na liście kategorii */
+.hiderow{display:flex;gap:6px;overflow-x:auto;margin:0 -16px 12px;padding:2px 16px 4px;scrollbar-width:none;align-items:center}
+.hiderow::-webkit-scrollbar{display:none}
+.hiderow>span{font-size:12px;font-weight:800;color:var(--muted);flex:none}
+.hchip{flex:none;padding:5px 11px;border-radius:999px;background:var(--glass-bg);border:1px solid var(--glass-border);font-size:12.5px;font-weight:700;color:var(--muted);white-space:nowrap;cursor:pointer}
+.hchip.on{background:color-mix(in srgb,#d9534f 16%,transparent);border-color:transparent;color:#b33a35}
+[data-dark="1"] .hchip.on{color:#ff8f86}
+/* kalendarz */
+.calbtn{display:flex;align-items:center;gap:10px;margin:2px 0 12px;padding:11px 14px;border-radius:16px;background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:var(--shadow),var(--glass-hi);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}
+.calbtn span{font-size:20px}.calbtn b{font-size:14.5px}.calbtn small{flex:1;min-width:0;color:var(--muted);font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.calbtn i{font-style:normal;font-size:20px;color:var(--muted)}
+.cal{padding:12px;border-radius:18px;background:var(--glass-bg);border:1px solid var(--glass-border);box-shadow:var(--shadow),var(--glass-hi);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cal-head b{font-family:Fraunces,serif;font-size:18px;font-weight:600}
+.cal-head button{width:36px;height:36px;border-radius:50%;background:var(--card2);font-size:20px;font-weight:800;color:var(--text)}
+.cal-head button:disabled{opacity:.3}
+.cal-wd,.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.cal-wd span{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;padding:2px 0}
+.cday{position:relative;aspect-ratio:1;border-radius:12px;font-size:14px;font-weight:700;color:var(--text);background:transparent;display:flex;align-items:center;justify-content:center}
+.cday.past{color:var(--muted);opacity:.55}
+.cday.has{background:var(--accent-soft);color:var(--accent-ink);font-weight:800}
+.cday.today{box-shadow:inset 0 0 0 2px var(--accent)}
+.cday.sel{background:var(--accent);color:#fff}
+.cday i{position:absolute;top:2px;right:2px;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:var(--accent);color:#fff;font-style:normal;font-size:9.5px;font-weight:800;line-height:15px}
+.cday.sel i{background:#fff;color:var(--accent-ink)}
+.cal-foot{margin-top:8px;text-align:center}
+/* profil: liczba znajomych i menu ⋯ */
+.pcard.me .avatar.big{width:62px;height:62px;font-size:24px}
+.pname{font-size:21px!important;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fstat{position:relative;display:flex;flex-direction:column;align-items:center;padding:4px 8px;border-radius:12px;line-height:1.1}
+.fstat b{font-size:19px;font-weight:800}.fstat span{font-size:11.5px;color:var(--muted);font-weight:700}
+.fstat .cnt{position:absolute;top:-4px;right:-4px;background:var(--accent);color:#fff;border-radius:999px;font-style:normal;font-size:10px;font-weight:800;padding:1px 5px}
+.dots{width:38px;height:38px;flex:none;align-self:flex-start;border-radius:50%;background:var(--glass-bg);border:1px solid var(--glass-border);font-size:22px;font-weight:800;line-height:1;color:var(--text);display:flex;align-items:center;justify-content:center;padding-bottom:6px}
+.pmenu .mi{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;margin-bottom:6px;border-radius:14px;background:var(--glass-bg);border:1px solid var(--glass-border);text-align:left;color:var(--text)}
+.pmenu .mi>span{width:34px;height:34px;flex:none;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:17px}
+.pmenu .mi div{flex:1;min-width:0}.pmenu .mi b{display:block;font-size:14.5px}.pmenu .mi small{display:block;color:var(--muted);font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pmenu .mi.danger b{color:#c0453f}.pmenu .mi.out{margin-top:10px}
+.pstats.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pmenu{padding-top:0}.pmenu .look-head .x{display:flex;width:34px;height:34px;padding:0;align-items:center;justify-content:center}
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="top"><a href="#/shows-search" class="logo"><i></i>Seria<span>Log</span></a><span class="muted" id="count"></span></header>
+  <header class="top"><div class="tl"><button class="hdback" data-act="back" title="Wstecz" hidden>‹</button><a href="#/shows-search" class="logo"><img class="lgi" src="icon-192.png?v=2" alt="">Sean<span>sik</span></a></div><span class="muted" id="count"></span></header>
   <main id="view"></main>
 </div>
 <nav class="tabs"><div class="in">
@@ -716,10 +781,18 @@ function noRel() {
 }
 // ukryte kategorie: Polskie (po kraju/języku), po języku i gatunkach (anime, K-dramy…) albo po zapamiętanych tytułach (kategorie z tagów)
 const noCats = kind => (((state.prefs || {}).noCats || {})[kind] || {});
-const catBlocked = (kind, x) => Object.values(noCats(kind)).some(r => (r.polish && isPolish(x))
-  || (r.lang && x.original_language === r.lang && (r.genres || []).every(g => (x.genre_ids || (x.genres || []).map(y => y.id)).includes(g)))
-  || (r.genres && !r.lang && r.genres.every(g => (x.genre_ids || (x.genres || []).map(y => y.id)).includes(g)))
-  || (r.ids || []).includes(x.id));
+const gIds = x => (x.genre_ids || (x.genres || []).map(y => y.id)).map(Number);
+const ruleHit = (r, x) => (r.polish && isPolish(x))
+  || (r.lang && x.original_language === r.lang && (r.genres || []).every(g => gIds(x).includes(g)))
+  || (r.genres && !r.lang && r.genres.every(g => gIds(x).includes(g)))
+  || (r.ids || []).includes(x.id);
+const catBlocked = (kind, x) => Object.values(noCats(kind)).some(r => ruleHit(r, x));
+// na liście gatunku/kategorii: ukryte gatunki i kategorie też znikają — poza tą, którą właśnie przeglądasz
+const ownGenres = cfg => String((cfg.params || {}).with_genres || '').split(',').filter(Boolean).map(Number);
+const blockedFor = (kind, x, key, cfg) => {
+  const own = ownGenres(cfg), no = noG(kind).filter(g => !own.includes(g));
+  return gIds(x).some(g => no.includes(g)) || Object.entries(noCats(kind)).some(([k, r]) => k !== key && ruleHit(r, x)) || noRel().has(kind + ':' + x.id);
+};
 const blocked = (kind, x) => hiddenG(kind, x) || catBlocked(kind, x) || noRel().has(kind + ':' + x.id);
 // tytuły dodane przed wejściem na ekran — na listach gatunków już się nie pokazują (dodane teraz zostają, żeby siatka nie skakała)
 let visitStart = Date.now();
@@ -872,8 +945,8 @@ function renderLogin() {
   document.body.classList.add('auth');
   const reg = authTab === 'register';
   view.innerHTML = `<div class="login">
-    <img class="login-ico" src="icon-192.png" alt="">
-    <span class="logo">Seria<span>Log</span></span>
+    <img class="login-ico" src="icon-192.png?v=2" alt="">
+    <span class="logo">Sean<span>sik</span></span>
     <div class="muted">Twoje seriale i filmy w jednym miejscu</div>
     <div class="sub" style="margin-top:24px"><a class="${reg ? '' : 'on'}" data-act="authTab" data-t="login">Logowanie</a><a class="${reg ? 'on' : ''}" data-act="authTab" data-t="register">Załóż konto</a></div>
     <form id="authForm">
@@ -902,7 +975,7 @@ function renderLogin() {
 }
 function renderInfo(title, text) {
   document.body.classList.add('auth');
-  view.innerHTML = `<div class="login"><span class="logo"><i></i>Seria<span>Log</span></span><div class="empty" style="padding-top:30px"><b>${title}</b>${text}</div></div>`;
+  view.innerHTML = `<div class="login"><span class="logo"><img class="lgi" src="icon-192.png?v=2" alt="">Sean<span>sik</span></span><div class="empty" style="padding-top:30px"><b>${title}</b>${text}</div></div>`;
 }
 
 // ---------- seriale ----------
@@ -985,18 +1058,98 @@ const EXTRA_CATS = {
     ['christmas', 'Świąteczne', '🎄', { with_keywords: '207317' }], ['anime', 'Anime', '🍥', { with_genres: '16', with_original_language: 'ja' }],
     ['korean', 'Kino koreańskie', '🌸', { with_original_language: 'ko' }]],
 };
+// ---------- moje platformy i filtry wyszukiwania ----------
+const myPlats = () => (state.prefs || {}).platforms || [];
+const platOn = () => !!(state.prefs || {}).platOnly && myPlats().length > 0;
+const platParams = () => platOn() ? { watch_region: 'PL', with_watch_providers: myPlats().map(p => p.id).join('|') } : {};
+const availParams = () => platOn() ? platParams() : plOnly ? { watch_region: 'PL', with_watch_monetization_types: 'flatrate|free|ads|rent|buy' } : {};
+// ukryte gatunki od razu w zapytaniu do bazy (poza gatunkami samej kategorii)
+const noGenParams = (kind, params) => {
+  const own = ownGenres({ params }), ex = String(params.without_genres || '').split(',').filter(Boolean).map(Number);
+  const all = [...new Set([...ex, ...noG(kind).filter(g => !own.includes(g))])];
+  return all.length ? { without_genres: all.join(',') } : {};
+};
+const searchF = { tv: { year: '' }, movie: { year: '' } };
+const yearOpts = () => { const y = new Date().getFullYear(); return [['', 'Każdy rok'], ...Array.from({ length: 9 }, (_, i) => String(y + 1 - i)).map(v => [v, v]), ['2010s', '2010–2019'], ['2000s', '2000–2009'], ['1990s', '1990–1999'], ['old', 'Starsze']]; };
+const yearRange = y => !y ? null : /^\d{4}$/.test(y) ? [+y, +y] : y === 'old' ? [1900, 1989] : [+y.slice(0, 4), +y.slice(0, 4) + 9];
+const yearParams = (kind, y) => { const r = yearRange(y), k = kind === 'tv' ? 'first_air_date' : 'primary_release_date'; return r ? { [k + '.gte']: `${r[0]}-01-01`, [k + '.lte']: `${r[1]}-12-31` } : {}; };
+const inYear = (kind, x, y) => { const r = yearRange(y); if (!r) return true; const d = +((kind === 'tv' ? x.first_air_date : x.release_date) || '').slice(0, 4); return d >= r[0] && d <= r[1]; };
+// źródła propozycji w Szukaj: zwykłe listy albo — przy wybranym roku / platformach — wyszukiwanie z filtrami
+function feedSources(kind) {
+  const extra = { ...yearParams(kind, searchF[kind].year), ...platParams() };
+  if (!Object.keys(extra).length) return LISTS[kind];
+  const path = `discover/${kind}`, vc = kind === 'movie' ? 40 : 10;
+  return { popular: { pages: 1, path, params: { ...extra, sort_by: 'popularity.desc' } },
+    best: { pages: 1, path, params: { ...extra, sort_by: 'vote_average.desc', 'vote_count.gte': vc * 5 } },
+    voted: { pages: 1, path, params: { ...extra, sort_by: 'vote_count.desc' } },
+    polish: { pages: 1, path, params: { ...extra, with_origin_country: 'PL', sort_by: 'popularity.desc' } } };
+}
+let provList = null;
+async function plProviderList() {
+  if (provList) return provList;
+  const res = await Promise.all(['tv', 'movie'].map(k => tmdb(`watch/providers/${k}`, { watch_region: 'PL' }).catch(() => ({ results: [] }))));
+  const m = new Map();
+  res.flatMap(r => r.results || []).forEach(p => {
+    const pr = (p.display_priorities || {}).PL ?? p.display_priority ?? 99, o = m.get(p.provider_id);
+    if (!o || pr < o.pr) m.set(p.provider_id, { id: p.provider_id, name: p.provider_name, logo: p.logo_path, pr });
+  });
+  // najpierw serwisy popularne w Polsce, bez sklepów z wypożyczaniem i kanałów w Amazonie
+  const TOP = [/^Netflix$/, /^(HBO )?Max$/, /^Disney/, /Prime Video$/, /SkyShowtime/, /^Apple TV(\+| Plus)?$/, /Canal\+/, /^Player$/, /Polsat Box/, /TVP/, /Viaplay/, /CDA/, /Crunchyroll/, /Filmbox|FILMBOX/, /^YouTube( Premium)?$/];
+  const rank = p => { const i = TOP.findIndex(r => r.test(p.name)); return i < 0 ? 100 + p.pr : i; };
+  return provList = [...m.values()].filter(p => !/Store|Amazon Video|Amazon Channel|Google Play|Rakuten|Chili|Microsoft|Apple TV Channel/i.test(p.name))
+    .sort((a, b) => rank(a) - rank(b)).slice(0, 24);
+}
+const resetFeeds = () => { feeds.tv = feeds.movie = null; listView = null; };
+function paintPlatforms() {
+  const on = new Set(myPlats().map(p => p.id));
+  $('#sheet').innerHTML = `<div class="look"><div class="look-head"><b>Moje platformy</b><button class="x" data-act="close" title="Zamknij">✕</button></div>
+    <p class="muted small" style="margin:0 0 12px">Zaznacz serwisy, które masz. Z filtrem <b>📺 Moje platformy</b> w Szukaj i w gatunkach zobaczysz tylko tytuły, które obejrzysz u siebie.</p>
+    ${provList && provList.length ? `<div class="plats">${provList.map(p => `<button class="plat ${on.has(p.id) ? 'on' : ''}" data-act="platPick" data-id="${p.id}">${p.logo ? `<img src="${img(p.logo, 'w92')}" alt="">` : '<i></i>'}<span>${esc(p.name)}</span></button>`).join('')}</div>`
+      : '<div class="loading">Ładowanie serwisów…</div>'}
+    <div class="actions" style="margin:16px 0 0"><button class="btn" data-act="platDone">Gotowe</button></div></div>`;
+}
+const PLAT_ACTIONS = {
+  async openPlatforms() {
+    paintPlatforms(); $('#sheetWrap').classList.remove('hidden');
+    if (!provList) { await plProviderList(); paintPlatforms(); }
+  },
+  platPick(d, el) {
+    const p = state.prefs ||= {}, list = p.platforms ||= [], id = +d.id, i = list.findIndex(x => x.id === id);
+    if (i >= 0) list.splice(i, 1); else { const pr = provList.find(x => x.id === id); list.push({ id, name: pr.name, logo: pr.logo }); }
+    el.classList.toggle('on', i < 0); save();
+  },
+  platDone() {
+    (state.prefs ||= {}).platOnly = myPlats().length > 0; save(); resetFeeds(); actions.close();
+    toast(myPlats().length ? `Pokazuję tytuły z: ${myPlats().map(p => p.name).join(', ')}` : 'Nie wybrano platform'); rerender();
+  },
+  platToggle() {
+    if (!myPlats().length) return actions.openPlatforms();
+    state.prefs.platOnly = !state.prefs.platOnly; save(); resetFeeds();
+    toast(state.prefs.platOnly ? '📺 Tylko na Twoich platformach' : 'Wszystkie platformy'); rerender();
+  },
+  clearQ(d, el) {
+    const inp = el.parentElement.querySelector('input'); if (!inp) return;
+    inp.value = ''; inp.dispatchEvent(new Event('input', { bubbles: true })); el.hidden = true; inp.focus();
+  },
+  searchRefresh() {
+    const kind = location.hash.startsWith('#/movies') ? 'movie' : 'tv';
+    feeds[kind] = null; scrollTo(0, 0); toast('Odświeżono ↻'); rerender();
+  },
+};
+// przycisk ✕ w polu wyszukiwania pokazuje się, gdy coś wpisano
+document.addEventListener('input', e => { const s = e.target.closest && e.target.closest('.search'); const c = s && s.querySelector('.clr'); if (c) c.hidden = !e.target.value; });
 function listConfig(kind, key) {
   if (LISTS[kind][key]) return LISTS[kind][key];
   const xc = /^x(\w+)$/.exec(key || '') && EXTRA_CATS[kind].find(c => 'x' + c[0] === key);
   if (xc) {
     const params = { ...xc[3], sort_by: 'popularity.desc', 'vote_count.gte': kind === 'movie' ? 40 : 8 };
-    if (plOnly) Object.assign(params, { watch_region: 'PL', with_watch_monetization_types: 'flatrate|free|ads|rent|buy' });
+    Object.assign(params, availParams(), noGenParams(kind, params));
     return { title: `${xc[2]} ${xc[1]}`, path: `discover/${kind}`, params, genre: true };
   }
   const m = /^g(\d+)$/.exec(key || '');
   if (!m) return null;
   const params = { with_genres: m[1], sort_by: 'popularity.desc', 'vote_count.gte': kind === 'movie' ? 50 : 5 };
-  if (plOnly) Object.assign(params, { watch_region: 'PL', with_watch_monetization_types: 'flatrate|free|ads|rent|buy' });
+  Object.assign(params, availParams(), noGenParams(kind, params));
   return { title: `${GENRE_ICON[m[1]] || '🎬'} ${genres[kind][m[1]] || 'Gatunek'}`, path: `discover/${kind}`, params, genre: true };
 }
 async function fetchList(kind, cfg, page = 1) {
@@ -1070,11 +1223,8 @@ const actions = {
   },
   async allSeen(d) {
     const eps = showCache[d.id].episodes.filter(e => counts(e) && !state.watched[e.key]);
-    const v = await ask('Obejrzane wszystko?', `Oznaczyć ${plural(eps.length, 'pozostały odcinek', 'pozostałe odcinki', 'pozostałych odcinków')} „${esc(showCache[d.id].show.name)}” jako obejrzane? Przyszłe odcinki pojawią się w „Do obejrzenia”, gdy tylko wyjdą.`,
-      [{ label: 'Tak, wszystko obejrzane', value: true }, { label: 'Anuluj', value: false, ghost: true }]);
-    if (!v) return;
     eps.forEach(e => setWatched(e, true)); save();
-    toast('Wszystkie odcinki obejrzane ✓'); rerender();
+    toast.msg = `Obejrzane wszystko: ${plural(eps.length, 'odcinek', 'odcinki', 'odcinków')} ✓`; rerender();
   },
   play(d, el) { el.outerHTML = `<div class="yt on"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(d.k)}?autoplay=1&rel=0" title="Zwiastun" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`; },
   playSwap(d) { const box = document.querySelector('.yt'); if (box) { box.outerHTML = `<div class="yt on"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(d.k)}?autoplay=1&rel=0" title="Zwiastun" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`; } },
@@ -1169,7 +1319,11 @@ const actions = {
   },
   mRate(d) { const st = state.movies[d.id]; st.rating = st.rating == d.n ? 0 : +d.n; save(); rerender(); },
   mReact(d) { const st = state.movies[d.id]; st.reaction = st.reaction === d.r ? null : d.r; save(); rerender(); },
-  plOnly(d) { plOnly = d.v === '1'; listView = null; rerender(); },
+  plOnly(d) {
+    if (d.v === 'mine') { if (!myPlats().length) return actions.openPlatforms(); (state.prefs ||= {}).platOnly = true; }
+    else { (state.prefs ||= {}).platOnly = false; plOnly = d.v === '1'; }
+    save(); resetFeeds(); rerender();
+  },
   revEdit(d) { const e = reviewEntry(d.k); editing = d.k; draft = { rating: e.rating || 0, text: e.review || '' }; rerender(); },
   revRate(d) { const t = $('#revText'); if (t) draft.text = t.value; draft.rating = draft.rating === +d.n ? 0 : +d.n; rerender(); },
   revSave(d) {
@@ -1282,7 +1436,9 @@ async function render() {
   if (!hasTmdb) return renderInfo('Brak klucza TMDB', 'Wklej klucz API z themoviedb.org do pliku <b>tmdb_klucz.txt</b> w folderze aplikacji i uruchom ponownie start.bat.');
   document.body.classList.remove('auth');
   const [, page = 'shows-search', arg] = location.hash.split('/');
-  const tab = page.startsWith('show') ? 'shows' : page.startsWith('movie') ? 'movies' : page.startsWith('cinema') ? 'cinema' : page === 'towatch' ? 'upcoming' : ['stats', 'lib', 'friend'].includes(page) ? 'profile' : page;
+  const tab = page.startsWith('show') ? 'shows' : page.startsWith('movie') ? 'movies' : page.startsWith('cinema') ? 'cinema' : ['towatch', 'calendar'].includes(page) ? 'upcoming' : ['stats', 'lib', 'friend', 'friends'].includes(page) ? 'profile' : page;
+  const subPage = ['show', 'movie', 'person', 'lib', 'friend', 'friends', 'stats', 'calendar', 'shows-list', 'movies-list'].includes(page);
+  $('.hdback').hidden = !subPage; document.body.classList.toggle('subpage', subPage);
   document.querySelectorAll('.tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
   const nS = Object.keys(state.shows).length, nM = Object.keys(state.movies).length;
   $('#count').textContent = [nS && plural(nS, 'serial', 'seriale', 'seriali'), nM && plural(nM, 'film', 'filmy', 'filmów')].filter(Boolean).join(' · ');
@@ -1306,6 +1462,8 @@ async function render() {
       case 'stats': await loadFollowed(); return renderStats();
       case 'lib': return await renderLib(arg, token);
       case 'friend': return await renderFriend(decodeURIComponent(arg || ''), token);
+      case 'friends': return await renderFriends(token, arg);
+      case 'calendar': return await renderCalendar(token);
       default: return await renderWatch(token);
     }
   } catch (e) {
@@ -1464,21 +1622,73 @@ async function renderToWatch(token) {
     </div>` : '');
 }
 
+Object.assign(actions, PLAT_ACTIONS);
 // ---------- widok: nadchodzące ----------
+// tylko seriale, które zaczęto oglądać (albo czekające na premierę); obejrzany odcinek znika od razu, nie dopiero następnego dnia
+const upShow = d => !isDropped(d.show.id) && (d.episodes.some(e => state.watched[e.key]) || !d.episodes.some(e => isAired(e)));
+function upcomingItems(all) {
+  const today = todayStr();
+  const items = all.filter(upShow).flatMap(d => d.episodes.filter(e => e.air && e.air >= today && !isSkipped(e) && !state.watched[e.key]).map(e => ({ kind: 'ep', day: e.air, e, s: d.show })));
+  Object.values(state.movies).forEach(m => { if (m.status !== 'seen' && m.release && m.release.slice(0, 10) >= today) items.push({ kind: 'movie', day: m.release.slice(0, 10), m }); });
+  return items.sort((a, b) => a.day.localeCompare(b.day) || (a.s && b.s ? a.s.name.localeCompare(b.s.name) : 0));
+}
+function upCard(it) {
+  if (it.kind === 'movie') return `<div class="card" data-act="mOpen" data-id="${it.m.id}">
+    ${poster(it.m.poster, it.m.title, 'sm')}
+    <div class="body"><div class="t">${esc(it.m.title)}</div><div class="e">🎬 Premiera filmu w Polsce</div><div class="n">${esc((it.m.genres || []).slice(0, 2).join(', '))}</div></div></div>`;
+  const { e, s } = it, where = plProviders(s)[0] || tvChannel(s);
+  return `<div class="card" data-act="open" data-id="${s.id}">
+    ${poster(img(s.poster_path), s.name, 'sm')}
+    <div class="body"><div class="t">${esc(s.name)}</div><div class="e">${code(e)}${where ? ` · <span class="muted">${esc(where)}</span>` : ''}</div>
+      <div class="n">${esc(e.name)}</div></div>
+    ${isAired(e) ? `<button class="chk sm" data-act="ep" data-id="${e.key}" title="Obejrzany">✓</button>` : ''}
+  </div>`;
+}
+const calBtn = '<a class="calbtn" href="#/calendar"><span>📅</span><b>Kalendarz premier</b><small>dni z nowymi odcinkami i filmami</small><i>›</i></a>';
+let calMonth = null, calSel = null;
+async function renderCalendar(token) {
+  if (Object.keys(state.shows).some(id => !showCache[id])) view.innerHTML = '<div class="loading">Ładowanie kalendarza…</div>';
+  const all = await loadFollowed();
+  if (token !== renderToken) return;
+  const today = todayStr(), items = upcomingItems(all), byDay = {};
+  items.forEach(it => (byDay[it.day] ||= []).push(it));
+  calMonth ||= today.slice(0, 7);
+  if (!calSel || calSel.slice(0, 7) !== calMonth) calSel = calMonth === today.slice(0, 7) ? today : (Object.keys(byDay).sort().find(d => d.startsWith(calMonth)) || calMonth + '-01');
+  const [y, mo] = calMonth.split('-').map(Number), first = new Date(y, mo - 1, 1), nDays = new Date(y, mo, 0).getDate(), lead = (first.getDay() + 6) % 7;
+  const mName = first.toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
+  const cells = [...Array(lead).fill('<span></span>'), ...Array.from({ length: nDays }, (_, i) => {
+    const d = `${calMonth}-${pad(i + 1)}`, n = (byDay[d] || []).length;
+    return `<button class="cday ${n ? 'has' : ''} ${d === today ? 'today' : ''} ${d === calSel ? 'sel' : ''} ${d < today ? 'past' : ''}" data-act="calDay" data-k="${d}">${i + 1}${n ? `<i>${n}</i>` : ''}</button>`;
+  })];
+  const sel = byDay[calSel] || [], inMonth = items.filter(it => it.day.startsWith(calMonth)).length;
+  const dt = parseDate(calSel).toLocaleDateString('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' });
+  view.innerHTML = `<div class="libhead"><h1>Kalendarz premier</h1></div>
+    <div class="cal"><div class="cal-head"><button data-act="calMove" data-v="-1" ${calMonth <= today.slice(0, 7) ? 'disabled' : ''} title="Poprzedni miesiąc">‹</button>
+      <b>${mName[0].toUpperCase() + mName.slice(1)}</b><button data-act="calMove" data-v="1" title="Następny miesiąc">›</button></div>
+      <div class="cal-wd">${['pn', 'wt', 'śr', 'cz', 'pt', 'sb', 'nd'].map(x => `<span>${x}</span>`).join('')}</div>
+      <div class="cal-grid">${cells.join('')}</div>
+      <div class="muted small cal-foot">${inMonth ? plural(inMonth, 'premiera', 'premiery', 'premier') + ' w tym miesiącu · liczba w kółku = ile tego dnia' : 'W tym miesiącu nie ma jeszcze zapowiedzianych premier'}</div></div>
+    <h2>${dt[0].toUpperCase() + dt.slice(1)}${calSel === today ? ' <small>· dziś</small>' : ''}</h2>
+    ${sel.length ? `<div class="list">${sel.map(upCard).join('')}</div>` : '<div class="shelf-empty">Tego dnia nic nie wychodzi. Stuknij zaznaczony dzień w kalendarzu.</div>'}`;
+}
+Object.assign(actions, {
+  calDay(d) { calSel = d.k; rerender(); },
+  calMove(d) {
+    const [y, mo] = calMonth.split('-').map(Number), n = new Date(y, mo - 1 + +d.v, 1);
+    calMonth = `${n.getFullYear()}-${pad(n.getMonth() + 1)}`; calSel = null; rerender();
+  },
+});
 async function renderUpcoming(token) {
   const head = upTabs('soon');
   if (!Object.keys(state.shows).length && !Object.keys(state.movies).length) {
-    view.innerHTML = head + emptyBox('Kalendarz jest pusty', 'Dodaj seriale lub filmy — tutaj zobaczysz po kolei, kiedy wychodzą nowe odcinki i premiery.', '#/shows-search', 'Szukaj seriali');
+    view.innerHTML = head + calBtn + emptyBox('Kalendarz jest pusty', 'Dodaj seriale lub filmy — tutaj zobaczysz po kolei, kiedy wychodzą nowe odcinki i premiery.', '#/shows-search', 'Szukaj seriali');
     return;
   }
   if (Object.keys(state.shows).some(id => !showCache[id])) view.innerHTML = head + '<div class="loading">Ładowanie kalendarza…</div>';
   const all = await loadFollowed();
   if (token !== renderToken) return;
-  const today = todayStr();
-  const items = all.filter(d => !isDropped(d.show.id)).flatMap(d => d.episodes.filter(e => e.air && e.air >= today && !isSkipped(e)).map(e => ({ kind: 'ep', day: e.air, e, s: d.show })));
-  Object.values(state.movies).forEach(m => { if (m.release && m.release.slice(0, 10) >= today) items.push({ kind: 'movie', day: m.release.slice(0, 10), m }); });
-  items.sort((a, b) => a.day.localeCompare(b.day) || (a.s && b.s ? a.s.name.localeCompare(b.s.name) : 0));
-  if (!items.length) { view.innerHTML = head + '<div class="empty"><b>Brak zapowiedzianych premier</b>Twoje seriale i filmy nie mają jeszcze ogłoszonych dat.</div>'; return; }
+  const today = todayStr(), items = upcomingItems(all);
+  if (!items.length) { view.innerHTML = head + calBtn + '<div class="empty"><b>Brak zapowiedzianych premier</b>Seriale, które oglądasz, i Twoje filmy nie mają jeszcze ogłoszonych dat. Nowe odcinki seriali, których jeszcze nie zaczęto, tu nie trafiają.</div>'; return; }
   const label = d => {
     const n = daysFrom(d), date = parseDate(d).toLocaleDateString('pl-PL', { weekday: 'long', day: 'numeric', month: 'long' });
     return n === 0 ? `Dziś <small>· ${date}</small>` : n === 1 ? `Jutro <small>· ${date}</small>` : n < 7 ? date[0].toUpperCase() + date.slice(1) : `${date[0].toUpperCase() + date.slice(1)} <small>· za ${n} dni</small>`;
@@ -1486,19 +1696,8 @@ async function renderUpcoming(token) {
   const groups = new Map();
   items.slice(0, 200).forEach(it => { const k = label(it.day); groups.has(k) ? groups.get(k).push(it) : groups.set(k, [it]); });
   const todayCount = items.filter(it => it.day === today).length;
-  view.innerHTML = upTabs('soon') + `<div class="muted small">${plural(items.length, 'premiera', 'premiery', 'premier')} w kalendarzu${todayCount ? ` · dziś: ${todayCount}` : ''}</div>` +
-    [...groups].map(([day, its]) => `<div class="day"><h3>${day}</h3><div class="list">${its.map(it => {
-      if (it.kind === 'movie') return `<div class="card" data-act="mOpen" data-id="${it.m.id}">
-        ${poster(it.m.poster, it.m.title, 'sm')}
-        <div class="body"><div class="t">${esc(it.m.title)}</div><div class="e">🎬 Premiera filmu w Polsce</div><div class="n">${esc((it.m.genres || []).slice(0, 2).join(', '))}</div></div></div>`;
-      const { e, s } = it, on = !!state.watched[e.key], where = plProviders(s)[0] || tvChannel(s);
-      return `<div class="card" data-act="open" data-id="${s.id}">
-        ${poster(img(s.poster_path), s.name, 'sm')}
-        <div class="body"><div class="t">${esc(s.name)}</div><div class="e">${code(e)}${where ? ` · <span class="muted">${esc(where)}</span>` : ''}</div>
-          <div class="n">${esc(e.name)}</div></div>
-        ${isAired(e) ? `<button class="chk sm ${on ? 'on' : ''}" data-act="ep" data-id="${e.key}" title="Obejrzany">✓</button>` : ''}
-      </div>`;
-    }).join('')}</div></div>`).join('') +
+  view.innerHTML = upTabs('soon') + calBtn + `<div class="muted small">${plural(items.length, 'premiera', 'premiery', 'premier')} w kalendarzu${todayCount ? ` · dziś: ${todayCount}` : ''}</div>` +
+    [...groups].map(([day, its]) => `<div class="day"><h3>${day}</h3><div class="list">${its.map(upCard).join('')}</div></div>`).join('') +
     '<p class="src" style="margin-top:20px">Odcinki zagranicznych seriali mają daty światowej premiery — w polskich serwisach pojawiają się zwykle tego samego dnia. Przy odcinku podany jest serwis dostępny w Polsce.</p>';
 }
 
@@ -1582,18 +1781,22 @@ async function buildForYou() {
     seeds.push({ kind: 'movie', id: m.id, title: m.title, w: Math.max(.3, (m.status === 'seen' ? 1.6 : .8) + (m.rating ? (m.rating - 3) * .8 : 0) + (state.favs['movie:' + m.id] ? 2 : 0) + (m.rw || []).length * .5) });
   });
   // losowanie ważone — przy „Inne propozycje” inne ziarna, ale ulubione wypadają najczęściej
-  const picked = [], pool = [...seeds];
-  while (picked.length < 14 && pool.length) {
-    const total = pool.reduce((a, s) => a + s.w, 0);
-    let x = r() * total, i = 0;
-    while (x > pool[i].w && i < pool.length - 1) x -= pool[i++].w;
-    picked.push(pool.splice(i, 1)[0]);
-  }
+  // osobno dla seriali i filmów, do 12 tytułów każdego rodzaju (wagi spłaszczone, żeby kilka ulubionych nie zabrało wszystkich miejsc)
+  const picked = [];
+  ['tv', 'movie'].forEach(kind => {
+    const pool = seeds.filter(s => s.kind === kind).map(s => ({ ...s, pw: Math.sqrt(s.w) }));
+    for (let n = 0; n < 12 && pool.length; n++) {
+      const total = pool.reduce((a, s) => a + s.pw, 0);
+      let x = r() * total, i = 0;
+      while (x > pool[i].pw && i < pool.length - 1) x -= pool[i++].pw;
+      picked.push(pool.splice(i, 1)[0]);
+    }
+  });
   const cand = {};
   const add = (kind, x, score, why) => {
     if (!x.poster_path || inLibrary(kind, x.id) || blocked(kind, x)) return;
-    const c = cand[kind + ':' + x.id] ||= { kind, x, score: 0, why: new Set() };
-    c.score += score; if (why) c.why.add(why);
+    const c = cand[kind + ':' + x.id] ||= { kind, x, score: 0, why: new Set(), by: {} };
+    c.score += score; if (why) { c.why.add(why); c.by[why] = (c.by[why] || 0) + score; }
   };
   await Promise.all(picked.map(async s => {
     const page = 1 + Math.floor(r() * 2);
@@ -1615,12 +1818,17 @@ async function buildForYou() {
     (res.results || []).forEach(x => add(kind, x, .6, `gatunek: ${g.name}`));
   }));
   // wynik = podobieństwo do Twoich tytułów (więcej, gdy pasuje do kilku naraz) + dopasowanie do gatunków + ocena widzów + odrobina losowości
-  const rank = kind => Object.values(cand).filter(c => c.kind === kind)
-    .map(c => ({ ...c, fit: genreFit(taste, kind, c.x), s: c.score + 1.4 * genreFit(taste, kind, c.x) + quality(c.x) + r() * .35 }))
-    .filter(c => c.fit > -.5).sort((a, b) => b.s - a.s)
-    // różnorodność: kolejne propozycje „bo: ten sam tytuł” tracą trochę punktów, żeby jeden tytuł nie zdominował listy
-    .reduce((acc, c) => { const k = [...c.why][0] || '', n = acc.n[k] = (acc.n[k] || 0) + 1; acc.l.push({ ...c, s: c.s - (n - 1) * .22 }); return acc; }, { n: {}, l: [] }).l
-    .sort((a, b) => b.s - a.s).slice(0, 40);
+  const rank = kind => {
+    const list = Object.values(cand).filter(c => c.kind === kind)
+      .map(c => ({ ...c, fit: genreFit(taste, kind, c.x), s: c.score + 1.4 * genreFit(taste, kind, c.x) + quality(c.x) + r() * .35 }))
+      .filter(c => c.fit > -.5).sort((a, b) => b.s - a.s);
+    // mieszanie: na zmianę po jednej najlepszej propozycji od każdego Twojego tytułu (a nie kilkanaście „bo: ten sam tytuł” pod rząd)
+    const groups = new Map();
+    list.forEach(c => { const k = (Object.entries(c.by).sort((a, b) => b[1] - a[1])[0] || [''])[0]; groups.has(k) ? groups.get(k).push(c) : groups.set(k, [c]); });
+    const qs = [...groups.values()], out = [];
+    while (out.length < 40 && qs.some(q => q.length)) qs.forEach(q => { if (q.length && out.length < 40) out.push(q.shift()); });
+    return out;
+  };
   Object.values(cand).forEach(c => seen[c.kind][c.x.id] = c.x);
   return { tv: rank('tv'), movie: rank('movie'), allSeeds: shuffled(seeds.sort((a, b) => b.w - a.w).slice(0, 30), 3), topG, taste, cursor: {}, pages: {}, loading: false };
 }
@@ -1763,8 +1971,13 @@ async function renderPerson(id, token) {
 async function renderSearch(token, kind) {
   const isM = kind === 'movie';
   view.innerHTML = (isM ? movieTabs('search') : showTabs('search')) +
-    `<div class="search"><input id="q" type="search" placeholder="${isM ? 'Szukaj filmu po tytule…' : 'Szukaj serialu lub programu…'}" value="${esc(searchQ[kind])}" autocomplete="off"></div>
+    `<div class="search"><input id="q" type="search" placeholder="${isM ? 'Szukaj filmu po tytule…' : 'Szukaj serialu lub programu…'}" value="${esc(searchQ[kind])}" autocomplete="off"><button class="clr" data-act="clearQ" title="Wyczyść" ${searchQ[kind] ? '' : 'hidden'}>✕</button></div>
+    <div class="sfilters"><select id="yearSel" class="fsel ${searchF[kind].year ? 'on' : ''}" aria-label="Rok">${yearOpts().map(([v, l]) => `<option value="${v}" ${v === searchF[kind].year ? 'selected' : ''}>${v ? '📅 ' + l : '📅 ' + l}</option>`).join('')}</select>
+      <button class="fchip ${platOn() ? 'on' : ''}" data-act="platToggle">📺 ${myPlats().length ? `Moje platformy <small>${myPlats().length}</small>` : 'Wybierz platformy'}</button>
+      ${myPlats().length ? '<button class="fchip ico" data-act="openPlatforms" title="Zmień platformy">⚙</button>' : ''}
+      <button class="fchip ico" data-act="searchRefresh" title="Odśwież propozycje">↻</button></div>
     <div id="results"><div class="loading">Ładowanie…</div></div>`;
+  $('#yearSel').onchange = e => { searchF[kind].year = e.target.value; feeds[kind] = null; rerender(); };
   const q = $('#q');
   q.addEventListener('input', () => {
     clearTimeout(searchTimer);
@@ -1779,21 +1992,23 @@ async function fillResults(kind, token = renderToken) {
   const box = $('#results'); if (!box) return;
   const query = searchQ[kind], base = kind === 'tv' ? 'shows' : 'movies';
   if (query) {
-    const items = await searchTitles(kind, query);
+    const items = (await searchTitles(kind, query)).filter(x => inYear(kind, x, searchF[kind].year));
     if (token !== renderToken || !$('#results') || query !== searchQ[kind]) return;
-    box.innerHTML = items.length ? `<h2>Wyniki dla „${esc(query)}”</h2><div class="grid">${items.map(x => tile(kind, x)).join('')}</div>`
+    box.innerHTML = items.length ? `<h2>Wyniki dla „${esc(query)}”</h2>${platOn() ? '<p class="muted small" style="margin:-4px 0 10px">Przy wpisanym tytule pokazuję wszystkie wyniki — filtr platform działa w propozycjach poniżej pustego pola.</p>' : ''}<div class="grid">${items.map(x => tile(kind, x)).join('')}</div>`
       : '<div class="empty"><b>Nic nie znaleziono</b>Spróbuj innego tytułu (po polsku lub w oryginale).</div>';
     return;
   }
   // bez wpisanego tytułu: jedna nieskończona lista propozycji (mieszanka popularnych, polskich, najlepszych…)
   feed = feeds[kind];
   if (!feed) {
-    feed = feeds[kind] = { kind, items: [], pages: {}, loading: false };
+    feed = feeds[kind] = { kind, items: [], pages: {}, loading: false, src: feedSources(kind) };
     box.innerHTML = '<div class="loading">Ładuję propozycje…</div>';
     await feedMore(); await feedMore();
   }
   if (token !== renderToken || !$('#results') || searchQ[kind]) return;
-  box.innerHTML = `<h2>${kind === 'tv' ? 'Seriale' : 'Filmy'} do odkrycia</h2><div class="grid" id="feedGrid">${feed.items.filter(x => !inLibrary(kind, x.id) && !blocked(kind, x)).map(x => tile(kind, x)).join('')}</div>
+  const fl = [searchF[kind].year && yearOpts().find(o => o[0] === searchF[kind].year)[1], platOn() && 'na Twoich platformach'].filter(Boolean).join(' · ');
+  if (!feed.items.length) { box.innerHTML = '<div class="empty"><b>Nic nie znaleziono</b>Spróbuj innego roku albo wyłącz filtr platform.</div>'; return; }
+  box.innerHTML = `<h2>${kind === 'tv' ? 'Seriale' : 'Filmy'} do odkrycia${fl ? ` <small>(${esc(fl)})</small>` : ''}</h2><div class="grid" id="feedGrid">${feed.items.filter(x => !inLibrary(kind, x.id) && !blocked(kind, x)).map(x => tile(kind, x)).join('')}</div>
     <div id="feedSentinel" class="loading small">Ładuję kolejne…</div>`;
   setTimeout(checkSentinel, 50);
 }
@@ -1802,11 +2017,11 @@ const feeds = { tv: null, movie: null };  // propozycje zostają po powrocie z s
 async function feedMore() {
   if (!feed || feed.loading) return [];
   feed.loading = true;
-  const f = feed, keys = Object.keys(LISTS[f.kind]);
+  const f = feed, keys = Object.keys(f.src || LISTS[f.kind]);
   // przy każdym doładowaniu po jednej stronie z dwóch losowych źródeł — dzięki temu lista jest różnorodna
   const pick = shuffled(keys, f.items.length + 1).slice(0, 2);
   const res = await Promise.all(pick.map(k => {
-    const cfg = LISTS[f.kind][k], page = f.pages[k] || 1 + Math.floor(Math.random() * Math.min(cfg.pages || 1, 5));
+    const cfg = (f.src || LISTS[f.kind])[k], page = f.pages[k] || 1 + Math.floor(Math.random() * Math.min(cfg.pages || 1, 5));
     f.pages[k] = page + 1;
     return fetchList(f.kind, cfg, page).then(r => r.items).catch(() => []);
   }));
@@ -1850,16 +2065,22 @@ async function renderList(kind, key, token) {
   if (!cfg) throw new Error('Nieznana lista');
   const base = kind === 'tv' ? 'shows' : 'movies';
   const tabs = kind === 'tv' ? showTabs(cfg.genre || key === 'polish' ? 'genres' : 'search') : movieTabs(cfg.genre || key === 'polish' ? 'genres' : 'search');
-  const back = cfg.genre || key === 'polish' ? `<a class="muted small" href="#/${base}-genres">‹ Wszystkie gatunki</a>` : `<a class="muted small" href="#/${base}-search">‹ Wróć</a>`;
-  const toggle = cfg.genre ? `<div class="pills" style="margin-top:10px"><a data-act="plOnly" data-v="1" class="${plOnly ? 'on' : ''}">Dostępne w Polsce</a><a data-act="plOnly" data-v="0" class="${plOnly ? '' : 'on'}">Wszystkie</a></div>` : '';
+  const back = '';  // wstecz: strzałka w nagłówku
+  const lm = platOn() ? 'mine' : plOnly ? '1' : '0', own = ownGenres(cfg);
+  const toggle = cfg.genre ? `<div class="pills" style="margin-top:10px"><a data-act="plOnly" data-v="mine" class="${lm === 'mine' ? 'on' : ''}">📺 Moje platformy</a><a data-act="plOnly" data-v="1" class="${lm === '1' ? 'on' : ''}">Dostępne w Polsce</a><a data-act="plOnly" data-v="0" class="${lm === '0' ? 'on' : ''}">Wszystkie</a></div>` : '';
+  // „Nie pokazuj tu”: ukrycie gatunku działa wszędzie i jest zapamiętane (np. bez anime w „Dla nastolatków”)
+  const hideChips = (cfg.genre || key === 'polish') ? `<div class="hiderow"><span>Nie pokazuj:</span>
+    ${key !== 'xanime' ? `<a class="hchip ${noCats(kind).xanime ? 'on' : ''}" data-act="noCat" data-kind="${kind}" data-k="xanime">${noCats(kind).xanime ? '🚫 ' : ''}Anime</a>` : ''}
+    ${Object.entries(genres[kind]).filter(([id]) => !own.includes(+id)).map(([id, name]) => { const on = noG(kind).includes(+id);
+      return `<a class="hchip ${on ? 'on' : ''}" data-act="noGenre" data-kind="${kind}" data-g="${id}">${on ? '🚫 ' : ''}${esc(name)}</a>`; }).join('')}</div>` : '';
   if (!listView || listView.kind !== kind || listView.key !== key) {
-    view.innerHTML = tabs + back + `<h2>${cfg.title}</h2>${toggle}<div class="loading">Ładowanie…</div>`;
+    view.innerHTML = tabs + back + `<h2>${cfg.title}</h2>${toggle}${hideChips}<div class="loading">Ładowanie…</div>`;
     const res = await fetchList(kind, cfg);
     if (token !== renderToken) return;
     listView = { kind, key, ...res };
   }
-  view.innerHTML = tabs + back + `<h2>${cfg.title} <small>(${listView.total.toLocaleString('pl-PL')}, od najpopularniejszych)</small></h2>${toggle}
-    <div class="grid">${listView.items.filter(x => !addedBefore(kind, x.id) && (cfg.genre ? !noRel().has(kind + ':' + x.id) : !blocked(kind, x))).map(x => tile(kind, x)).join('')}</div>
+  view.innerHTML = tabs + back + `<h2>${cfg.title} <small>(${listView.total.toLocaleString('pl-PL')}, od najpopularniejszych)</small></h2>${toggle}${hideChips}
+    <div class="grid">${listView.items.filter(x => !addedBefore(kind, x.id) && !blockedFor(kind, x, key, cfg)).map(x => tile(kind, x)).join('')}</div>
     ${listView.page < listView.pages ? '<div id="sentinel" class="loading small">Ładuję kolejne…</div>' : ''}`;
   watchSentinel();
 }
@@ -2465,7 +2686,7 @@ async function renderLib(key, token) {
   const [title, type, items] = cfg, canBulk = key === 'later-tv' || key === 'later-movies', sel = canBulk && selMode === key;
   view.innerHTML = `<div class="libhead"><button class="back3" data-act="back" title="Wstecz">‹</button><h1>${title} <small>(${items.length})</small></h1>
       ${canBulk && items.length ? `<button class="btn ${sel ? '' : 'ghost'} sm" data-act="selMode" data-k="${key}">${sel ? 'Gotowe' : 'Zaznacz kilka'}</button>` : ''}</div>
-    ${items.length > 8 ? `<div class="search libsearch"><span class="ico">⌕</span><input id="libFilter" type="search" placeholder="Szukaj na tej liście…" autocomplete="off"></div>` : ''}
+    ${items.length > 8 ? `<div class="search libsearch"><span class="ico">⌕</span><input id="libFilter" type="search" placeholder="Szukaj na tej liście…" autocomplete="off"><button class="clr" data-act="clearQ" title="Wyczyść" hidden>✕</button></div>` : ''}
     ${sel ? '<p class="muted small" style="margin:4px 0 10px">Stuknij plakaty, które już obejrzano, i zatwierdź przyciskiem na dole.</p>' : ''}
     ${items.length ? `<div class="libgrid">${items.map(x => libItem(type, x, sel)).join('')}</div>` : '<div class="shelf-empty">Ta lista jest na razie pusta.</div>'}
     ${sel ? `<div class="selbar"><button class="btn ghost" data-act="selMode" data-k="">Anuluj</button>
@@ -2481,15 +2702,25 @@ async function loadFriends(token) {
   try { friends = await api('/api/friends'); } catch (e) { return; }
   const box = $('#friendsBox');
   if (box && token === renderToken) box.innerHTML = friendsInner();
+  const fs = $('#fstat'); if (fs) fs.innerHTML = fstatInner();
+}
+const fstatInner = () => `<b>${friends ? friends.friends.length : '·'}</b><span>${friends && friends.friends.length === 1 ? 'znajomy' : 'znajomych'}</span>${friends && friends.incoming.length ? `<i class="cnt">+${friends.incoming.length}</i>` : ''}`;
+async function renderFriends(token, arg) {
+  view.innerHTML = `<div class="libhead"><h1>Znajomi</h1></div>${friendsPanel()}
+    <p class="muted small" style="text-align:center;margin-top:18px">Znajomi widzą Twoje listy seriali i filmów, ale nie widzą, ilu masz znajomych. Recenzje, oceny i notatki są prywatne.</p>`;
+  if (arg === 'add') { const i = $('#friendName'); if (i) i.focus(); }
+  await loadFriends(token);
+  if (arg === 'add') { const i = $('#friendName'); if (i) i.focus(); }
 }
 const friendsPanel = () => `<section class="shelf" id="friendsBox">${friendsInner()}</section>`;
 function friendsInner() {
   const f = friends || { friends: [], incoming: [], outgoing: [] };
   const person = (n, btns) => `<div class="frow"><a href="#/friend/${encodeURIComponent(n)}" class="fname"><span class="avatar sm">${avatarHtml((f.avatars || {})[n], n)}</span><b>${esc(n)}</b></a>${btns}</div>`;
-  return `<h2>Znajomi <small>(${f.friends.length})</small></h2>
+  return `<div class="fsec">Dodaj znajomego</div>
     <div class="fadd"><input id="friendName" placeholder="Nazwa użytkownika znajomego" autocomplete="off" autocapitalize="off" maxlength="30"><button class="btn sm" data-act="friendAdd">Dodaj</button></div>
     ${f.incoming.length ? `<div class="fsec">Zaproszenia do Ciebie</div>${f.incoming.map(n => `<div class="frow"><span class="fname"><span class="avatar sm">${avatarHtml((f.avatars || {})[n], n)}</span><b>${esc(n)}</b></span>
       <button class="btn sm" data-act="friendAccept" data-u="${esc(n)}">Przyjmij</button><button class="btn ghost sm" data-act="friendRemove" data-u="${esc(n)}" data-m="decline">Odrzuć</button></div>`).join('')}` : ''}
+    <div class="fsec">Twoi znajomi (${f.friends.length})</div>
     ${f.friends.length ? f.friends.map(n => person(n, `<a class="btn ghost sm" href="#/friend/${encodeURIComponent(n)}">Profil ›</a>`)).join('')
       : friends ? '<div class="shelf-empty">Dodaj kogoś po nazwie użytkownika — zobaczycie nawzajem swoje listy seriali i filmów (recenzje i notatki zostają prywatne).</div>' : '<div class="muted small">Ładowanie…</div>'}
     ${f.outgoing.length ? `<div class="fsec">Wysłane zaproszenia</div>${f.outgoing.map(n => `<div class="frow"><span class="fname"><span class="avatar sm">${avatarHtml((f.avatars || {})[n], n)}</span><b>${esc(n)}</b><small class="muted">czeka na akceptację</small></span>
@@ -2508,11 +2739,17 @@ async function renderFriend(name, token) {
   const fMini = f => `<a class="mini" href="#/${f.type === 'tv' ? 'show' : 'movie'}/${f.id}">${poster(f.poster, f.title)}<div class="nm">❤ ${esc(f.title)}</div><div class="sub2">${f.type === 'tv' ? 'serial' : 'film'}</div></a>`;
   const shelf = (title, items, render) => items.length ? `<section class="shelf"><h2>${title} <small>(${items.length})</small></h2><div class="hscroll">${items.map(render).join('')}</div></section>` : '';
   const shows = p.shows.filter(s => !s.dropped).sort((a, b) => b.eps - a.eps), seenM = p.movies.filter(m => m.status === 'seen').sort((a, b) => (b.seenAt || 0) - (a.seenAt || 0));
+  // obejrzane wspólnie: seriale, z których oboje coś obejrzeliście, i filmy obejrzane przez oboje
+  const mine = {}; Object.values(state.watched).forEach(w => mine[w.s] = (mine[w.s] || 0) + 1);
+  const together = [...shows.filter(s => s.eps && mine[s.id]).map(s => ({ kind: 'tv', id: s.id, title: s.name, poster: s.poster, sub: 'serial' })),
+    ...seenM.filter(m => (state.movies[m.id] || {}).status === 'seen').map(m => ({ kind: 'movie', id: m.id, title: m.title, poster: m.poster, sub: 'film' }))];
+  const tMini = x => `<a class="mini" href="#/${x.kind === 'tv' ? 'show' : 'movie'}/${x.id}">${poster(x.poster, x.title)}<span class="both" title="Obejrzane wspólnie">👯</span><div class="nm">${esc(x.title)}</div><div class="sub2">${x.sub}</div></a>`;
   view.innerHTML = `<div class="libhead"><button class="back3" data-act="back" title="Wstecz">‹</button><h1>Profil znajomego</h1></div>
     <div class="pcard"><div class="prow"><div class="avatar">${avatarHtml(p.avatar, p.username)}</div>
       <div class="body"><b>${esc(p.username)}</b><div class="muted small">${days} dni ${hours} godz. przed ekranem</div></div>
       <button class="btn ghost sm" data-act="friendRemove" data-u="${esc(p.username)}" data-m="remove">Usuń ze znajomych</button></div>
-      <div class="pstats"><div><b>${p.shows.length}</b>seriali</div><div><b>${p.episodes}</b>odcinków</div><div><b>${seenM.length}</b>filmów</div></div></div>
+      <div class="pstats three"><div><b>${p.shows.length}</b>seriali</div><div><b>${seenM.length}</b>filmów</div><div><b>${together.length}</b>wspólnie</div></div></div>
+    ${together.length ? shelf('Obejrzane wspólnie', together, tMini) : '<div class="shelf-empty" style="margin-top:14px">Nie macie jeszcze wspólnie obejrzanych seriali ani filmów.</div>'}
     ${shelf('Seriale', shows, sMini)}
     ${shelf('Przerwane', p.shows.filter(s => s.dropped), sMini)}
     ${shelf('Filmy obejrzane', seenM, mMini)}
@@ -2561,6 +2798,7 @@ Object.assign(actions, {
     rerender();
   },
   async noCat(d) {
+    listView = null; feeds.tv = feeds.movie = null;
     const p = state.prefs ||= {}, all = (p.noCats ||= {})[d.kind] ||= {}, key = d.k;
     if (all[key]) { delete all[key]; save(); toast('Kategoria znowu pojawi się w propozycjach'); rerender(); return; }
     let rule;
@@ -2579,8 +2817,8 @@ Object.assign(actions, {
   noGenre(d) {
     const p = state.prefs ||= {}, ng = p.noGenres ||= {}, list = ng[d.kind] ||= [], g = +d.g;
     const i = list.indexOf(g);
-    if (i >= 0) { list.splice(i, 1); toast('Gatunek znowu pojawi się w propozycjach'); } else { list.push(g); toast('Ukryto ten gatunek w propozycjach'); }
-    save(); rerender();
+    if (i >= 0) { list.splice(i, 1); toast('Gatunek znowu się pokazuje'); } else { list.push(g); toast(`Ukryto: ${genres[d.kind][g] || 'gatunek'} — zapamiętane`); }
+    listView = null; feeds.tv = feeds.movie = null; save(); rerender();
   },
   selMode(d) { selMode = d.k || null; selected.clear(); rerender(); },
   selToggle(d, el) { selected.has(d.k) ? selected.delete(d.k) : selected.add(d.k); el.classList.toggle('picked', selected.has(d.k)); selCount(); },
@@ -2618,7 +2856,7 @@ Object.assign(actions, {
     }
     friends = await api('/api/friends/remove', { method: 'POST', body: JSON.stringify({ username: d.u }) });
     toast(d.m === 'decline' ? 'Odrzucono zaproszenie' : d.m === 'cancel' ? 'Cofnięto zaproszenie' : 'Usunięto ze znajomych');
-    if (d.m === 'remove') location.hash = '#/profile';
+    if (d.m === 'remove') location.hash = '#/friends';
     else { const box = $('#friendsBox'); if (box) box.innerHTML = friendsInner(); }
   },
 });
@@ -2668,60 +2906,45 @@ async function renderProfile(token) {
     ${items.length ? `<div class="hscroll">${items.map(render).join('')}</div>` : `<div class="shelf-empty">${emptyText}</div>`}</section>`;
 
   view.innerHTML = `
-    <div class="pcard">
+    <div class="pcard me">
       <div class="prow">
-        <label class="avatar ph" title="Zmień zdjęcie profilowe">${avatarHtml((state.prefs || {}).avatar, user)}<span class="cam">📷</span><input type="file" accept="image/*" id="avatarFile"></label>
-        <div class="body"><b>${esc(user)}</b>${(state.prefs || {}).avatar ? ' <button class="linkbtn" data-act="avatarDel">usuń zdjęcie</button>' : ''}<div class="muted small">${months ? months + ' mies. ' : ''}${days} dni ${hours} godz. przed ekranem</div></div>
-        <button class="btn ghost sm" data-act="logout">Wyloguj</button>
+        <label class="avatar ph big" title="Zmień zdjęcie profilowe">${avatarHtml((state.prefs || {}).avatar, user)}<span class="cam">📷</span><input type="file" accept="image/*" id="avatarFile"></label>
+        <div class="body"><b class="pname">${esc(user)}</b><div class="muted small">${months ? months + ' mies. ' : ''}${days} dni ${hours} godz. przed ekranem</div></div>
+        <a class="fstat" id="fstat" href="#/friends" title="Znajomi — dodaj nowych">${fstatInner()}</a>
+        <button class="dots" data-act="profMenu" title="Więcej: znajomi, statystyki, ustawienia, wylogowanie">⋯</button>
       </div>
-      <div class="pstats">
-        <div><b>${Object.keys(state.shows).length}</b>seriali</div>
-        <div><b>${w.length}</b>odcinków</div>
-        <div><b>${seenM.length}</b>filmów</div>
-        <div><b>${favs.length}</b>ulubionych</div>
-        <div><b>${reviews.length}</b>recenzji</div>
-        <div><b>${notes.length}</b>notatek</div>
-      </div>
-      <a class="pcard-link" href="#/stats">Statystyki i wykresy ›</a>
     </div>
-    ${friendsPanel()}
     ${shelf('watching', 'Oglądam', watching, showMini, 'Zacznij oglądać serial — pojawi się tutaj.')}
     ${shelf('later-tv', 'Seriale na później', laterS, showMini, 'Brak seriali odłożonych na później.')}
-    ${shelf('done-tv', 'Seriale obejrzane', doneS, showMini, 'Tu trafią seriale, których wszystkie odcinki obejrzano.')}
-    ${droppedS.length ? shelf('dropped', 'Przerwane', droppedS, showMini, '') : ''}
-    ${shelf('seen-movies', 'Filmy obejrzane', seenM.sort((a, b) => (b.seenAt || 0) - (a.seenAt || 0)), movieMini, 'Brak obejrzanych filmów.')}
     ${shelf('later-movies', 'Filmy na później', laterM.sort((a, b) => b.addedAt - a.addedAt), movieMini, 'Dodaj film przyciskiem „Chcę obejrzeć później”.')}
-    ${shelf('favs', 'Ulubione', favs, favMini, 'Kliknij ♡ przy serialu lub filmie, aby dodać go do ulubionych.')}
-    ${Object.keys(disliked()).length ? `<a class="pcard-link dis" href="#/lib/disliked">👎 Nie podoba mi się (${Object.keys(disliked()).length}) — podobne nie są proponowane ›</a>` : ''}
-    <section class="shelf"><h2>Moje recenzje <small>(${reviews.length})</small></h2>
-      ${reviews.length ? reviews.map(r => `<a class="revcard" href="#/${r.kind === 'tv' ? 'show' : 'movie'}/${r.id}">
-        ${poster(r.poster, r.title, 'sm')}
-        <div class="body"><div class="t">${esc(r.title)} <span class="muted small">· ${r.kind === 'tv' ? 'serial' : 'film'}</span></div>
-          ${r.rating ? `<div class="stars">${'★'.repeat(r.rating)}<span class="off">${'★'.repeat(5 - r.rating)}</span> <span class="rw">${RATE_WORDS[r.rating]}</span></div>` : ''}
-          ${r.review ? `<div class="rtext clamp">${esc(r.review)}</div>` : ''}
-          <div class="src">${r.reviewAt ? fmtDate(r.reviewAt) + ' · ' : ''}kliknij, aby edytować</div></div></a>`).join('')
-        : '<div class="shelf-empty">Oceniaj obejrzane seriale i filmy — przycisk „Oceń i napisz recenzję” jest na ich stronach.</div>'}
-    </section>
+    ${droppedS.length ? shelf('dropped', 'Przerwane', droppedS, showMini, '') : ''}
     ${notes.length ? `<section class="shelf"><h2>Notatki do odcinków <small>(${notes.length})</small></h2>
       ${notes.slice(0, 8).map(([k, n]) => { const [sid, se, ep] = k.split(':'); return `<a class="revcard" href="#/show/${sid}">
         <div class="body"><div class="t">${esc(showName(sid))} <span class="muted small">· S${pad(se)}E${pad(ep)}</span></div><div class="rtext clamp">${esc(n.text)}</div><div class="src">${fmtDate(n.t)}</div></div></a>`; }).join('')}
     </section>` : ''}
-    ${topG.length || topMG.length ? `<h2>Ulubione gatunki</h2><div class="panel">
-      ${topG.length ? `<div class="muted small" style="margin-bottom:4px">Seriale</div>${bars(topG)}` : ''}
-      ${topMG.length ? `<div class="muted small" style="margin:${topG.length ? 14 : 0}px 0 4px">Filmy</div>${bars(topMG)}` : ''}</div>` : ''}
-    <h2>Ustawienia</h2>
-    <div class="panel">
-      <div class="muted small" style="margin:0 0 8px">Dane</div>
-      <div class="actions" style="margin:0">
-        <button class="btn ghost sm" data-act="export">⬇ Eksportuj</button>
-        <button class="btn ghost sm" data-act="import">⬆ Importuj</button>
-        <button class="btn ghost sm danger" data-act="reset">Wyczyść wszystko</button>
-      </div>
-    </div>
-    <button class="lookbtn" data-act="openLook"><span class="sw" style="background:var(--bg)"><u style="background:var(--card)"></u><i style="background:var(--accent)"></i></span>
-      <div><b>Dostosuj wygląd</b><small>Motyw, kolory tła i akcentu, natężenie</small></div><span class="go">›</span></button>
+    ${shelf('done-tv', 'Seriale obejrzane', doneS, showMini, 'Tu trafią seriale, których wszystkie odcinki obejrzano.')}
+    ${shelf('seen-movies', 'Filmy obejrzane', seenM.sort((a, b) => (b.seenAt || 0) - (a.seenAt || 0)), movieMini, 'Brak obejrzanych filmów.')}
+    ${shelf('favs', 'Ulubione', favs, favMini, 'Kliknij ♡ przy serialu lub filmie, aby dodać go do ulubionych.')}
     <p class="muted" style="font-size:12px;margin-top:24px">Recenzje i notatki są prywatne — widzi je tylko właściciel konta. Dane o filmach i serialach: TMDB (themoviedb.org); aplikacja korzysta z API TMDB, ale nie jest przez TMDB wspierana ani certyfikowana. Dostępność w serwisach: JustWatch.</p>`;
 }
+Object.assign(actions, {
+  profMenu() {
+    const av = (state.prefs || {}).avatar, nd = Object.keys(disliked()).length, pl = myPlats();
+    $('#sheet').innerHTML = `<div class="menu pmenu"><div class="look-head"><b>${esc(user)}</b><button class="x" data-act="close" title="Zamknij">✕</button></div>
+      <a class="mi" href="#/friends/add"><span>➕</span><div><b>Dodaj znajomego</b><small>po nazwie użytkownika</small></div></a>
+      <a class="mi" href="#/friends"><span>👥</span><div><b>Znajomi i zaproszenia</b></div></a>
+      <a class="mi" href="#/stats"><span>📊</span><div><b>Statystyki</b><small>czas przed ekranem, wykresy, gatunki, lata</small></div></a>
+      <button class="mi" data-act="openPlatforms"><span>📺</span><div><b>Moje platformy</b><small>${pl.length ? esc(pl.map(p => p.name).join(', ')) : 'wybierz serwisy, które masz'}</small></div></button>
+      <button class="mi" data-act="openLook"><span>🎨</span><div><b>Dostosuj wygląd</b><small>motyw i kolory</small></div></button>
+      ${nd ? `<a class="mi" href="#/lib/disliked"><span>👎</span><div><b>Nie podoba mi się</b><small>${plural(nd, 'tytuł', 'tytuły', 'tytułów')}</small></div></a>` : ''}
+      ${av ? '<button class="mi" data-act="avatarDel"><span>🖼</span><div><b>Usuń zdjęcie profilowe</b></div></button>' : ''}
+      <button class="mi" data-act="export"><span>⬇</span><div><b>Eksportuj dane</b></div></button>
+      <button class="mi" data-act="import"><span>⬆</span><div><b>Importuj dane</b></div></button>
+      <button class="mi danger" data-act="reset"><span>🗑</span><div><b>Wyczyść wszystko</b></div></button>
+      <button class="mi out" data-act="logout"><span>🚪</span><div><b>Wyloguj się</b></div></button></div>`;
+    $('#sheetWrap').classList.remove('hidden');
+  },
+});
 
 // ---------- start ----------
 // motyw zapamiętany w tej przeglądarce (wygoda — nie trzeba go trzymać na koncie)
@@ -2785,7 +3008,7 @@ function openLook() {
   $('#sheet').innerHTML = `<div class="look">
     <div class="look-head"><b>Dostosuj wygląd</b><button class="x" data-act="close" title="Zamknij">✕</button></div>
     <div class="lprev" aria-hidden="true"><div class="lp-bg">
-      <div class="lp-top"><b>Seria<span>Log</span></b><small>podgląd</small></div>
+      <div class="lp-top"><b>Sean<span>sik</span></b><small>podgląd</small></div>
       <div class="lp-card"><span class="lp-poster"></span><div class="lp-body"><b>Twój serial</b><small>S02E05 · za 3 dni</small><span class="lp-bar"><i></i></span></div><span class="lp-chk">✓</span></div>
       <div class="lp-row"><span class="lp-btn">✓ Obejrzany</span><span class="lp-ghost">＋ Na później</span><span class="lp-chip">Dramat</span></div>
       <div class="lp-tabs"><i class="on"></i><i></i><i></i><i></i><i></i></div>
@@ -2819,7 +3042,7 @@ try { setTheme(localStorage.getItem('serialog.theme')); } catch (e) { setTheme('
 try { applyLook(JSON.parse(localStorage.getItem('serialog.look') || 'null')); } catch (e) {}
 function updateTodayDot() {
   const today = todayStr();
-  const n = Object.keys(state.shows).filter(id => showCache[id] && !isDropped(id)).reduce((a, id) => a + showCache[id].episodes.filter(e => e.air === today).length, 0);
+  const n = Object.keys(state.shows).filter(id => showCache[id] && upShow(showCache[id])).reduce((a, id) => a + showCache[id].episodes.filter(e => e.air === today && !state.watched[e.key]).length, 0);
   const dot = $('#todayDot'); dot.hidden = !n; dot.textContent = n;
 }
 async function boot() {

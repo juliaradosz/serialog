@@ -1,4 +1,4 @@
-"""SeriaLog — serwer z kontami użytkowników.
+"""Seansik — serwer z kontami użytkowników.
 
 Uruchomienie lokalne:  python server.py  (albo start.bat)  -> http://localhost:8000
 Hosting (np. PythonAnywhere): plik WSGI z linią  from server import application
@@ -33,12 +33,13 @@ TMDB_API = 'https://api.themoviedb.org/3/'
 TMDB_PATH_RE = re.compile(
     r'^(search/(tv|movie)|discover/(tv|movie)|trending/(tv|movie)/(day|week)|genre/(tv|movie)/list'
     r'|(tv|movie)/\d+|(tv|movie)/\d+/(recommendations|similar)|tv/\d+/season/\d+(/episode/\d+)?'
-    r'|movie/(now_playing|upcoming|popular)|person/\d+|find/[\w.-]+)$')
+    r'|movie/(now_playing|upcoming|popular)|person/\d+|find/[\w.-]+|watch/providers/(tv|movie))$')
 TMDB_CACHE_SECONDS = 30 * 60
 tmdb_cache = {}  # url -> (wygasa, status, treść)
 # serwujemy tylko aplikację (i jej ikony), nic więcej — baza, klucz i kod serwera są niedostępne
 STATIC = {'/': 'index.html', '/index.html': 'index.html', '/manifest.json': 'manifest.json',
-          '/icon-180.png': 'icon-180.png', '/icon-192.png': 'icon-192.png', '/icon-512.png': 'icon-512.png'}
+          '/icon-180.png': 'icon-180.png', '/icon-192.png': 'icon-192.png', '/icon-512.png': 'icon-512.png',
+          '/icon-maskable.png': 'icon-maskable.png'}
 STATIC_TYPES = {'.html': 'text/html; charset=utf-8', '.json': 'application/manifest+json', '.png': 'image/png'}
 SESSION_SECONDS = 30 * 24 * 3600
 MAX_BODY = 5 * 1024 * 1024
@@ -393,7 +394,7 @@ def route(req):
 
 # ---------- uruchomienie lokalne (start.bat / python server.py) ----------
 class Handler(BaseHTTPRequestHandler):
-    server_version = 'SeriaLog'
+    server_version = 'Seansik'
 
     def run(self):
         path, _, query = self.path.partition('?')
@@ -431,5 +432,5 @@ def application(environ, start_response):
 if __name__ == '__main__':
     init_db()
     host, port = os.environ.get('HOST', '127.0.0.1'), int(os.environ.get('PORT', '8000'))
-    print(f'SeriaLog działa: http://{"localhost" if host in ("127.0.0.1", "0.0.0.0") else host}:{port}  (Ctrl+C zatrzymuje)')
+    print(f'Seansik działa: http://{"localhost" if host in ("127.0.0.1", "0.0.0.0") else host}:{port}  (Ctrl+C zatrzymuje)')
     ThreadingHTTPServer((host, port), Handler).serve_forever()

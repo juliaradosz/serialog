@@ -617,3 +617,23 @@ Zmiany:
 Testy (widok telefonu, konto testowe): podgląd zmienia kolor tła razem z suwakiem; 19 przycisków 🚫 przy kategoriach seriali; ukryte Polskie/Romanse/Anime → 0 polskich w propozycjach Szukaj, reguły działają na przykładowych tytułach; brak „Ostatnio obejrzane”; brak błędów w konsoli. Konto testowe usunięte.
 
 Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload**.
+
+### 2026-11-05 — Polecenie 36
+> 19 punktów: kropki w rogu profilu (znajomi, wylogowanie, statystyki), inna czcionka nazwy, wspólnie obejrzane u znajomego, bez recenzji i statystyk w profilu, „Obejrzane wszystko” bez pytania, kategorie pamiętają ukryte gatunki (np. bez anime w „Dla nastolatków”), znajomi jak na Instagramie (liczba przy nazwie, niewidoczna dla znajomych), obejrzane na koniec profilu, rok i moje platformy w szukaniu, obejrzany odcinek od razu znika z nadchodzących, kalendarz premier, nadchodzące tylko z zaczętych seriali, strzałka wstecz przyklejona u góry, ✕ w wyszukiwarce, przycisk odśwież, mieszane „Dla Ciebie”, ładniejsza nazwa, nowa ikona (popcorn).
+
+Kroki: przegląd kodu (profil, znajomi, szukaj, listy, nadchodzące, Dla Ciebie) → łatka `patch36.py` (scratchpad) na `index.html` → `server.py`: dozwolone zapytanie TMDB `watch/providers/(tv|movie)`, nowa nazwa, plik `icon-maskable.png` → ikony 180/192/512 + maskable wygenerowane (Pillow) z przesłanego obrazka popcornu → `manifest.json` (nazwa, ikony z `?v=2`, żeby telefon nie trzymał starej) → test w widoku telefonu na kontach testowych → poprawki (kolejność kodu „actions”, lista platform: najpierw popularne w Polsce, bez sklepów; odmiana „1 znajomy / N znajomych”; szerokość filtrów) → sprzątanie kont testowych.
+
+Zmiany:
+1. **Nowa nazwa: Seansik** i **ikona z popcornem** (nagłówek, logowanie, ikona na ekranie telefonu).
+2. **Profil**: duże zdjęcie, nazwa nową czcionką (Nunito zamiast ozdobnej), obok **liczba znajomych** (stuknięcie → strona Znajomi z dodawaniem i zaproszeniami; „+N” = nowe zaproszenia), w rogu **⋯** → Dodaj znajomego, Znajomi, **Statystyki**, Moje platformy, Dostosuj wygląd, Nie podoba mi się, eksport/import, wyczyść, **Wyloguj**. Z profilu usunięte: kafelki statystyk, „Ulubione gatunki”, „Moje recenzje”, ustawienia. Kolejność: Oglądam, Seriale na później, Filmy na później, Przerwane, Notatki, Seriale obejrzane, Filmy obejrzane, Ulubione.
+3. **Znajomy**: półka **„Obejrzane wspólnie”** (seriale, z których oboje coś obejrzeliście, i filmy obejrzane przez oboje) + licznik. Znajomi nie widzą, ilu masz znajomych.
+4. **„Obejrzane wszystko”** bez pytania (jest „Cofnij”).
+5. **Listy gatunków/kategorii** ukrywają ukryte gatunki i kategorie (poza tą, którą przeglądasz) — np. ukryte Anime nie pokazuje się w „Dla nastolatków”. Pasek „Nie pokazuj:” z gatunkami i Anime, zapamiętany na koncie.
+6. **Szukaj**: ✕ czyści pole (też na listach w profilu), wybór roku (konkretny rok, dekady, starsze), **📺 Moje platformy** (wybór serwisów z logo; filtr działa w propozycjach Szukaj i w gatunkach, też jako „📺 Moje platformy” obok „Dostępne w Polsce”), ↻ odśwież propozycje.
+7. **Nadchodzące**: obejrzany odcinek znika od razu; tylko seriale, które zaczęto oglądać (albo czekają na premierę); przycisk **📅 Kalendarz premier** → miesiąc z zaznaczonymi dniami premier (liczba w kółku), stuknięcie dnia pokazuje, co wychodzi.
+8. **Strzałka wstecz** w nagłówku, zawsze u góry ekranu, na każdej podstronie (serial, film, osoba, listy, znajomi, statystyki, kalendarz).
+9. **„Dla Ciebie” mieszane**: do 12 tytułów każdego rodzaju jako źródła (wagi spłaszczone), a lista na zmianę po jednej propozycji z każdego Twojego tytułu.
+
+Testy (widok telefonu, konta testowe): menu ⋯ i platformy (Netflix, HBO Max, Disney Plus… z logo); rok 2025 → wszystkie propozycje z 2025; filtr platform → zapytanie z `with_watch_providers`; ✕ pokazuje się po wpisaniu; „Dla nastolatków”: 6 anime → 0 po ukryciu; kalendarz: 4 dni z premierami w listopadzie; znajomy: „Obejrzane wspólnie (2)”; „Obejrzane wszystko” bez okienka (61 odcinków); strzałka wstecz zostaje u góry po przewinięciu; „Dla Ciebie”: 12 pierwszych z 6 różnych źródeł. Konta testowe usunięte (zostało tylko „julkar8”).
+
+Do zrobienia przez użytkownika: `cd ~/serialog && git pull` + **Reload** (zmienił się też serwer). Na iPhonie nową ikonę widać po usunięciu starej z ekranu i ponownym „Dodaj do ekranu początkowego”.
